@@ -10,6 +10,29 @@ import be.kuleuven.cs.som.annotate.Raw;
 // Create Boundry collision method
 // adjust the collision function to check wether two colliding objects reside within the same world.
 // documentatie voor de massa
+
+/*
+ * Design choices:
+ * If a bullet is loaded on a ship, the association between the ship and the bullet is a bidirectional relationship
+ * this because the totalMass of the ship is calculated as the mass of the ship itself + the mass of the bullets.
+ * If a bullet is shot into the world, the association between the bullet and the Ship becomes an unidirectional relationship
+ * where only the bullet knows about the association with the ship
+ */
+/**
+ * A class that represents the World Object
+ * @author Martijn & Flor
+ * @Invar  	The velocity of a WorldObject is always lower than the LIGHT_SPEED
+ * 			|isValidVelocity()
+ * 
+ * @Invar	The radius will always be larger than or equal to the specified minimum radius
+ * 			|isValidRadius()
+ * 
+ * @Invar   The Density will always be larger than or equal to the specified minimum
+ * 			|isValidDensity()
+ * 
+ * @Invar   The mass will always be larger than or equal to the specified minimum
+ * 			|canHaveAsMass()
+ */
 public abstract class WorldObject {
 	
 	
@@ -39,11 +62,13 @@ public abstract class WorldObject {
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public WorldObject(double xPos, double yPos, double radius, double xVel, double yVel)throws IllegalArgumentException{
+	public WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
 		this.setXPosition(xPos);
 		this.setYPosition(yPos);
 		this.setRadius(radius);
 		this.setVelocity(xVel, yVel);
+		this.setDensity(density);
+		this.setMass(mass);
 	}
 		
 	
@@ -52,7 +77,7 @@ public abstract class WorldObject {
 	 * @effect WorldObject(0,0,10,0,0)
 	 */
 	public WorldObject(){
-		this(0d,0d,10d,0,0);
+		this(0d,0d,10d,0,0,1,1);
 	}
 	
 	/**
@@ -247,7 +272,7 @@ public abstract class WorldObject {
 	 */
 	@Basic @Immutable @Raw
 	public void setRadius(double rad) throws IllegalArgumentException{
-			if(! isValidRadius(rad))
+			if(! this.isValidRadius(rad))
 				throw new IllegalArgumentException();
 			this.radius = rad;
 			
@@ -260,9 +285,7 @@ public abstract class WorldObject {
 	 * 
 	 * @return |result == (rad >= MIN_RADIUS)
 	 */
-	public static boolean isValidRadius(double rad){
-		return rad > 0;
-	}
+	public abstract boolean isValidRadius(double rad);
 	
 	// the radius will not change once the radius has been set
 	private double radius;
@@ -285,21 +308,16 @@ public abstract class WorldObject {
 	 * 			| else new.getDensity() == 1
 	 */
 	public void setDensity(double density){
-		if(canHaveAsDensity(density))
+		if(this.isValidDensity(density))
 			this.Density = density;
 		else
-			this.Density = 1;
+			this.Density = this.getMinimumDensity() ;
 	}
 	
-	/**
-	 * checks if the mass for an object is a valid mass
-	 * @param mass
-	 * @return  true if and only if the mass is larger than zero, smaller than Double.MAX_VALUE and does not equal NaN.
-	 * 			@see implementation
-	 */
-	public boolean canHaveAsDensity(double density){
-		return density > 0 && density < Double.MAX_VALUE && !Double.isNaN(density);
-	}
+
+	public abstract boolean isValidDensity(double density);
+	
+	public abstract double getMinimumDensity();
 	
 	// mass is variable so no final value
 	private double Density;
@@ -308,20 +326,21 @@ public abstract class WorldObject {
 		return this.mass;
 	}
 	public void setMass(double mass){
-		if(canHaveAsMass(mass))
+		if(this.canHaveAsMass(mass))
 			this.mass = mass;
 		else
-			this.mass =1;
+			this.mass = calcMinMass();
 	}
 	
 	private double mass;
-	
-	public boolean canHaveAsMass(double mass){
-		return mass > 0&& mass < Double.MAX_VALUE && !Double.isNaN(mass);
-	}
+
+	public abstract boolean canHaveAsMass(double mass);
 	
 	protected static double volumeSphere(double radius){
 		return 4.0/3.0 * Math.PI*Math.pow(radius,3);
+	}
+	protected double calcMinMass(){
+		return volumeSphere(this.getRadius())*this.getDensity();
 	}
 	
 	/**
@@ -764,7 +783,20 @@ public abstract class WorldObject {
 	public double boundryCollision(){
 		return 1d;
 	}
-
-
+	
+	/**
+	 * Return the associated world (no clone)
+	 * @return the associated world
+	 * 			|this.associatedWorld
+	 */
+	public World getWorld(){
+		return this.associatedWorld;
+	}
+	
+	public void setWorld(World world){
+		
+	}
+	
+	private World associatedWorld;
 
 }

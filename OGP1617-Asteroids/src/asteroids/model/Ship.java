@@ -1,21 +1,44 @@
 package asteroids.model;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import be.kuleuven.cs.som.annotate.*;
 
 // To do
 // documentatie voor mass & density functies
 
+// Algemene info over de klasse schip:
+// De associatie bullet-Ship wordt enkel aangemaakt door bullet, de methodes
+// die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
+// dit is gedaan om de association integrity te behouden
+
+// denk ook nog eens na over als je de density aanpast of de massa ook aangepast moet worden om de invariant
+// niet te schenden (dus als je een nieuwe density zet dat je massa nog geldig blijft)
+
+// moet het schip nog van de bullet weten als deze geschoten is?
+// wat als we het schip de bullet doen schieten is er dan apparte 'klasse' van afgeschoten kogels?
+
 /**
  * 
  * @author Martijn Sauwens & Flor Theuns
  * 
- * @Invar The ship cannot go faster than the speed of light
+ * @Invar 	The ship cannot go faster than the speed of light
  * 			|isValidVelocity(TotalVelocity(getXVelocity(), getYVelocity))
  *
- * @Invar The radius of the ship is always lager than 10km
+ * @Invar 	The radius of the ship is always lager than 10km
  * 			|isValidRadius(radius)
- * @Invar The orientation of the ship is always an angle between 0 and 2*Math.PI
+ * 
+ * @Invar 	The orientation of the ship is always an angle between 0 and 2*Math.PI
  * 			|isValidOrientation(angle)
+ * 
+ * @Invar	The Density of the ship is always larger than or equalt to the MINIMUM_DENISTY
+ * 			|isValidDensity()
+ * 
+ * @Invar 	The mass of the ship is larger than or equal to the volume of a sphere with the radius of the ship multiplied
+ * 			with the density of the ship
+ * 			|WorldObject.volumeSphere(this.getRadius()) * this.getDensity()
  */
 public class Ship extends WorldObject{
 	
@@ -49,10 +72,17 @@ public class Ship extends WorldObject{
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel)throws IllegalArgumentException{
-		super(xPos, yPos, 10, xVel, yVel);
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
+		
+		// set the single valued attributes
+		super(xPos, yPos, radius, xVel, yVel, density, mass);
 		this.setOrientation(orientation);
-		this.setRadius(radius);
+
+		// load the 15 bullets on the ship
+		for(int index = 0; index < START_BULLETS; index++){
+			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0, 0);
+			newBullet.loadBulletOnShip(this);
+		}
 	}
 		
 	
@@ -61,7 +91,7 @@ public class Ship extends WorldObject{
 	 * @effect Ship(0,0,0,10,0,0)
 	 */
 	public Ship(){
-		this(0d,0d,0d,10d,0,0);
+		this(0d,0d,0d,10d,0,0,0,0);
 	}
 
 	/**
@@ -95,23 +125,6 @@ public class Ship extends WorldObject{
 	}
 	private double orientation;
 	
-
-	
-	/**
-	 * Sets the radius of a ship
-	 * @post 	the radius is set to rad
-	 * 			| new.getRadius() == rad
-	 * 
-	 * @throws  IllegalArgumentException
-	 * 			| !isValidRadius(rad)
-	 * 		
-	 */
-	@Basic @Immutable @Raw
-	public void setRadius(double rad) throws IllegalArgumentException{
-			if(! isValidRadius(rad))
-				throw new IllegalArgumentException();
-			super.setRadius(rad);
-	}
 	
 	/**
 	 * checks whether the provided radius is valid
@@ -120,7 +133,8 @@ public class Ship extends WorldObject{
 	 * 
 	 * @return |result == (rad >= MIN_RADIUS)
 	 */
-	public static boolean isValidRadius(double rad){
+	@Override
+	public boolean isValidRadius(double rad){
 		return rad >= MIN_RADIUS;
 	}
 	
@@ -128,29 +142,24 @@ public class Ship extends WorldObject{
 	
 	public final static double MIN_RADIUS = 10;
 	
-	public void setShipMass(double mass){
-		if(canHaveAsMass(mass))
-			super.setMass(mass);
-		else
-			super.setMass(volumeSphere(this.getRadius())*super.getDensity());
-	}
-	
-	// eventueel nog een functie om de density te zetten
-	public void setDensity(double density){
-		if(density > MINIMUM_DENSITY)
-			super.setDensity(density);
-		else
-			super.setDensity(MINIMUM_DENSITY);
-
+	@Override
+	public boolean isValidDensity(double density){
+		return density >= MINIMUM_DENSITY&& density <= Double.MAX_VALUE && !Double.isNaN(density);
 	}
 	
 	public final static double MINIMUM_DENSITY = 1.42e12;
 	
-
+	@Override
 	public boolean canHaveAsMass(double mass){
-		return mass >= volumeSphere(this.getRadius());
+		// causes overflow if the radius is to big or the density is to high
+		return mass >= this.calcMinMass()&&!Double.isNaN(mass)&&mass <= Double.MAX_VALUE;
 	}
 	
+	@Override
+	public double getMinimumDensity(){
+		return MINIMUM_DENSITY;
+	}
+
 	
 	private boolean thrustStatus;
 	
@@ -285,4 +294,138 @@ public class Ship extends WorldObject{
 
 	
 	private final double thrustForce = 1.1E21;
+	
+	// ga ook na of de bullet niet geassocieerd is met een wereld (gaat pas nadat er functie voor is bij Bullet
+	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
+		if(bullet.getShip()==this){
+			loadedBullets.add(bullet);
+			double newMass = this.getMass() + bullet.getMass();
+			this.setMass(newMass);
+		}
+		else
+			throw new IllegalArgumentException();
+	}
+	
+	
+	public void loadBullets(Bullet...bullets) throws NullPointerException, IllegalArgumentException{
+		Set<Bullet> bulletSet = new HashSet<Bullet>(Arrays.asList(bullets));
+		if(bulletSet.contains(null))
+			throw new NullPointerException();
+		
+		// check if the bullet isn't already associated with another ship or world
+		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
+			if(bullet.isAssociated())
+				throw new IllegalArgumentException();		
+		}
+		
+		// load the bullet on the ship
+		for(Bullet bullet : bulletSet){
+			bullet.loadBulletOnShip(this);
+		}
+		
+	}
+	
+	/**
+	 * unloads the specified bullet
+	 * @param bullet
+	 * @post	The association between the ship and the bullet is broken 
+	 * @throws 	IllegalArgumentException
+	 * 			|bullet == null || !containsBullet(bullet)
+	 */
+	private void unloadBullet(Bullet bullet) throws IllegalArgumentException{
+		if(bullet == null)
+			throw new IllegalArgumentException();
+		if(!this.containsBullet(bullet))
+			throw new IllegalArgumentException();
+		this.getLoadedBullets().remove(bullet);
+		bullet.transferToWorld();
+		
+	}
+	
+	/**
+	 * A getter for the loaded bullets
+	 * @return 	the loaded bullets
+	 * 			|result == this.loadedBullets()
+	 */
+	@Model
+	private Set<Bullet> getLoadedBullets(){
+		// return the set itself (not a clone) the method is used to manipulate the amount of bullets on the ship
+		return this.loadedBullets;
+	}
+	
+	/**
+	 * Checks if a ship has the specified bullet associated with itself
+	 * @param bullet
+	 * @return	Whether the bullet is associated with the ship
+	 * 			|result == this.getLoadedBullets().contains(bullet)
+	 */
+	public boolean containsBullet(Bullet bullet){
+		return this.getLoadedBullets().contains(bullet);
+	}
+	
+	/**
+	 * Fires the Bullet into space
+	 * @param 	bullet
+	 * 
+	 * @effect	The bullet is removed from the arsenal of the ship and the bullet is cast into the world
+	 * 			|unloadBullet()
+	 * 
+	 * @post  	The fired bullet is positioned next to the ship (on the relative y-axis at a distance equal to the total radii)
+	 * 			|(new bullet).getXPosition()== this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius())
+	 *			|(new bullet).getYPosition()==this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius())
+	 *
+	 * @post	The fired bullet has a standard velocity (depending on bullet.SHOOTING_VELOCITY) in the same direction as the ship is facing
+	 * 			|(new bullet).getXVelocity() == Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 *			|(new bullet).getYVelocity() == Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 * 
+	 * @throws 	IllegalStateException
+	 * 			a Ship cannot fire a bullet when it is not located in a world.
+	 * 			|this.getWorld() == null
+	 * @throws 	ArithmeticException
+	 * 			if a calculation caused over or underflow
+	 * 			|causedOverflow()
+	 * @throws 	IllegalArgumentException
+	 * 			if the provided bullet is a null reference or the bullet isn't associated with the ship
+	 * 			|bullet == null||!containsBullet(bullet)
+	 */
+	public void fireBullet(Bullet bullet) throws IllegalStateException, IllegalArgumentException, ArithmeticException{
+		
+		//check if the bullet isn't a null reference
+		if( bullet == null)
+			throw new IllegalArgumentException();
+		//check if the bullet is associated with the ship.
+		if (!this.containsBullet(bullet))
+			throw new IllegalArgumentException();
+		
+		// if the ship is not a world it cannot fire a bullet
+		if( this.getWorld() == null)
+			throw new IllegalStateException();
+		
+		//unload the bullet
+		this.unloadBullet(bullet);
+		
+		// set the position of the bullet.
+		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
+		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius());
+		
+		if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
+			throw new ArithmeticException();
+		
+		bullet.setXPosition(nextToShipX);
+		bullet.setYPosition(nextToShipY);
+		
+		// set the velocity of the bullet. Can only cause overflow
+		double bulletXVelocity = Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+		double bulletYVelocity = Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+		
+		if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
+			throw new ArithmeticException();
+		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
+	}
+	
+	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
+	
+	private final static int START_BULLETS = 15;
+	
+	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
 }
