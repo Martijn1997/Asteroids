@@ -1,4 +1,6 @@
 package asteroids.model;
+import java.util.HashMap;
+import java.util.Map;
 
 import be.kuleuven.cs.som.annotate.*;
 
@@ -44,25 +46,37 @@ public class World {
 		return worldObject1.getDistanceBetween(worldObject2) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
 	
-	public boolean withinBoundary(WorldObject worldobject) throws IllegalArgumentException{
-		if (worldObject == null)
+
+public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
+  if (worldObject == null)
 				throw new IllegalArgumentException();
 		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
 				return false;
 		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
 	}
 	
+
+	public void addWorldObject(WorldObject worldObject) throws IllegalArgumentException{
+		
+		// checker if valid object
+		if(!this.canHaveAsWorldObject(worldObject))
+			throw new IllegalArgumentException();
+		
+		//get the position of the WO
+		double xPos = worldObject.getXPosition();
+		double yPos = worldObject.getYPosition();
+		double[] position = {xPos, yPos};
+		
+		//set the WO in the map
+		worldObjects.put(position, worldObject);
+		worldObject.setWorld(this);
+		
+	}
 	
-	@Basic @Raw
-	public WorldObject getWorldObject(){
-		return worldObject;
+	public boolean canHaveAsWorldObject(WorldObject worldObject){
+		return (worldObject != null)&&(worldObject.getWorld() == null);
 	}
 
-	@Raw
-	public void setWorldObject(WorldObject worldObject){
-		this.worldObject = worldObject;
-	}
 
-	private WorldObject worldObject = null;
-	
+	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }

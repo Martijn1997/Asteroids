@@ -83,6 +83,9 @@ public class Bullet extends WorldObject {
 		
 	}
 	
+	public void transferToShip(){
+	}
+	
 	
 	/**
 	 * Checks if a Bullet is associated with a World or a Ship.
