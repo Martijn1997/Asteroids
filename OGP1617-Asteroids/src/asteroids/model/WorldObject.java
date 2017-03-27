@@ -5,7 +5,35 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
 
-public class WorldObject {
+// to do:
+// Make double reference binding from WorldObject to World
+// Create Boundry collision method
+// adjust the collision function to check wether two colliding objects reside within the same world.
+// documentatie voor de massa
+
+/*
+ * Design choices:
+ * If a bullet is loaded on a ship, the association between the ship and the bullet is a bidirectional relationship
+ * this because the totalMass of the ship is calculated as the mass of the ship itself + the mass of the bullets.
+ * If a bullet is shot into the world, the association between the bullet and the Ship becomes an unidirectional relationship
+ * where only the bullet knows about the association with the ship
+ */
+/**
+ * A class that represents the World Object
+ * @author Martijn & Flor
+ * @Invar  	The velocity of a WorldObject is always lower than the LIGHT_SPEED
+ * 			|isValidVelocity()
+ * 
+ * @Invar	The radius will always be larger than or equal to the specified minimum radius
+ * 			|isValidRadius()
+ * 
+ * @Invar   The Density will always be larger than or equal to the specified minimum
+ * 			|isValidDensity()
+ * 
+ * @Invar   The mass will always be larger than or equal to the specified minimum
+ * 			|canHaveAsMass()
+ */
+public abstract class WorldObject {
 	
 	
 	/**
@@ -28,30 +56,28 @@ public class WorldObject {
 	 * @effect 	yPosition is set to the provided yPos
 	 * 			| setYPosition(yPos)
 	 * 
-	 * @effect 	the orientation of the WorldObject is set to the given orientation
-	 * 			| setOrientation(orientation)
-	 * 
 	 * @effect 	the radius of the WorldObject is set to the given radius
 	 * 			| setRadius(radius)
 	 * 
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public WorldObject(double xPos, double yPos, double orientation, double radius, double xVel, double yVel)throws IllegalArgumentException{
+	public WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
 		this.setXPosition(xPos);
 		this.setYPosition(yPos);
-		this.setOrientation(orientation);
 		this.setRadius(radius);
 		this.setVelocity(xVel, yVel);
+		this.setDensity(density);
+		this.setMass(mass);
 	}
 		
 	
 	/**
 	 * default constructor for a WorldObject object
-	 * @effect WorldObject(0,0,0,10)
+	 * @effect WorldObject(0,0,10,0,0)
 	 */
 	public WorldObject(){
-		this(0d,0d,0d,10d,0,0);
+		this(0d,0d,10d,0,0,1,1);
 	}
 	
 	/**
@@ -209,7 +235,7 @@ public class WorldObject {
 	 * @return 	if the sum causes overflow, return positive infinity
 	 * 			|result == Double.POSITIVE_INFINITY
 	 */
-	private static double totalVelocity(double xVel, double yVel){
+	protected static double totalVelocity(double xVel, double yVel){
 		if (Double.MAX_VALUE - Math.pow(xVel,2) < Math.pow(yVel,2))
 			return Double.POSITIVE_INFINITY;
 		else
@@ -225,38 +251,7 @@ public class WorldObject {
 	}
 
 	public static final double LIGHT_SPEED = 300000;
-	
-	
-	/**
-	 * Returns the orientation of the WorldObject
-	 */
-	@Basic
-	public double getOrientation(){
-		return this.orientation;
-	}
-	
-	/**
-	 * Basic setter for the orientation of the WorldObject
-	 * 
-	 * @pre 	the provided angle is between 0 and Math.PI * 2
-	 * 			| isValidOrientation(angle)
-	 * 
-	 * @post 	the orientation is equal to the given angle
-	 * 			| new.getOrientation() == angle
-	 */
-	@Basic
-	public void setOrientation(double angle){
-		assert(isValidOrientation(angle));
-		this.orientation = angle;
-	}
-	
-	/**
-	 * returns if the given angle is between 0 and 2PI
-	 */
-	public static boolean isValidOrientation(double angle){
-		return (angle <= 2*Math.PI)&&(angle >= 0);
-	}
-	private double orientation;
+
 	
 	/**
 	 * @return 	the radius of the WorldObject
@@ -277,9 +272,10 @@ public class WorldObject {
 	 */
 	@Basic @Immutable @Raw
 	public void setRadius(double rad) throws IllegalArgumentException{
-			if(! isValidRadius(rad))
+			if(! this.isValidRadius(rad))
 				throw new IllegalArgumentException();
 			this.radius = rad;
+			
 	}
 	
 	/**
@@ -289,15 +285,63 @@ public class WorldObject {
 	 * 
 	 * @return |result == (rad >= MIN_RADIUS)
 	 */
-	public static boolean isValidRadius(double rad){
-		return rad >= MIN_RADIUS;
-	}
+	public abstract boolean isValidRadius(double rad);
 	
 	// the radius will not change once the radius has been set
 	private double radius;
 	
-	public final static double MIN_RADIUS = 10;
+
 	
+	/**
+	 * @return The density of the WorldObject
+	 */
+	public double getDensity(){
+		return this.Density;
+	}
+	
+	/**
+	 * Set the mass of the WorldObject to the provided mass
+	 * @param 	density
+	 * @post	| the object density equals to the provided mass
+	 * 			| if(canHaveAsDensity(density))
+	 * 			| then new.getDensity() == density
+	 * 			| else new.getDensity() == 1
+	 */
+	public void setDensity(double density){
+		if(this.isValidDensity(density))
+			this.Density = density;
+		else
+			this.Density = this.getMinimumDensity() ;
+	}
+	
+
+	public abstract boolean isValidDensity(double density);
+	
+	public abstract double getMinimumDensity();
+	
+	// mass is variable so no final value
+	private double Density;
+	
+	public double getMass(){
+		return this.mass;
+	}
+	public void setMass(double mass){
+		if(this.canHaveAsMass(mass))
+			this.mass = mass;
+		else
+			this.mass = calcMinMass();
+	}
+	
+	private double mass;
+
+	public abstract boolean canHaveAsMass(double mass);
+	
+	protected static double volumeSphere(double radius){
+		return 4.0/3.0 * Math.PI*Math.pow(radius,3);
+	}
+	protected double calcMinMass(){
+		return volumeSphere(this.getRadius())*this.getDensity();
+	}
 	
 	/**
 	 * Sets the new position of the WorldObject according to the current speed and given time interval
@@ -342,68 +386,6 @@ public class WorldObject {
 		return time>=0;
 	}
 	
-	/**
-	 * Turns the WorldObject for a given angle
-	 * @param 	angle
-	 * 			The angle the WorldObject has to turn
-	 * 
-	 * @Pre 	The sum of the angle and the old angle of the WorldObject is nonnegative and smaller than 2PI
-	 * 			| (angle + getOrientation()) <= 2*Math.PI && (angle + getOrientation() >= 0)
-	 * 
-	 * @post 	The new orientation is the sum of the angle and the old orientation
-	 * 			| new.getOrientation() == angle + getOrientation()
-	 */
-	public void turn(double angle){
-		double newAngle = angle + this.getOrientation();
-		assert( isValidOrientation(newAngle) );
-		this.setOrientation(newAngle);		
-	}
-	
-	/**
-	 * changes the velocity of the WorldObject, according to the current orientation and the given acceleration
-	 * @param 	acc
-	 * 			the acceleration of the WorldObject
-	 * 
-	 * @post	if the new total velocity is below light speed the new velocity is the sum
-	 * 			of the old velocity plus the acceleration, if the new velocity is greater then the speed
-	 * 			of light, the total velocity stays the same but the vector components are scaled accordingly
-	 * 			| if acc>0 || !causedOverflow(this.getXVelocity() + acc * Math.cos(this.getOrientation()))
-	 * 			|	|| !causedOverflow(this.getYVelocity() + acc * Math.sin(this.getOrientation()))
-	 * 			| then 
-	 * 			| 	if(isValidvelocity(totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))))
-	 * 			| 	then new.getXVelocity() = getXVelocity() + acc*cos(getOrientation())&&
-	 * 			|			new.getYVelocity = getYVelocity() + acc*sin(getOrientation())
-	 * 			|
-	 * 			| 	else new.getXVelocity() = (totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))/LIGHT_SPEED)
-	 * 			|					*(getXVelocity() + acc*cos(getOrientation()))
-	 * 			|
-	 * 			|      new.getYVelocity() = (totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))/LIGHT_SPEED)
-	 * 			|				*(getYVelocity() + acc*sins(getOrientation()))
-	 * 			| else
-	 * 			| 		new.getXVelocity() == this.getXvelocity() && new.getYVelocity() == this.getYVelocity()
-	 */
-	public void thrust(double acc){
-		if(acc < 0)
-			acc = 0;
-		
-		if(acc > Double.MAX_VALUE - this.getXVelocity() ||acc > Double.MAX_VALUE - this.getYVelocity())
-			acc = 0;
-		
-		double newXVel = this.getXVelocity() + acc * Math.cos(this.getOrientation());
-		double newYVel = this.getYVelocity() + acc * Math.sin(this.getOrientation());
-		double newTotalVel = totalVelocity(newXVel, newYVel);
-		
-		if(!isValidVelocity(newTotalVel)){
-			double rescaleConstant = newTotalVel/(LIGHT_SPEED);
-			newXVel /= rescaleConstant;
-			newYVel /= rescaleConstant;
-		}
-		
-		this.setVelocity(newXVel, newYVel);
-	}
 	
 	/**
 	 * Calculates the distance between the sides of two WorldObjects, if two WorldObjects overlap the distance is negative
@@ -797,7 +779,24 @@ public class WorldObject {
 		
 	}
 	
-
-
+	// before implementing this method, create a function to set a WorldObject into a world
+	public double boundryCollision(){
+		return 1d;
+	}
+	
+	/**
+	 * Return the associated world (no clone)
+	 * @return the associated world
+	 * 			|this.associatedWorld
+	 */
+	public World getWorld(){
+		return this.associatedWorld;
+	}
+	
+	public void setWorld(World world){
+		
+	}
+	
+	private World associatedWorld;
 
 }

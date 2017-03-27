@@ -1,20 +1,47 @@
 package asteroids.model;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import be.kuleuven.cs.som.annotate.*;
+
+// To do
+// documentatie voor mass & density functies
+
+// Algemene info over de klasse schip:
+// De associatie bullet-Ship wordt enkel aangemaakt door bullet, de methodes
+// die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
+// dit is gedaan om de association integrity te behouden
+
+// denk ook nog eens na over als je de density aanpast of de massa ook aangepast moet worden om de invariant
+// niet te schenden (dus als je een nieuwe density zet dat je massa nog geldig blijft)
+
+// moet het schip nog van de bullet weten als deze geschoten is?
+// wat als we het schip de bullet doen schieten is er dan apparte 'klasse' van afgeschoten kogels?
 
 /**
  * 
  * @author Martijn Sauwens & Flor Theuns
  * 
- * @Invar The ship cannot go faster than the speed of light
+ * @Invar 	The ship cannot go faster than the speed of light
  * 			|isValidVelocity(TotalVelocity(getXVelocity(), getYVelocity))
  *
- * @Invar The radius of the ship is always lager than 10km
+ * @Invar 	The radius of the ship is always lager than 10km
  * 			|isValidRadius(radius)
- * @Invar The orientation of the ship is always an angle between 0 and 2*Math.PI
+ * 
+ * @Invar 	The orientation of the ship is always an angle between 0 and 2*Math.PI
  * 			|isValidOrientation(angle)
+ * 
+ * @Invar	The Density of the ship is always larger than or equalt to the MINIMUM_DENISTY
+ * 			|isValidDensity()
+ * 
+ * @Invar 	The mass of the ship is larger than or equal to the volume of a sphere with the radius of the ship multiplied
+ * 			with the density of the ship
+ * 			|WorldObject.volumeSphere(this.getRadius()) * this.getDensity()
  */
-public class Ship {
+public class Ship extends WorldObject{
 	
 	
 	/**
@@ -46,196 +73,28 @@ public class Ship {
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel)throws IllegalArgumentException{
-		this.setXPosition(xPos);
-		this.setYPosition(yPos);
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
+		
+		// set the single valued attributes
+		super(xPos, yPos, radius, xVel, yVel, density, mass);
 		this.setOrientation(orientation);
-		this.setRadius(radius);
-		this.setVelocity(xVel, yVel);
+
+		// load the 15 bullets on the ship
+		for(int index = 0; index < START_BULLETS; index++){
+			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0, 0);
+			newBullet.loadBulletOnShip(this);
+		}
 	}
 		
 	
 	/**
 	 * default constructor for a Ship object
-	 * @effect Ship(0,0,0,10)
+	 * @effect Ship(0,0,0,10,0,0)
 	 */
 	public Ship(){
-		this(0d,0d,0d,10d,0,0);
-	}
-	
-	/**
-	 * Returns the current x position of the ship
-	 */
-	@Basic @Raw
-	public double getXPosition(){	
-		return this.xPosition;
-	}
-	
-	/**
-	 * Sets the x position of the ship if the xPos is valid
-	 * 
-	 * @param 	xPos
-	 * 			the new x-position of the ship
-	 * 
-	 * @post	the new x position is xPos
-	 * 			|new.getXPosition() = xPos
-	 * 
-	 * @throws 	IllegalArgumentexception
-	 * 			| !isValidposition(xPos)
-	 */
-	@Basic @Raw
-	public void setXPosition(double xPos) throws IllegalArgumentException{
-		if(!isValidPosition(xPos))
-			throw new IllegalArgumentException();
-		this.xPosition = xPos;
-	}
-	
-	/**
-	 * Checks if the Position is a Valid position
-	 */
-	public static boolean isValidPosition(double Pos){
-		return !((Double.isNaN(Pos))||(Pos == Double.POSITIVE_INFINITY)
-				||(Pos == Double.NEGATIVE_INFINITY));
-	}
-	
-	private double xPosition;
-	
-	/**
-	 * returns the y position of the ship
-	 */
-	@Basic @Raw
-	public double getYPosition(){	
-		return this.yPosition;
-	}
-	
-	
-	/**
-	 * Sets the y position of the ship if the yPos is valid
-	 * @param   yPos
-	 * 			the new y position of the ship
-	 * 
-	 * @post    the new y position is yPos
-	 * 			|new.getYPosition() == yPos
-	 * 
-	 * @throws 	IllegalArgumentException
-	 * 			| !isValidPosition(yPos)
-	 */
-	@Basic @Raw
-	public void setYPosition(double yPos) throws IllegalArgumentException{
-		if(!isValidPosition(yPos))
-			throw new IllegalArgumentException();
-		this.yPosition = yPos;
-	}
-	
-	private double yPosition;
-	
-	
-	/**
-	 * Returns the x velocity of the ship
-	 */
-	@Basic @Raw
-	public double getXVelocity(){
-		
-		return this.xVelocity;
-	}
-	
-	/**
-	 * Sets the x-velocity to xVel if the supplied value is valid
-	 * @param 	xVel
-	 * 			the new x velocity
-	 * 
-	 * @post 	if the supplied value for yVel is valid, the velocity it set to yVel
-	 * 			| if isValidVelocity(totalVelocity(yVel, this.getXVelocity))
-	 * 			| then new.getXVelocity() = xVel
-	 * 			| else new.getXVelocity() = this.getXVelocity()
-	 */
-	@Basic @Raw
-	public void setXVelocity(double xVel){
-		
-		if(isValidVelocity(totalVelocity(xVel, this.yVelocity)))
-			this.xVelocity = xVel;
-		
-	}
-	
-	private double xVelocity;
-	
-	/**
-	 * Returns the y velocity of the ship
-	 */
-	@Basic @Raw
-	public double getYVelocity(){
-		return this.yVelocity;
-	}
-	
-	/** 
-	 * Sets the y-velocity to yVel if the supplied value is valid
-	 * @param 	yVel
-	 * 			the new y-velocity
-	 * 
-	 * @post 	if the supplied value for yVel is valid, the velocity it set to yVel
-	 * 			| if isValidVelocity(totalVelocity(this.xVelocity, yVel))
-	 * 			| then new.getYVelocity() = yVel
-	 * 			| else new.getYVelocity() = this.getYVelocity()
-	 */
-	@Basic @Raw
-	public void setYVelocity(double yVel){
-		if(isValidVelocity(totalVelocity(this.xVelocity,yVel)))
-			this.yVelocity = yVel;
-		
-	}
-	private double yVelocity;
-	
-	
-	
-	/**
-	 * Sets the velocity to the two provided velocity components, xVel and yVel
-	 * @param 	xVel 
-	 * 			the new x-velocity component
-	 * 
-	 * @param 	yVel
-	 * 			the new y-velocity component
-	 * 
-	 * @post 	if the supplied velocity is valid, the velocity is set to the supplied values
-	 * 			| if isValidVelocity(totalVelocity(xVel, yVel))
-	 * 			| then new.getXVelocity() = xVel&&
-	 * 			| 	   new.getYVelocity() = yVel
-	 * 			|
-	 * 			| else new.getYVelocity() = this.getYVelocity()&&
-	 * 			|	   new.getXVelocity() = this.getXVelocity()
-	 */
-	@Basic @Raw
-	public void setVelocity(double xVel, double yVel){
-		if (isValidVelocity(totalVelocity(xVel,yVel)))
-			this.xVelocity = xVel;
-			this.yVelocity = yVel;
-	}
-	
-
-	/**
-	 * @return 	The total velocity of the ship
-	 * 			|result == Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2))
-	 * 
-	 * @return 	if the sum causes overflow, return positive infinity
-	 * 			|result == Double.POSITIVE_INFINITY
-	 */
-	private static double totalVelocity(double xVel, double yVel){
-		if (Double.MAX_VALUE - Math.pow(xVel,2) < Math.pow(yVel,2))
-			return Double.POSITIVE_INFINITY;
-		else
-			return Math.sqrt(Math.pow(xVel,2) + Math.pow(yVel,2));
-	}
-	
-	/**
-	 * Returns if the given velocity is below the light speed
-	 * @return totalVel <= LIGHT_SPEED && totalVel >= 0
-	 */
-	public static boolean isValidVelocity(double totalVel){
-		return (totalVel <= LIGHT_SPEED && totalVel >= 0);
+		this(0d,0d,0d,10d,0,0,0,0);
 	}
 
-	public static final double LIGHT_SPEED = 300000;
-	
-	
 	/**
 	 * Returns the orientation of the Ship
 	 */
@@ -267,29 +126,6 @@ public class Ship {
 	}
 	private double orientation;
 	
-	/**
-	 * @return 	the radius of the ship
-	 */
-	@Basic @Raw
-	public double getRadius(){
-		return radius;
-	}
-	
-	/**
-	 * Sets the radius of a ship
-	 * @post 	the radius is set to rad
-	 * 			| new.getRadius() == rad
-	 * 
-	 * @throws  IllegalArgumentException
-	 * 			| !isValidRadius(rad)
-	 * 		
-	 */
-	@Basic @Immutable @Raw
-	public void setRadius(double rad) throws IllegalArgumentException{
-			if(! isValidRadius(rad))
-				throw new IllegalArgumentException();
-			this.radius = rad;
-	}
 	
 	/**
 	 * checks whether the provided radius is valid
@@ -298,15 +134,35 @@ public class Ship {
 	 * 
 	 * @return |result == (rad >= MIN_RADIUS)
 	 */
-	public static boolean isValidRadius(double rad){
+	@Override
+	public boolean isValidRadius(double rad){
 		return rad >= MIN_RADIUS;
 	}
 	
 	// the radius will not change once the radius has been set
-	private double radius;
 	
 	public final static double MIN_RADIUS = 10;
 	
+	@Override
+	public boolean isValidDensity(double density){
+		return density >= MINIMUM_DENSITY&& density <= Double.MAX_VALUE && !Double.isNaN(density);
+	}
+	
+	public final static double MINIMUM_DENSITY = 1.42e12;
+	
+	@Override
+	public boolean canHaveAsMass(double mass){
+		// causes overflow if the radius is to big or the density is to high
+		return mass >= this.calcMinMass()&&!Double.isNaN(mass)&&mass <= Double.MAX_VALUE;
+	}
+	
+	@Override
+	public double getMinimumDensity(){
+		return MINIMUM_DENSITY;
+	}
+
+	
+	private boolean thrustStatus;
 	
 	/**
 	 * Sets the new position of the ship according to the current speed and given time interval
@@ -368,6 +224,22 @@ public class Ship {
 		this.setOrientation(newAngle);		
 	}
 	
+	public void thrustOn(){
+		this.thrustStatus = true;
+	}
+	
+	public void thrustOff(){
+		this.thrustStatus = false;
+	}
+	
+	public boolean getThrusterStatus(){
+		return this.thrustStatus;
+	}
+	
+	public double getThrustForce(){
+		return this.thrustForce;
+	}
+	
 	/**
 	 * changes the velocity of the ship, according to the current orientation and the given acceleration
 	 * @param 	acc
@@ -376,436 +248,195 @@ public class Ship {
 	 * @post	if the new total velocity is below light speed the new velocity is the sum
 	 * 			of the old velocity plus the acceleration, if the new velocity is greater then the speed
 	 * 			of light, the total velocity stays the same but the vector components are scaled accordingly
-	 * 			| if acc>0 || !causedOverflow(this.getXVelocity() + acc * Math.cos(this.getOrientation()))
-	 * 			|	|| !causedOverflow(this.getYVelocity() + acc * Math.sin(this.getOrientation()))
-	 * 			| then 
-	 * 			| 	if(isValidvelocity(totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))))
-	 * 			| 	then new.getXVelocity() = getXVelocity() + acc*cos(getOrientation())&&
-	 * 			|			new.getYVelocity = getYVelocity() + acc*sin(getOrientation())
-	 * 			|
-	 * 			| 	else new.getXVelocity() = (totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))/LIGHT_SPEED)
-	 * 			|					*(getXVelocity() + acc*cos(getOrientation()))
-	 * 			|
-	 * 			|      new.getYVelocity() = (totalVelocity(getXVelocity() + acc*cos(getOrientation()),
-	 * 			|		getYVelocity() + acc*sin(getOrientation()))/LIGHT_SPEED)
-	 * 			|				*(getYVelocity() + acc*sins(getOrientation()))
-	 * 			| else
-	 * 			| 		new.getXVelocity() == this.getXvelocity() && new.getYVelocity() == this.getYVelocity()
+	 * 			if an overflow occured, the old values are kept for the velocity
+	 * 			|@see implementation
 	 */
-	public void thrust(double acc){
-		if(acc < 0)
-			acc = 0;
+	public void thrust(double deltaTime){
 		
-		if(acc > Double.MAX_VALUE - this.getXVelocity() ||acc > Double.MAX_VALUE - this.getYVelocity())
-			acc = 0;
-		
-		double newXVel = this.getXVelocity() + acc * Math.cos(this.getOrientation());
-		double newYVel = this.getYVelocity() + acc * Math.sin(this.getOrientation());
-		double newTotalVel = totalVelocity(newXVel, newYVel);
-		
-		if(!isValidVelocity(newTotalVel)){
-			double rescaleConstant = newTotalVel/(LIGHT_SPEED);
-			newXVel /= rescaleConstant;
-			newYVel /= rescaleConstant;
+		if(this.getThrusterStatus()){
+			
 		}
-		
-		this.setVelocity(newXVel, newYVel);
+			double acceleration = this.getThrustForce()/this.getMass();
+			
+			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
+			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
+			
+			if (!WorldObject.causedOverflow(newXVel) && !WorldObject.causedOverflow(newYVel) ){
+				double newTotalVel = WorldObject.totalVelocity(newXVel, newYVel);
+							
+				if(!isValidVelocity(newTotalVel)){
+					double rescaleConstant = newTotalVel/(LIGHT_SPEED);
+					newXVel /= rescaleConstant;
+					newYVel /= rescaleConstant;
+				}
+				
+				this.setVelocity(newXVel, newYVel);
+			
+		}
 	}
-	
-	/**
-	 * Calculates the distance between the sides of two ships, if two ships overlap the distance is negative
-	 * if other is the same ship as the prime object, the distance is zero
-	 * @param 	other
-	 * 			the other ship
-	 * 
-	 * @return 	the total distance between two ships, if the other ship is also the prime object, the 
-	 * 		   	distance returned is 0
-	 * 			| if(other != this)
-	 * 			|	then result == distance(this.getXPosition(), this.getYPosition(), 
-	 *			| 	other.getXPosition(), other.getYPosition()) - other.getRadius() - this.getRadius()
-	 *			| else if (other == this)
-	 *			|	then result == 0
-	 * @throws 	IllegalArgumentException
-	 * 			| other == null
-	 * 
-	 * @throws 	ArithmeticException
-	 * 			is thrown when a calculation caused overflow
-	 * 			|causedOverflow()
-	 */
-	public double getDistanceBetween(Ship other) throws IllegalArgumentException, ArithmeticException{
-		if(other == this)
-			return 0;
-		if(other == null)
-			throw new IllegalArgumentException();
-		double distanceToCenter = distance(this.getXPosition(), this.getYPosition(), 
-				other.getXPosition(), other.getYPosition());
-		double totalDistance = distanceToCenter - this.getSigma(other);
 		
-		if(causedOverflow(totalDistance))
-			throw new ArithmeticException();
-		
-		return totalDistance;
-	}
-	
-	/**
-	 * calculates the distance between two points in space
-	 * @param 	xCoord1
-	 * 			The x-coordinate of the first point
-	 * 
-	 * @param 	yCoord1
-	 * 			The y-coordinate of the first point
-	 * 
-	 * @param 	xCoord2
-	 * 			The x-coordinate of the second point
-	 * 
-	 * @param 	yCoord2
-	 * 			The y-coordinate of the second point
-	 * 
-	 * @return	The distance between the two points
-	 * 			| Math.sqrt(Math.pow(xCoord1-xCoord2, 2) + Math.pow(yCoord1-yCoord2, 2))
-	 * 
-	 * @throws 	ArithMeticException
-	 * 			|causedOverflow()
-	 */
-	@Model
-	private static double distance(double xCoord1, double yCoord1, double xCoord2, double yCoord2) throws ArithmeticException{
-		double distance = Math.sqrt(Math.pow(xCoord1-xCoord2, 2) + Math.pow(yCoord1-yCoord2, 2));
-		
-		if(causedOverflow(distance))
-			throw new ArithmeticException();
-		return distance;	
-	}
-	
-	/**
-	 * This function checks whether the two ships overlap
-	 * @param other
-	 * 
-	 * @return 	true if and only if the ships overlap or the other ship is the same as the primary object
-	 * 			| if (other == this)
-	 * 			| then true
-	 * 			| else getDistanceBetween(other) <= 0
-	 * 
-	 * @throws IllegalArgumentException
-	 * 			| other == 0
-	 * @throws ArithmeticException
-	 * 		    throws the exception if a calculation caused overflow
-	 * 			| causedOverflow()
-	 */
-	public boolean overlap(Ship other) throws IllegalArgumentException, ArithmeticException{
-		if(other == null)
-			throw new IllegalArgumentException();
-		if(other == this)
-			return true;
-		return this.getDistanceBetween(other) <= 0;
-	}
-	
-	/**
-	 * returns the sum of the radii of two ships 
-	 * @param 	other
-	 * 			the other ship
-	 * 
-	 * @return 	the sum of the radii
-	 * 			| result == this.getRadius() + other.getRadius()
-	 * 
-	 * @throws ArithmeticException
-	 * 			throws exception when calculation resulted in an overflow
-	 * 			|causedOverflow()
-	 */
-	public double getSigma(Ship other) throws ArithmeticException{
-		double sigma = this.getRadius() + other.getRadius();
-		
-		if(causedOverflow(sigma))
-			throw new ArithmeticException();
-		return sigma;
-	}
+//		if(acc < 0)
+//			acc = 0;
+//		
+//		if(acc > Double.MAX_VALUE - this.getXVelocity() ||acc > Double.MAX_VALUE - this.getYVelocity())
+//			acc = 0;
+//		
+//		double newXVel = this.getXVelocity() + acc * Math.cos(this.getOrientation());
+//		double newYVel = this.getYVelocity() + acc * Math.sin(this.getOrientation());
+//		double newTotalVel = WorldObject.totalVelocity(newXVel, newYVel);
+//		
+//		if(!isValidVelocity(newTotalVel)){
+//			double rescaleConstant = newTotalVel/(LIGHT_SPEED);
+//			newXVel /= rescaleConstant;
+//			newYVel /= rescaleConstant;
+//		}
+//		
+//		this.setVelocity(newXVel, newYVel);
 
 	
-	/**
-	 * Calculates the time it will take for two ships to collide if they keep their current trajectory
-	 * @param	other
-	 * 			the other ship
-	 * 
-	 * @return	return the time of the collision
-	 * 			|positions on collision are:
-	 * 			|	xPos1 = this.getXPosition() + this.getXVelocity()*time
-	 * 			|	yPos1 = this.getYPosition() + this.getYVelocity()*time
-	 * 			|	xPos2 = other.getXPosition() + other.getXVelocity()*time
-	 * 			|	yPos2 = other.getYPosition() + other.getYVelocity()*time
-	 * 			|returns time such that:
-	 * 			|	distance(XPos1, YPos1, XPos2, YPos2) == this.getSigma(other)
-	 * 
-	 * @throws 	IllegalArgumentException
-	 * 			| other == null || this.overlap(other)
-	 * 
-	 * @throws 	ArithmeticException
-	 * 			throws the exception if a calculation caused overflow
-	 * 			| causedOverflow()
-	 */
-	public double getTimeToCollision(Ship other) throws IllegalArgumentException, ArithmeticException{
-		
-		if (other == null)
-			throw new IllegalArgumentException();
-		
-		if (this.overlap(other))
-			throw new IllegalArgumentException();
-		
-		double[] deltaR = this.getDeltaR(other);
-		double[] deltaV = this.getDeltaV(other);
-		
-		if(dotProduct2D(deltaV, deltaR) >= 0)
-			return Double.POSITIVE_INFINITY;
-		
-		// check if the calculations for d cause over or underflow
-		double d = calculateD(other, deltaR, deltaV);
-		
-		if (d <= 0)
-			return Double.POSITIVE_INFINITY;
-		else{
-			
-			double time = -(dotProduct2D(deltaV, deltaR) + Math.sqrt(d))/dotProduct2D(deltaV,deltaV);
-			if(causedOverflow(time))
-				throw new ArithmeticException();
-			
-			return time;
-		}
-	}	
+	private final double thrustForce = 1.1E21;
 	
-
+	// ga ook na of de bullet niet geassocieerd is met een wereld (gaat pas nadat er functie voor is bij Bullet
+	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
+		if(bullet.getShip()==this){
+			loadedBullets.add(bullet);
+			double newMass = this.getMass() + bullet.getMass();
+			this.setMass(newMass);
+		}
+		else
+			throw new IllegalArgumentException();
+	}
+	
 	/**
-	 * Calculates the d value for the collision time calculation
-	 * @param 	other
-	 * 			the other ship
+	 * Loads an arbitrary amount of bullets onto the ship
+	 * @param 	bullets
+	 * 			the bullets to be loaded onto the ship
+	 * @post	the bullets are loaded onto the ship
+	 * 			|new.getLoadedBullets == getLoadedBullets.addAll(bullets)
 	 * 
-	 * @param 	deltaR
-	 * 			the vector that points from the center of the first ship to the other ship
+	 * @throws 	IllegalArgumentException if the argument contains a bullet that is a null reference
+	 * 			or when a bullet in the argument already is associated with as ship
+	 * 			|bullets.contains(null)||bullets[i].isAssociated()
+	 */
+	public void loadBullets(Bullet...bullets) throws IllegalArgumentException{
+		Set<Bullet> bulletSet = new HashSet<Bullet>(Arrays.asList(bullets));
+		if(bulletSet.contains(null))
+			throw new IllegalArgumentException();
+		
+		// check if the bullet isn't already associated with another ship or world
+		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
+			if(bullet.isAssociated())
+				throw new IllegalArgumentException();		
+		}
+		
+		// load the bullet on the ship
+		for(Bullet bullet : bulletSet){
+			bullet.loadBulletOnShip(this);
+		}
+		
+	}
+	
+	/**
+	 * unloads the specified bullet
+	 * @param bullet
+	 * @post	The association between the ship and the bullet is broken 
+	 * @throws 	IllegalArgumentException
+	 * 			|bullet == null || !containsBullet(bullet)
+	 */
+	private void unloadBullet(Bullet bullet) throws IllegalArgumentException{
+		if(bullet == null)
+			throw new IllegalArgumentException();
+		if(!this.containsBullet(bullet))
+			throw new IllegalArgumentException();
+		this.getLoadedBullets().remove(bullet);
+		bullet.transferToWorld();
+		
+	}
+	
+	/**
+	 * A getter for the loaded bullets
+	 * @return 	the loaded bullets
+	 * 			|result == this.loadedBullets()
+	 */
+	@Model @Basic
+	private Set<Bullet> getLoadedBullets(){
+		// return the set itself (not a clone) the method is used to manipulate the amount of bullets on the ship
+		return this.loadedBullets;
+	}
+	
+	/**
+	 * Checks if a ship has the specified bullet associated with itself
+	 * @param bullet
+	 * @return	Whether the bullet is associated with the ship
+	 * 			|result == this.getLoadedBullets().contains(bullet)
+	 */
+	public boolean containsBullet(Bullet bullet){
+		return this.getLoadedBullets().contains(bullet);
+	}
+	
+	public Bullet selectBullet(){
+		for(Bullet bullet : this.getLoadedBullets())
+		{
+		        return bullet;
+		}
+		return null;
+	}
+	
+	// voeg nog checkers toe om na te gaan of de kogel al niet overlapt met andere schepen of de rand van de wereld
+	/**
+	 * Fires the Bullet into space
+	 * @param 	bullet
 	 * 
-	 * @param 	deltaV
-	 * 			the vector of the difference in speed of both ships
+	 * @effect	The bullet is removed from the arsenal of the ship and the bullet is cast into the world
+	 * 			|unloadBullet()
 	 * 
-	 * @return 	the value d used in the collision time method
-	 * 			| result == Math.pow(dotProduct2D(deltaV, deltaR),2) - 
-	 *			| (dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV)
+	 * @post  	The fired bullet is positioned next to the ship (on the relative y-axis at a distance equal to the total radii)
+	 * 			|(new bullet).getXPosition()== this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius())
+	 *			|(new bullet).getYPosition()==this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius())
 	 *
-	 * @throws 	ArithmeticException
-	 * 			throws the exception if a calculation caused overflow
-	 * 			| causedOverflow()
-	 * 
-	 * @throws 	IllegalArgumentexception
-	 * 			|other == null
+	 * @post	The fired bullet has a standard velocity (depending on bullet.SHOOTING_VELOCITY) in the same direction as the ship is facing
+	 * 			|(new bullet).getXVelocity() == Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 *			|(new bullet).getYVelocity() == Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 	 */
-	private double calculateD(Ship other, double[] deltaR, double[] deltaV) throws ArithmeticException, IllegalArgumentException{
+	public void fireBullet(){
 		
-		if(other == null)
-			throw new IllegalArgumentException();
+		// select a bullet from the magazine
+		Bullet bullet = selectBullet();
 		
-		double result = Math.pow(dotProduct2D(deltaV, deltaR),2) - 
-				(dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV);
+		//unload the bullet
+		this.unloadBullet(bullet);
 		
-		if(causedOverflow(result))
-			throw new ArithmeticException();
+		// set the position of the bullet.
+		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
+		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius());
 		
-		return result;
+		//if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
+		//	throw new ArithmeticException();
+		
+		bullet.setXPosition(nextToShipX);
+		bullet.setYPosition(nextToShipY);
+		
+		// set the velocity of the bullet. Can only cause overflow
+		double bulletXVelocity = Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+		double bulletYVelocity = Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+		
+		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
+		//	throw new ArithmeticException();
+		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
 	}
 	
 	/**
-	 * Calculates the position of a collision
-	 * @param 	other
-	 * 			the other ship
-	 * 
-	 * @return  the position of the collision
-	 * @return	return the time of the collision
-	 * 			|positions on collision are:
-	 * 			|	xPos1 = this.getXPosition() + this.getXVelocity()*time
-	 * 			|	yPos1 = this.getYPosition() + this.getYVelocity()*time
-	 * 			|	xPos2 = other.getXPosition() + other.getXVelocity()*time
-	 * 			|	yPos2 = other.getYPosition() + other.getYVelocity()*time
-	 * 			|calculates time such that:
-	 * 			|	distance(XPos1, YPos1, XPos2, YPos2) == this.getSigma(other)
-	 *          |
-	 * 			|using the calculated time determine xCol, yCol the coordinates
-	 * 			|of the collision such that:
-	 * 			|   distance(xPos1, yPos1, xCol, yCol) == this.getRadius() && 
-	 * 			|   distance(xPos2,yPos2, xCol, yCol) == other.getRadius()
-	 * 
-	 * @throws 	ArithmeticException
-	 * 			throws the exception if a calculation caused overflow
-	 * 			|causedOverflow()
-	 * 
-	 * @throws 	IllegalArgumentException
-	 * 			| other == null
+	 * The set of the bullets carried by a ship
 	 */
-	public double[] getCollisionPosition(Ship other)throws ArithmeticException, IllegalArgumentException{
-		
-		if(other == null)
-			throw new IllegalArgumentException();
-		
-		double time = this.getTimeToCollision(other);
-		
-		if(time == Double.POSITIVE_INFINITY){
-			return null;
-		}
-		
-		double[] thisShipPos = {this.getXPosition() + this.getXVelocity()*time, this.getYPosition() + this.getYVelocity()*time};
-		double[] otherShipPos = {other.getXPosition() + other.getXVelocity()*time, other.getYPosition() + other.getYVelocity()*time};
-		
-		if(causedOverflow(thisShipPos[0])||causedOverflow(thisShipPos[1])||
-				causedOverflow(otherShipPos[0])||causedOverflow(otherShipPos[1]))
-			throw new ArithmeticException();
-		
-		double radiusRatio = this.getRadius()/(this.getSigma(other));
-		
-		if(causedOverflow(radiusRatio))
-			throw new ArithmeticException();
-		
-		
-		double[] collisionPos = {(otherShipPos[0] - thisShipPos[0])*radiusRatio + thisShipPos[0], 
-				(otherShipPos[1] - thisShipPos[1])*radiusRatio + thisShipPos[1]};
-
-		if(causedOverflow(collisionPos[0])||causedOverflow(collisionPos[1]))
-			throw new ArithmeticException();
-		
-		return collisionPos;
-	}
-	
-
+	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
 	/**
-	 * Calculates the vector that connects the centers of the
-	 * two ships
-	 * @param 	other
-	 * 			the other ship
-	 * @return 	the vector that connects the two centers of the ship
-	 * 			| result == { other.getXPosition() - this.getXPosition(), 
-	 * 			|             other.getYPosition() - this.getYPosition()}
-	 * 
-	 * @throws  IllegalArgumentException
-	 * 			throws the exception whether a subtraction causes overflow
-	 * 			| causedOverflow() 
-	 * 
-	 * @throws 	NullPointerException
-	 * 			throws the exception if the supplied other is a null reference
-	 * 			| other == null
+	 * the amount of bullets that is loaded on the ship upon creation of the ship
 	 */
-	
-	private double[] getDeltaR(Ship other) throws IllegalArgumentException, ArithmeticException{
-		
-		if(other == null)
-			throw new IllegalArgumentException();
-		
-		// Acquire the coordinates of the first ship
-		double x1 = this.getXPosition();
-		double y1 = this.getYPosition();
-		
-		//  Acquire the coordinates of the other ship
-		double x2 = other.getXPosition();
-		double y2 = other.getYPosition();
-		
-		double[] deltaR = {x2-x1, y2-y1};
-		
-		if(causedOverflow(deltaR[0])||causedOverflow(deltaR[1]))
-			throw new ArithmeticException();
-			
-		return deltaR;
-		
-	}
-
+	private final static int START_BULLETS = 15;
 	
 	/**
-	 * Calculates the difference in speed vectors of the two ships
-	 * @param 	other
-	 * 			the other ship
-	 * 
-	 * @return 	the difference in speed vectors of the two ships in an array
-	 * 			|result == {other.getXVelocity() - this.getXVelocity(),
-	 * 						other.getYVelocity() - this.getYvelocity()}
-	 * 
-	 * @throws 	NullPointerException
-	 * 			| other == null
-	 * 
-	 * @throws 	IllegalArgumentException
-	 * 			| causedOverflow()
+	 * the size ratio between the bullets and the ship
 	 */
-	private double[] getDeltaV(Ship other) throws ArithmeticException, IllegalArgumentException{
-		
-		if(other == null)
-			throw new IllegalArgumentException();
-		
-		// Acquire the velocity of the first ship
-		double vx1 = this.getXVelocity();
-		double vy1 = this.getYVelocity();
-		
-		// Acquire the velocity of the other ship
-		double vx2 = other.getXVelocity();
-		double vy2 = other.getYVelocity();
-		
-		double[] deltaV = {vx2-vx1, vy2-vy1};
-		
-		if(causedOverflow(deltaV[0])||causedOverflow(deltaV[1]))
-			throw new ArithmeticException();
-		
-		return deltaV;
-		
-	}
-	
-	/**
-	 * Calculates the dot product of two 2D vectors
-	 * @param 	vector1
-	 * 			the first 2D vector in array format
-	 * 
-	 * @param 	vector2
-	 * 			the second 2D vector in array format
-	 * 
-	 * @return	the dot product of the two supplied 2D vectors
-	 *			| result == vector1[0]*vector2[0] + vector1[1]*vector2[1]
-	 *
-	 * @throws 	IllegalArgumentException
-	 * 			| vector1.length == 0 || vector2.length == 0||vector1 == null || vector2 == null 
-	 * 
-	 * @throws 	ArithmeticException
-	 * 			| causedOverflow()
-	 */
-	private static double dotProduct2D(double[] vector1, double[] vector2) throws IllegalArgumentException, ArithmeticException{
-		
-		// check if null reference
-		if(vector1 == null || vector2 == null)
-			throw new IllegalArgumentException();
-		
-		// check if empty arrays
-		if( vector1.length == 0 || vector2.length == 0)
-			throw new IllegalArgumentException();
-		// extract the x parts of the vectors
-		double x1 = vector1[0];
-		double x2 = vector2[0];
-		
-		// extract the y parts of the vectors
-		double y1 = vector1[1];
-		double y2 = vector2[1];
-		
-		// do the actual dot product
-		double xPart = x1*x2;
-		double yPart = y1*y2;
-		
-		double sum = xPart + yPart;
-		if(causedOverflow(sum))
-			throw new ArithmeticException();
-		
-		return sum;
-	}
-	
-	/**
-	 * checks if a calculation caused overflow
-	 * @param a
-	 * 
-	 * @return 	true if and only if the result of a calculation was overflow
-	 * 			| result == (a==Double.POSITIVE_INFINITY)||(a==Double.NEGATIVE_INFINITY)||(a == Double.NaN)
-	 */
-	public static boolean causedOverflow(double a){
-		return ((Double.isInfinite(a))||(Double.isNaN(a)));
-		
-	}
+	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
 }
-	
-
-
