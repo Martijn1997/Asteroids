@@ -83,7 +83,8 @@ public class Bullet extends WorldObject {
 		
 	}
 	
-	public void transferToShip()
+	public void transferToShip(){
+	}
 	
 	
 	/**
