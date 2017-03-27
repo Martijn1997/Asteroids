@@ -1,5 +1,4 @@
 package asteroids.model;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,14 +46,16 @@ public class World {
 		return worldObject1.getDistanceBetween(worldObject2) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
 	
-	public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{
-		if (worldObject == null)
+
+public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
+  if (worldObject == null)
 				throw new IllegalArgumentException();
 		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
 				return false;
 		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
 	}
 	
+
 	public void addWorldObject(WorldObject worldObject) throws IllegalArgumentException{
 		
 		// checker if valid object
