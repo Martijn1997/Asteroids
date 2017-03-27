@@ -44,6 +44,7 @@ public class World {
 		return worldObject1.getDistanceBetween(worldObject2) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
 	
+	
 	public boolean withinBoundary(WorldObject worldobject) throws IllegalArgumentException{
 		if (worldObject == null)
 				throw new IllegalArgumentException();
