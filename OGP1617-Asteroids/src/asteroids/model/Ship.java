@@ -2,6 +2,7 @@ package asteroids.model;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import be.kuleuven.cs.som.annotate.*;
@@ -306,11 +307,21 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 	}
 	
-	
-	public void loadBullets(Bullet...bullets) throws NullPointerException, IllegalArgumentException{
+	/**
+	 * Loads an arbitrary amount of bullets onto the ship
+	 * @param 	bullets
+	 * 			the bullets to be loaded onto the ship
+	 * @post	the bullets are loaded onto the ship
+	 * 			|new.getLoadedBullets == getLoadedBullets.addAll(bullets)
+	 * 
+	 * @throws 	IllegalArgumentException if the argument contains a bullet that is a null reference
+	 * 			or when a bullet in the argument already is associated with as ship
+	 * 			|bullets.contains(null)||bullets[i].isAssociated()
+	 */
+	public void loadBullets(Bullet...bullets) throws IllegalArgumentException{
 		Set<Bullet> bulletSet = new HashSet<Bullet>(Arrays.asList(bullets));
 		if(bulletSet.contains(null))
-			throw new NullPointerException();
+			throw new IllegalArgumentException();
 		
 		// check if the bullet isn't already associated with another ship or world
 		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
@@ -347,7 +358,7 @@ public class Ship extends WorldObject{
 	 * @return 	the loaded bullets
 	 * 			|result == this.loadedBullets()
 	 */
-	@Model
+	@Model @Basic
 	private Set<Bullet> getLoadedBullets(){
 		// return the set itself (not a clone) the method is used to manipulate the amount of bullets on the ship
 		return this.loadedBullets;
@@ -363,6 +374,15 @@ public class Ship extends WorldObject{
 		return this.getLoadedBullets().contains(bullet);
 	}
 	
+	public Bullet selectBullet(){
+		for(Bullet bullet : this.getLoadedBullets())
+		{
+		        return bullet;
+		}
+		return null;
+	}
+	
+	// voeg nog checkers toe om na te gaan of de kogel al niet overlapt met andere schepen of de rand van de wereld
 	/**
 	 * Fires the Bullet into space
 	 * @param 	bullet
@@ -377,29 +397,11 @@ public class Ship extends WorldObject{
 	 * @post	The fired bullet has a standard velocity (depending on bullet.SHOOTING_VELOCITY) in the same direction as the ship is facing
 	 * 			|(new bullet).getXVelocity() == Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 	 *			|(new bullet).getYVelocity() == Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
-	 * 
-	 * @throws 	IllegalStateException
-	 * 			a Ship cannot fire a bullet when it is not located in a world.
-	 * 			|this.getWorld() == null
-	 * @throws 	ArithmeticException
-	 * 			if a calculation caused over or underflow
-	 * 			|causedOverflow()
-	 * @throws 	IllegalArgumentException
-	 * 			if the provided bullet is a null reference or the bullet isn't associated with the ship
-	 * 			|bullet == null||!containsBullet(bullet)
 	 */
-	public void fireBullet(Bullet bullet) throws IllegalStateException, IllegalArgumentException, ArithmeticException{
+	public void fireBullet(){
 		
-		//check if the bullet isn't a null reference
-		if( bullet == null)
-			throw new IllegalArgumentException();
-		//check if the bullet is associated with the ship.
-		if (!this.containsBullet(bullet))
-			throw new IllegalArgumentException();
-		
-		// if the ship is not a world it cannot fire a bullet
-		if( this.getWorld() == null)
-			throw new IllegalStateException();
+		// select a bullet from the magazine
+		Bullet bullet = selectBullet();
 		
 		//unload the bullet
 		this.unloadBullet(bullet);
@@ -408,8 +410,8 @@ public class Ship extends WorldObject{
 		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
 		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius());
 		
-		if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
-			throw new ArithmeticException();
+		//if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
+		//	throw new ArithmeticException();
 		
 		bullet.setXPosition(nextToShipX);
 		bullet.setYPosition(nextToShipY);
@@ -418,14 +420,23 @@ public class Ship extends WorldObject{
 		double bulletXVelocity = Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 		double bulletYVelocity = Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 		
-		if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
-			throw new ArithmeticException();
+		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
+		//	throw new ArithmeticException();
 		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
 	}
 	
+	/**
+	 * The set of the bullets carried by a ship
+	 */
 	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
+	/**
+	 * the amount of bullets that is loaded on the ship upon creation of the ship
+	 */
 	private final static int START_BULLETS = 15;
 	
+	/**
+	 * the size ratio between the bullets and the ship
+	 */
 	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
 }
