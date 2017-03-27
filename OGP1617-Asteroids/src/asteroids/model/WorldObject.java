@@ -793,8 +793,15 @@ public abstract class WorldObject {
 		return this.associatedWorld;
 	}
 	
-	public void setWorld(World world){
+	public void setWorld(World world) throws IllegalArgumentException{
+		if(!canHaveAsWorld(world))
+			throw new IllegalArgumentException();
+		this.associatedWorld = world;
 		
+	}
+	
+	public boolean canHaveAsWorld(World world){
+		return (world!=null)&&(this.getWorld()==null);
 	}
 	
 	private World associatedWorld;
