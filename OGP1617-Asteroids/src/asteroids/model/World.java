@@ -120,7 +120,7 @@ public class World {
 				object = i;
 			}
 		}
-		//nog een return statement
+		//nog een return statement probleem met double[]
 	}
 
 	
