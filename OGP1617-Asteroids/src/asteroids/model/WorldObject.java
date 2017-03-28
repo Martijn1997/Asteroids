@@ -61,8 +61,15 @@ public abstract class WorldObject {
 	 * 
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
+	 * 
+	 * @effect 	the density is set to the given density
+	 * 			| setDensity(density)
+	 * 
+	 * @effect 	the mass is set to the given mass
+	 * 			| setMass(mass)
 	 */
-	public WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
+	@Model @Raw
+	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
 		this.setXPosition(xPos);
 		this.setYPosition(yPos);
 		this.setRadius(radius);
@@ -71,12 +78,13 @@ public abstract class WorldObject {
 		this.setMass(mass);
 	}
 		
+	private static final double EPSILON = 0.0001;
 	
 	/**
 	 * default constructor for a WorldObject object
 	 * @effect WorldObject(0,0,10,0,0)
 	 */
-	public WorldObject(){
+	protected WorldObject(){
 		this(0d,0d,10d,0,0,1,1);
 	}
 	
@@ -289,7 +297,6 @@ public abstract class WorldObject {
 	
 	// the radius will not change once the radius has been set
 	private double radius;
-	
 
 	
 	/**
@@ -307,7 +314,7 @@ public abstract class WorldObject {
 	 * 			| then new.getDensity() == density
 	 * 			| else new.getDensity() == 1
 	 */
-	public void setDensity(double density){
+	private void setDensity(double density){
 		if(this.isValidDensity(density))
 			this.Density = density;
 		else
@@ -325,6 +332,12 @@ public abstract class WorldObject {
 	public double getMass(){
 		return this.mass;
 	}
+	
+	/**
+	 * 
+	 * @param mass
+	 */
+	@Raw
 	public void setMass(double mass){
 		if(this.canHaveAsMass(mass))
 			this.mass = mass;
@@ -544,6 +557,94 @@ public abstract class WorldObject {
 			return time;
 		}
 	}	
+	
+	public double getTimeToCollision(World other){
+		
+		if(other == null)
+			return Double.POSITIVE_INFINITY;
+		
+		// calculate the collision time for the x velocity and the y velocity seperatly
+		double xPosWO = this.getXPosition();
+		double yPosWO = this.getYPosition();
+		double xVelWO = this.getXVelocity();
+		double yVelWO = this.getYVelocity();
+		double RadiusWO = this.getRadius();
+		
+		// initialize the time components
+		double xTime;
+		double yTime;
+		
+		// calculate the time needed to get to the boundary using the xComponent
+		// first case: right boundary
+		if(Math.signum(xVelWO)>0){
+			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, other.getWidth(), xVelWO);
+		}
+		// case left boundary
+		else
+		{
+			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, 0, xVelWO);
+		}
+		
+		// calculate the time needed to get to the boundary using the yComponent
+		// first case: collision with the top boundary
+		if(Math.signum(yVelWO)>0){
+			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, other.getHeight(), yVelWO);
+		}
+		// case bottom boundary
+		else
+		{
+			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, 0, yVelWO);
+		}
+		
+		//Select the shortest time
+		if(xTime>=yTime)
+			return xTime;
+		else
+			return yTime;	
+	}
+	
+	public double[] getCollisionPosition(World world){
+		double collisionTime = this.getTimeToCollision(world);
+		if(collisionTime == Double.POSITIVE_INFINITY)
+			return null;
+		
+		double WOXPosAtCollision = this.getXPosition() + this.getXVelocity()*collisionTime;
+		double WOYPosAtCollision = this.getYPosition() + this.getYVelocity()*collisionTime;
+		double WORadius = this.getRadius();
+		
+		double xCollision;
+		double yCollision;
+		
+		// check if the ship collides with the right boundary of the world
+		if(0<=(WOXPosAtCollision+WORadius)-world.getWidth()&&(WOXPosAtCollision+WORadius)-world.getWidth()<EPSILON){
+			xCollision = WOXPosAtCollision + WORadius;
+			yCollision = WOYPosAtCollision;
+			
+		// check if the ship collides with the left boundary of the world
+		}else if(0<= WOXPosAtCollision-WORadius && WOXPosAtCollision-WORadius < EPSILON){
+			xCollision = WOXPosAtCollision - WORadius;
+			yCollision = WOYPosAtCollision;
+		// check if the ship collides with the bottom boundary of the world
+		}else if(0<= WOYPosAtCollision-WORadius && WOYPosAtCollision-WORadius < EPSILON){
+			xCollision = WOXPosAtCollision;
+			yCollision = WOYPosAtCollision - WORadius;
+		}
+		// in all other cases the ship collides with the top of the world
+		else{
+			xCollision = WOXPosAtCollision;
+			yCollision = WOYPosAtCollision + WORadius;
+		}
+		
+		// create the return array
+		double[] collisionPosition = {xCollision, yCollision};
+		
+		return collisionPosition;
+	}
+	
+	
+	public double calculateLinearCollisionTime(double pos1,double pos2,double objVel){
+		return (pos1-pos2)/(objVel);
+	}
 	
 
 	/**
@@ -780,6 +881,7 @@ public abstract class WorldObject {
 	}
 	
 	// before implementing this method, create a function to set a WorldObject into a world
+	//
 	public double boundryCollision(){
 		return 1d;
 	}
@@ -800,9 +902,7 @@ public abstract class WorldObject {
 		
 	}
 	
-	public boolean canHaveAsWorld(World world){
-		return (world!=null)&&(this.getWorld()==null);
-	}
+	public abstract boolean canHaveAsWorld(World world);
 	
 	private World associatedWorld;
 
