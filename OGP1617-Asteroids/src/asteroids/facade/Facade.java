@@ -4,7 +4,7 @@ import asteroids.model.Ship;
 import asteroids.part1.facade.IFacade;
 import asteroids.util.ModelException;
 
-public class Facade implements IFacade {
+public class Facade implements asteroids.part2.facade.IFacade{
 	
 	/**
 	 * Create a new ship with a default position, velocity, radius and
@@ -181,5 +181,46 @@ public class Facade implements IFacade {
 			throw new ModelException(exc2);
 		}
 	}
+	
+	
+	
+	/**
+	 * Create a new non-null ship with the given position, velocity, radius,
+	 * direction and mass.
+	 * 
+	 * The thruster of the new ship is initially inactive. The ship is not
+	 * located in a world.
+	 */
+	//density moet weg
+	public Ship createShip(double x, double y, double xVelocity, double yVelocity, double radius, double direction,
+			double mass) throws ModelException{
+		Ship newShip = new Ship(x, y, direction, radius, xVelocity, yVelocity, 0, mass);
+		return newShip;
+	}
+
+	/**
+	 * Terminate <code>ship</code>.
+	 */
+	//nog implementeren
+	public void terminateShip(Ship ship) throws ModelException{
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

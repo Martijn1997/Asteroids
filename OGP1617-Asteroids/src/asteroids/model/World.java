@@ -52,9 +52,9 @@ public class World {
 	
 
 
-public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
-  if (worldObject == null)
-				throw new IllegalArgumentException();
+	public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
+		if (worldObject == null)
+			throw new IllegalArgumentException();
 
 		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
 				return false;
@@ -98,9 +98,7 @@ public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentExc
 			}
 		}
 	}
-	
-	
-	
+
 	
 	public double[] getNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
@@ -126,7 +124,13 @@ public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentExc
 	}
 
 	
+	public void removeFromWorld(WorldObject worldObject){
+		if 
+		worldObjects.remove(worldObject);
+		worldObject.setWorld(null);
+	}
 	
+
 	
 	public boolean canHaveAsWorldObject(WorldObject worldObject){
 		return (worldObject != null)&&(worldObject.getWorld() == null);
@@ -138,3 +142,7 @@ public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentExc
 
 	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }
+
+
+//Bij WorldObject constructors protected en @Model, ook @Raw?
+
