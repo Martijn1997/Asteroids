@@ -69,6 +69,7 @@ public class World {
 		//set the WO in the map
 		worldObjects.put(position, worldObject);
 		worldObject.setWorld(this);
+		worldObjects.
 		
 	}
 	

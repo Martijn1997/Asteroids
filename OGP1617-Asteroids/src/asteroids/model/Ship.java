@@ -182,15 +182,12 @@ public class Ship extends WorldObject{
 	 * 			The given value for the time is illegal
 	 * 			| ! isValidTime(time)
 	 */
+	@Override
 	public void move(double time) throws IllegalArgumentException{
-		if(!isValidTime(time))
-			throw new IllegalArgumentException();
-		
-		double xPos = this.getXPosition() + time*this.getXVelocity();
-		double yPos = this.getYPosition() + time*this.getYVelocity();
-		
-		this.setXPosition(xPos);
-		this.setYPosition(yPos);
+		super.move(time);
+		for(Bullet bullet: this.getLoadedBullets()){
+			bullet.syncBulletVectors();
+		}
 		
 	}
 	
@@ -273,24 +270,6 @@ public class Ship extends WorldObject{
 			
 		}
 	}
-		
-//		if(acc < 0)
-//			acc = 0;
-//		
-//		if(acc > Double.MAX_VALUE - this.getXVelocity() ||acc > Double.MAX_VALUE - this.getYVelocity())
-//			acc = 0;
-//		
-//		double newXVel = this.getXVelocity() + acc * Math.cos(this.getOrientation());
-//		double newYVel = this.getYVelocity() + acc * Math.sin(this.getOrientation());
-//		double newTotalVel = WorldObject.totalVelocity(newXVel, newYVel);
-//		
-//		if(!isValidVelocity(newTotalVel)){
-//			double rescaleConstant = newTotalVel/(LIGHT_SPEED);
-//			newXVel /= rescaleConstant;
-//			newYVel /= rescaleConstant;
-//		}
-//		
-//		this.setVelocity(newXVel, newYVel);
 
 	
 	private final double thrustForce = 1.1E21;
@@ -342,13 +321,17 @@ public class Ship extends WorldObject{
 	 * @throws 	IllegalArgumentException
 	 * 			|bullet == null || !containsBullet(bullet)
 	 */
-	private void unloadBullet(Bullet bullet) throws IllegalArgumentException{
+	protected void unloadBullet(Bullet bullet) throws IllegalArgumentException{
 		if(bullet == null)
 			throw new IllegalArgumentException();
 		if(!this.containsBullet(bullet))
 			throw new IllegalArgumentException();
+		//calculate the new mass of the ship (later in aggregate functions)
+		double newMass = this.getMass() - bullet.getMass();
+		this.setMass(newMass);
+		
+		// remove the bullet and transfer the bullet to the world
 		this.getLoadedBullets().remove(bullet);
-		bullet.transferToWorld();
 		
 	}
 	
@@ -403,7 +386,7 @@ public class Ship extends WorldObject{
 		Bullet bullet = selectBullet();
 		
 		//unload the bullet
-		this.unloadBullet(bullet);
+		bullet.transferToWorld();
 		
 		// set the position of the bullet.
 		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
@@ -422,6 +405,15 @@ public class Ship extends WorldObject{
 		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
 		//	throw new ArithmeticException();
 		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
+	}
+	
+	/**
+	 * Checker for adding a ship to a world
+	 * @return  true if and only if the world is not a null reference and the ship isn't already in a world.
+	 * 			|result == (world != null &&this.getWorld()==null)
+	 */
+	public boolean canHaveAsWorld(World world){
+		return (world != null &&this.getWorld()==null);
 	}
 	
 	/**
