@@ -133,3 +133,6 @@ public class World {
 
 	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }
+
+
+//Bij WorldObject constructors protected en @Model, ook @Raw?
