@@ -51,9 +51,11 @@ public class World {
 	}
 	
 
-	public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
-		if (worldObject == null)
-			throw new IllegalArgumentException();
+
+public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
+  if (worldObject == null)
+				throw new IllegalArgumentException();
+
 		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
 				return false;
 		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
