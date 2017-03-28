@@ -1,14 +1,21 @@
 package asteroids.model;
 
+import be.kuleuven.cs.som.annotate.Basic;
+
 public class Bullet extends WorldObject {
 	
-	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass){
-		super(xPos, yPos, radius, xVel, yVel, density, mass);
-		
+	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double mass){
+		super(xPos, yPos, radius, xVel, yVel, mass);	
 	}
 	
 	public Bullet(){
-		this(0,0,MIN_RADIUS,0,0,MINIMUM_DENSITY,1);
+		this(0,0,MIN_RADIUS,0,0,1);
+	}
+	
+	@Override
+	public void terminate(){
+		this.associatedShip = null;
+		super.terminate();
 	}
 	
 	/**
@@ -88,8 +95,9 @@ public class Bullet extends WorldObject {
 	}
 	
 	public void transferToShip(){
-		
+		this.getWorld().removeFromWorld(this);
 		this.getShip().loadBullet(this);
+		
 		
 	}
 	
@@ -130,4 +138,83 @@ public class Bullet extends WorldObject {
 	 * the total velocity of a bullet upon shooting.
 	 */
 	public final static int SHOOTING_VELOCITY=250;
+	
+	/**
+	 * Resolves the collision between a bullet and a Ship
+	 * 
+	 * @effect  resolves the collision between a ship and a bullet
+	 * 			|ship.resolveCollision(this)
+	 */
+	@Override
+	public void resolveCollision(Ship ship){
+		ship.resolveCollision(this);
+	}
+	
+	
+	/**
+	 * Resolves the collision between a bullet and a world
+	 * 
+	 * @post  	the bounce count is incremented by 1
+	 * 			|incrementBounceCount();
+	 * 
+	 * @post	if the bounce count is larger than or equal to MAX_BOUNCES
+	 * 			the bullet will be terminated
+	 * 			|if(getBounceCount() >= MAX_BOUNCES)
+	 * 			|then terminate()
+	 * 
+	 */
+	@Override
+	public void resolveCollision(World world){
+		super.resolveCollision(world);
+		this.incementBounceCount();
+		if(this.getBounceCount()>=MAX_BOUNCES)
+			this.terminate();
+		
+	}
+	
+	/**
+	 * Basic getter for the bounce count variable
+	 * @return	the number of bounces
+	 */
+	@Basic
+	public int getBounceCount(){
+		return this.bounceCount;
+	}
+	
+	@Basic
+	public void incementBounceCount(){
+		this.bounceCount++;
+	}
+	
+	private int bounceCount = 0;
+	
+	public final int MAX_BOUNCES = 3;
+	
+	
+	/**
+	 * Resolves the collision between a bullet and another bullet
+	 * @param 	other
+	 * 			the other bullet involved in the collision
+	 * 
+	 * @post	both bullets are terminated
+	 * 			| terminate()
+	 * 			| other.terminate()
+	 * 
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if other is a null reference
+	 * 			| other == null
+	 * 
+	 * @throws 	IllegalStateException
+	 * 			thrown if the bullets don't collide
+	 * 			|!overlap(other)
+	 */
+	@Override
+	public void resolveCollision(Bullet other){
+		if(other == null)
+			throw new IllegalArgumentException();
+		if(!this.overlap(other))
+			throw new IllegalStateException();
+		this.terminate();
+		other.terminate();
+	}
 }

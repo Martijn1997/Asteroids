@@ -79,6 +79,10 @@ public class World {
 		
 	}
 	
+	public HashSet<Bullet> getAllBullets(){
+		return null;
+	}
+	
 	public void evolve(double dt) throws IllegalArgumentException, ArithmeticException{
 		if (dt < 0)
 			throw new IllegalArgumentException();
@@ -145,4 +149,4 @@ public class World {
 
 
 //Bij WorldObject constructors protected en @Model, ook @Raw?
-
+//moet bij within boundry ook geen rekening gehouden worden met de x en y as zelf?

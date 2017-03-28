@@ -10,6 +10,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 // Create Boundry collision method
 // adjust the collision function to check wether two colliding objects reside within the same world.
 // documentatie voor de massa
+// documentatie voor termination
 
 /*
  * Design choices:
@@ -40,15 +41,12 @@ public abstract class WorldObject {
 	 * Initializes an object of the WorldObject class
 	 * @param 	xPos
 	 * 			the x position of the WorldObject
-	 * 
 	 * @param	yPos
 	 * 			the y position of the WorldObject
-	 * 
-	 * @param 	orientation
-	 * 			the orientation of the WorldObject
-	 * 
 	 * @param 	radius
 	 * 			the Radius of the WorldObject
+	 * @param 	orientation
+	 * 			the orientation of the WorldObject
 	 * 
 	 * @effect 	xPosition is set to the provided xPos
 	 * 			| setXPosition(xPos)
@@ -69,23 +67,28 @@ public abstract class WorldObject {
 	 * 			| setMass(mass)
 	 */
 	@Model @Raw
-	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
+	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
 		this.setXPosition(xPos);
 		this.setYPosition(yPos);
 		this.setRadius(radius);
 		this.setVelocity(xVel, yVel);
-		this.setDensity(density);
+		this.setDensity(this.getMinimumDensity());
 		this.setMass(mass);
 	}
 		
-	private static final double EPSILON = 0.0001;
+	protected static final double EPSILON = 0.0001;
 	
 	/**
 	 * default constructor for a WorldObject object
 	 * @effect WorldObject(0,0,10,0,0)
 	 */
 	protected WorldObject(){
-		this(0d,0d,10d,0,0,1,1);
+		this(0d,0d,10d,0,0,1);
+	}
+	
+	public void terminate(){
+		this.getWorld().removeFromWorld(this);
+		this.associatedWorld = null;
 	}
 	
 	/**
@@ -763,7 +766,7 @@ public abstract class WorldObject {
 	 * 			| other == null
 	 */
 	
-	private double[] getDeltaR(WorldObject other) throws IllegalArgumentException, ArithmeticException{
+	protected double[] getDeltaR(WorldObject other) throws IllegalArgumentException, ArithmeticException{
 		
 		if(other == null)
 			throw new IllegalArgumentException();
@@ -801,7 +804,7 @@ public abstract class WorldObject {
 	 * @throws 	IllegalArgumentException
 	 * 			| causedOverflow()
 	 */
-	private double[] getDeltaV(WorldObject other) throws ArithmeticException, IllegalArgumentException{
+	protected double[] getDeltaV(WorldObject other) throws ArithmeticException, IllegalArgumentException{
 		
 		if(other == null)
 			throw new IllegalArgumentException();
@@ -840,7 +843,7 @@ public abstract class WorldObject {
 	 * @throws 	ArithmeticException
 	 * 			| causedOverflow()
 	 */
-	private static double dotProduct2D(double[] vector1, double[] vector2) throws IllegalArgumentException, ArithmeticException{
+	protected static double dotProduct2D(double[] vector1, double[] vector2) throws IllegalArgumentException, ArithmeticException{
 		
 		// check if null reference
 		if(vector1 == null || vector2 == null)
@@ -880,12 +883,6 @@ public abstract class WorldObject {
 		
 	}
 	
-	// before implementing this method, create a function to set a WorldObject into a world
-	//
-	public double boundryCollision(){
-		return 1d;
-	}
-	
 	/**
 	 * Return the associated world (no clone)
 	 * @return the associated world
@@ -904,6 +901,53 @@ public abstract class WorldObject {
 	
 	public abstract boolean canHaveAsWorld(World world);
 	
+	
+	public abstract void resolveCollision(Ship ship);
+	
+	public abstract void resolveCollision(Bullet bullet);
+	
+	/**
+	 * Resolve the collision between a ship and a world boundary
+	 * 
+	 * @param 	world
+	 * 			the world where the ship collides with
+	 * 
+	 * @post 
+	 * 
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the provided world is a null reference or the WorldObject isn't located in the world
+	 * 			| world == null || this.getWorld() != world
+	 * 			
+	 * @throws 	IllegalStateException
+	 * 			thrown if the WorldObject isn't colliding with a boundary
+	 * 			| {this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
+	 */
+	public void resolveCollision(World world)throws IllegalArgumentException, IllegalStateException{
+		if(world==null)
+			throw new IllegalArgumentException();
+		if(this.getWorld()!= world)
+			throw new IllegalArgumentException();
+		double[] collisionPosition = this.getCollisionPosition(world);
+		if(!(doubleEquals(collisionPosition[0], this.getXPosition())&&doubleEquals(collisionPosition[0], this.getYPosition())))
+			throw new IllegalStateException();
+		double worldWidth = world.getWidth();
+		
+		double[] currentVelocity = {this.getXVelocity(), this.getYVelocity()};
+		
+	
+		if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0))
+			if(doubleEquals(collisionPosition[0],collisionPosition[1]))
+				this.setVelocity(-currentVelocity[0],-currentVelocity[1]);
+			else
+				this.setVelocity(-currentVelocity[0], currentVelocity[1]);
+		else
+			this.setVelocity(currentVelocity[0], -currentVelocity[1]);	
+	}
+	
 	private World associatedWorld;
+	
+	public static boolean doubleEquals(double a, double b){
+		return a-EPSILON <= b && a+EPSILON >= b;
+	}
 
 }

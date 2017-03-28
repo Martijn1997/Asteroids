@@ -20,6 +20,10 @@ import be.kuleuven.cs.som.annotate.*;
 // moet het schip nog van de bullet weten als deze geschoten is?
 // wat als we het schip de bullet doen schieten is er dan apparte 'klasse' van afgeschoten kogels?
 
+// voorzie nog een documentatie bij de termation
+
+// voorzie documentatie bij de botsing ship-ship
+
 /**
  * 
  * @author Martijn Sauwens & Flor Theuns
@@ -75,12 +79,12 @@ public class Ship extends WorldObject{
 	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
 		
 		// set the single valued attributes
-		super(xPos, yPos, radius, xVel, yVel, density, mass);
+		super(xPos, yPos, radius, xVel, yVel, mass);
 		this.setOrientation(orientation);
 
 		// load the 15 bullets on the ship
 		for(int index = 0; index < START_BULLETS; index++){
-			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0, 0);
+			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0);
 			newBullet.loadBulletOnShip(this);
 		}
 	}
@@ -93,6 +97,40 @@ public class Ship extends WorldObject{
 	public Ship(){
 		this(0d,0d,0d,10d,0,0,0,0);
 	}
+	
+	/**
+	 * Terminates a Ship Object
+	 */
+	@Override
+	public void terminate(){
+		
+		for(Bullet bullet: this.getLoadedBullets()){
+			bullet.terminate();
+		}
+
+		super.terminate();
+		
+		// decide what to to with the bullets that are free flying is space that
+		// reference the ship
+//		HashSet<Bullet> freeBullets = this.getWorld().getAllBullets();
+//		for(Bullet bullet: freeBullets){
+//			if(bullet.getShip()=this){
+//				bullet.
+//			}
+//		}
+		
+		
+	}
+	
+	/**
+	 * the amount of bullets that is loaded on the ship upon creation of the ship
+	 */
+	private final static int START_BULLETS = 15;
+	
+	/**
+	 * the size ratio between the bullets and the ship
+	 */
+	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
 
 	/**
 	 * Returns the orientation of the Ship
@@ -274,7 +312,21 @@ public class Ship extends WorldObject{
 	
 	private final double thrustForce = 1.1E21;
 	
-	// ga ook na of de bullet niet geassocieerd is met een wereld (gaat pas nadat er functie voor is bij Bullet
+	/**
+	 * Loads the provided bullet onto the ship
+	 * @param bullet
+	 * 
+	 * @post	The bullet is associated with the ship
+	 * 			| new.getLoadedBullets() == getLoadedBullets().add(bullet)
+	 * 
+	 * @post	The mass of the ship equals the mass of the ship (inclusive other loaded bullets)
+	 * 			plus the mass of the newly loaded bullet
+	 * 			|new.getMass() == getMass() + bullet.getMass()
+	 * 
+	 * @throws IllegalArgumentException
+	 * 			If the bullet doens't reference the ship throw the exception
+	 * 			|bullet.getShip()!=this
+	 */
 	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
 		if(bullet.getShip()==this){
 			loadedBullets.add(bullet);
@@ -291,6 +343,11 @@ public class Ship extends WorldObject{
 	 * 			the bullets to be loaded onto the ship
 	 * @post	the bullets are loaded onto the ship
 	 * 			|new.getLoadedBullets == getLoadedBullets.addAll(bullets)
+	 * 
+	 * @effect	all the bullets are loaded on the ship
+	 * 			|for bullet in bullets do 
+	 * 			|	this.loadBullet(bullet)
+	 * 			|end_for
 	 * 
 	 * @throws 	IllegalArgumentException if the argument contains a bullet that is a null reference
 	 * 			or when a bullet in the argument already is associated with as ship
@@ -421,13 +478,57 @@ public class Ship extends WorldObject{
 	 */
 	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
-	/**
-	 * the amount of bullets that is loaded on the ship upon creation of the ship
-	 */
-	private final static int START_BULLETS = 15;
 	
 	/**
-	 * the size ratio between the bullets and the ship
+	 * Resolve the collision between a ship and a bullet
+	 * @param 	bullet
+	 * 			The bullet that collides with the ship
+	 * 
+	 * @post	if the bullet is associated with the ship, transfer the bullet to the ship
+	 * 			else the ship and the bullet are destroyed
+	 * 			|@see Implementation
+	 * 
+	 * @throws	IllegalStateException
+	 * 			thrown if the bullet and the ship don't overlap
+	 * 			|!this.overlap(bullet)
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the bullet is a null reference
+	 * 			| bullet == null
 	 */
-	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
+	@Override
+	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
+		if(!this.overlap(bullet))
+			throw new IllegalStateException();
+		if(bullet == null)
+			throw new IllegalArgumentException();
+		if(bullet.getShip() == this){
+			bullet.transferToShip();
+		}else
+			bullet.terminate();
+			this.terminate();
+	}
+	
+	
+	@Override
+	public void resolveCollision(Ship other){
+		
+		//prepare all the varriables
+		double[] deltaR = this.getDeltaR(other);
+		double[] deltaV = this.getDeltaV(other);
+		double massShip1 = this.getMass();
+		double massShip2 = other.getMass();
+		double sigma = this.getSigma(other);
+		
+		// run the calculations provided
+		double energy = (2*massShip1*massShip2*WorldObject.dotProduct2D(deltaR,deltaV))/(sigma*(massShip1+massShip2));
+		double xEnergy = energy*(this.getXPosition()-other.getXPosition())/sigma;
+		double yEnergy = energy*(this.getYPosition()-other.getYPosition())/sigma;
+		
+		// set the velocities
+		this.setVelocity(this.getXVelocity()+xEnergy/massShip1, this.getYVelocity()+yEnergy/massShip1);
+		other.setVelocity(other.getXVelocity() - xEnergy/massShip2, other.getYVelocity() - yEnergy/massShip2);
+		
+		
+	}
+
 }
