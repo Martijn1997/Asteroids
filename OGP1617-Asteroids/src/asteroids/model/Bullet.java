@@ -12,7 +12,7 @@ public class Bullet extends WorldObject {
 	}
 	
 	/**
-	 * checks whether the provided radius is valid
+	 * Checks whether the provided radius is valid
 	 * @param 	rad
 	 * 			the radius
 	 * 

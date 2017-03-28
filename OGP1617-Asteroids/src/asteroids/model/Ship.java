@@ -403,7 +403,7 @@ public class Ship extends WorldObject{
 		double bulletYVelocity = Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 		
 		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
-		//	throw new ArithmeticException();
+		//throw new ArithmeticException();
 		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
 	}
 	

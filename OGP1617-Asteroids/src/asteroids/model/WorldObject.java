@@ -881,6 +881,7 @@ public abstract class WorldObject {
 	}
 	
 	// before implementing this method, create a function to set a WorldObject into a world
+	//
 	public double boundryCollision(){
 		return 1d;
 	}
