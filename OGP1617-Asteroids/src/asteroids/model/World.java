@@ -96,9 +96,7 @@ public class World {
 			}
 		}
 	}
-	
-	
-	
+
 	
 	public double[] getNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
@@ -123,6 +121,17 @@ public class World {
 		//nog een return statement probleem met double[]
 	}
 
+	
+	public void removeFromWorld(WorldObject worldObject){
+		if 
+		worldObjects.remove(worldObject);
+		worldObject.setWorld(null);
+	}
+	
+	
+	
+	
+	
 	
 	
 	
