@@ -102,7 +102,8 @@ public class World {
 	
 	public double[] getNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
-		double[] collisionPosition = {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+		double collisionXPosition = Double.POSITIVE_INFINITY;
+		double collisionYPosition = Double.POSITIVE_INFINITY;
 		WorldObject object = null;
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
@@ -111,21 +112,24 @@ public class World {
 			for (WorldObject j : copyAllObjects){
 				if (i.getTimeToCollision(j) < timeToCollision)
 					timeToCollision = i.getTimeToCollision(j);
-					collisionPosition = i.getCollisionPosition(j);
+					collisionXPosition = i.getCollisionPosition(j)[0];
+					collisionYPosition = i.getCollisionPosition(j)[1];
 					object = i;
-			//bij nieuwe overloading van gettimetocollision wel ok
-			if (i.getTimeToCollision(this) < timeToCollision)
-				timeToCollision = i.getTimeToCollision(this);
-				collisionPosition = i.getCollisionPosition(this);
-				object = i;
+					if (i.getTimeToCollision(this) < timeToCollision)
+						timeToCollision = i.getTimeToCollision(this);
+						collisionXPosition = i.getCollisionPosition(this)[0];
+						collisionYPosition = i.getCollisionPosition(this)[1];
+						object = i;
 			}
 		}
-		//nog een return statement probleem met double[]
+		double[] nextCollision = {timeToCollision, collisionXPosition, collisionYPosition};
+		return nextCollision;
 	}
 
 	
-	public void removeFromWorld(WorldObject worldObject){
-		if 
+	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
+		if (worldObject.getWorld() == null)
+			throw new IllegalArgumentException();
 		worldObjects.remove(worldObject);
 		worldObject.setWorld(null);
 	}
@@ -136,9 +140,6 @@ public class World {
 		return (worldObject != null)&&(worldObject.getWorld() == null);
 	}
 
-	public void removeFromWorld(WorldObject worldObject){
-		
-	}
 
 	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }
