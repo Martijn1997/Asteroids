@@ -51,9 +51,11 @@ public class World {
 	}
 	
 
+
 	public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
 		if (worldObject == null)
 			throw new IllegalArgumentException();
+
 		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
 				return false;
 		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
@@ -72,7 +74,7 @@ public class World {
 		double[] position = {xPos, yPos};
 		
 		//set the WO in the map
-		worldObjects.put(position, worldObject);
+		worldObjects.put(position , worldObject);
 		worldObject.setWorld(this);
 		
 	}
@@ -128,20 +130,19 @@ public class World {
 		worldObject.setWorld(null);
 	}
 	
-	
-	
-	
-	
-	
-	
+
 	
 	public boolean canHaveAsWorldObject(WorldObject worldObject){
 		return (worldObject != null)&&(worldObject.getWorld() == null);
 	}
 
+	public void removeFromWorld(WorldObject worldObject){
+		
+	}
 
 	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }
 
 
 //Bij WorldObject constructors protected en @Model, ook @Raw?
+

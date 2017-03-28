@@ -4,9 +4,7 @@ public class Bullet extends WorldObject {
 	
 	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density, double mass){
 		super(xPos, yPos, radius, xVel, yVel, density, mass);
-		this.setRadius(radius);
-		this.setDensity(density);
-		this.setMass(mass);
+		
 	}
 	
 	public Bullet(){
@@ -14,7 +12,7 @@ public class Bullet extends WorldObject {
 	}
 	
 	/**
-	 * checks whether the provided radius is valid
+	 * Checks whether the provided radius is valid
 	 * @param 	rad
 	 * 			the radius
 	 * 
@@ -62,9 +60,9 @@ public class Bullet extends WorldObject {
 	 * @throws 	IllegalArgumentException
 	 */
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
-		if((!this.isAssociated())&&(ship != null)){
+		if((!this.isAssociated())&&(this.canBeLoadedOnShip(ship))){
 				this.associatedShip = ship;
-				this.loadedOnShip = true;
+				this.getWorld().removeFromWorld(this);
 				ship.loadBullet(this);
 				this.syncBulletVectors();
 		}
@@ -73,17 +71,30 @@ public class Bullet extends WorldObject {
 		
 	}
 	
+	public boolean canBeLoadedOnShip(Ship ship){
+		return (ship!=null) && (this.getRadius() < ship.getRadius());
+	}
+	
 	/**
 	 * Basic setter for the loadedOnShip variable
 	 * @post 	the bullet is transfered to the World
 	 * 			|this.loadedOnShip = false;
 	 */
 	public void transferToWorld(){
-		this.loadedOnShip = false;
+		World shipWorld = this.getShip().getWorld();
+		shipWorld.addWorldObject(this);
+		this.getShip().unloadBullet(this);
 		
 	}
 	
 	public void transferToShip(){
+		
+		this.getShip().loadBullet(this);
+		
+	}
+	
+	public boolean isLoadedOnShip(){
+		return this.getWorld() != null;
 	}
 	
 	
@@ -95,11 +106,18 @@ public class Bullet extends WorldObject {
 		return (this.getShip()!= null)||(this.getWorld() != null);
 	}
 	
-	private void syncBulletVectors(){
+	protected void syncBulletVectors()throws IllegalStateException{
+		if(!isLoadedOnShip())
+			throw new IllegalStateException();
 		Ship matchedShip = this.getShip();
 		this.setXPosition(matchedShip.getXPosition());
 		this.setYPosition(matchedShip.getYPosition());
 		this.setVelocity(matchedShip.getXVelocity(), matchedShip.getYVelocity());
+	}
+	
+	public boolean canHaveAsWorld(World world){
+		return (world!=null) || (world==null && this.getShip()!= null);
+		
 	}
 	
 	/**
@@ -107,7 +125,6 @@ public class Bullet extends WorldObject {
 	 */
 	private Ship associatedShip;
 	
-	private Boolean loadedOnShip;
 	
 	/**
 	 * the total velocity of a bullet upon shooting.
