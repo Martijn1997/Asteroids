@@ -62,7 +62,7 @@ public class Bullet extends WorldObject {
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
 		if((!this.isAssociated())&&(this.canBeLoadedOnShip(ship))){
 				this.associatedShip = ship;
-				this.setWorld(null);
+				this.getWorld().removeFromWorld(this);
 				ship.loadBullet(this);
 				this.syncBulletVectors();
 		}
