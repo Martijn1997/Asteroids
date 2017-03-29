@@ -89,11 +89,13 @@ public class World {
 			if (tc <= dt) {
 				for (WorldObject i : allObjects){
 					i.move(tc);
-					WorldObject object1 = getObjectsNextCollision()[0];
-					WorldObject object2 = getObjectsNextCollision()[1];
-					if (object2 == null);
-						
 				}
+				WorldObject object1 = getObjectsNextCollision()[0];
+				WorldObject object2 = getObjectsNextCollision()[1];
+				if (object2 == null)
+					object1.resolveCollision(this);
+				else
+					object2.resolveCollision(object1);
 			}else {
 				for (WorldObject i : allObjects){
 					i.move(dt);
