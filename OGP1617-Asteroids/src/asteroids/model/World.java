@@ -85,11 +85,14 @@ public class World {
 		double tc = 0;
 		for (double timeLeft = dt; timeLeft > 0; timeLeft -= tc){
 			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
-			tc = getNextCollision()[0];
+			tc = getTimeNextCollision();
 			if (tc <= dt) {
 				for (WorldObject i : allObjects){
 					i.move(tc);
-					//resolve collision
+					WorldObject object1 = getObjectsNextCollision()[0];
+					WorldObject object2 = getObjectsNextCollision()[1];
+					if (object2 == null);
+						
 				}
 			}else {
 				for (WorldObject i : allObjects){
@@ -99,27 +102,56 @@ public class World {
 		}
 	}
 
+	public double getTimeNextCollision() throws IllegalArgumentException, ArithmeticException{
+		return getNextCollision()[0];
+	}
+	
+	public double[] getPosNextCollision() throws IllegalArgumentException, ArithmeticException{
+		double[] posNextCollision = {getNextCollision()[1], getNextCollision()[2]};
+		return posNextCollision;
+	}
+	
+	
+	public WorldObject[] getObjectsNextCollision() throws IllegalArgumentException, ArithmeticException{
+		double timeToCollision = Double.POSITIVE_INFINITY;
+		WorldObject object1 = null;
+		WorldObject object2 = null;
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
+		for (WorldObject i : allObjects){
+			copyAllObjects.remove(i);
+			if (i.getTimeToCollision(this) < timeToCollision)
+				timeToCollision = i.getTimeToCollision(this);
+				object1 = i;
+				object2 = null;
+			for (WorldObject j : copyAllObjects){
+				if (i.getTimeToCollision(j) < timeToCollision)
+					timeToCollision = i.getTimeToCollision(j);
+					object1 = i;
+					object2 = j;
+			}
+		}
+		WorldObject[] objectsNextCollision = {object1, object2};
+		return objectsNextCollision;
+	}
 	
 	public double[] getNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
 		double collisionXPosition = Double.POSITIVE_INFINITY;
 		double collisionYPosition = Double.POSITIVE_INFINITY;
-		WorldObject object = null;
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
 		for (WorldObject i : allObjects){
 			copyAllObjects.remove(i);
+			if (i.getTimeToCollision(this) < timeToCollision)
+				timeToCollision = i.getTimeToCollision(this);
+				collisionXPosition = i.getCollisionPosition(this)[0];
+				collisionYPosition = i.getCollisionPosition(this)[1];
 			for (WorldObject j : copyAllObjects){
 				if (i.getTimeToCollision(j) < timeToCollision)
 					timeToCollision = i.getTimeToCollision(j);
 					collisionXPosition = i.getCollisionPosition(j)[0];
 					collisionYPosition = i.getCollisionPosition(j)[1];
-					object = i;
-					if (i.getTimeToCollision(this) < timeToCollision)
-						timeToCollision = i.getTimeToCollision(this);
-						collisionXPosition = i.getCollisionPosition(this)[0];
-						collisionYPosition = i.getCollisionPosition(this)[1];
-						object = i;
 			}
 		}
 		double[] nextCollision = {timeToCollision, collisionXPosition, collisionYPosition};
