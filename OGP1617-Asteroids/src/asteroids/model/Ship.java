@@ -442,9 +442,6 @@ public class Ship extends WorldObject{
 		// select a bullet from the magazine
 		Bullet bullet = selectBullet();
 		
-		//unload the bullet
-		bullet.transferToWorld();
-		
 		// set the position of the bullet.
 		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
 		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius());
@@ -462,6 +459,10 @@ public class Ship extends WorldObject{
 		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
 		//throw new ArithmeticException();
 		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
+
+		//unload the bullet, needs to be at the end because the bullet coordinates need to be different from the
+		//coordinates of the ship
+		bullet.transferToWorld();
 	}
 	
 	/**

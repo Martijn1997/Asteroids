@@ -2,6 +2,14 @@ package asteroids.model;
 
 import be.kuleuven.cs.som.annotate.Basic;
 
+/**
+ * 
+ * @author Martijn & Flor
+ *
+ * @invar	If a bullet belongs to a world, the total velocity of the bullet equals SHOOTING_VELOCITY
+ * 			|if(getWorld() != null)
+ * 			|then WorldObject.getTotalVelocity(getXVelocity(), getYVelocity()) == SHOOTING_VELOCITY
+ */
 public class Bullet extends WorldObject {
 	
 	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double mass){
@@ -69,8 +77,8 @@ public class Bullet extends WorldObject {
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
 		if((!this.isAssociated())&&(this.canBeLoadedOnShip(ship))){
 				this.associatedShip = ship;
-				this.getWorld().removeFromWorld(this);
 				ship.loadBullet(this);
+				this.getWorld().removeFromWorld(this);
 				this.syncBulletVectors();
 		}
 		else 
@@ -97,8 +105,7 @@ public class Bullet extends WorldObject {
 	public void transferToShip(){
 		this.getWorld().removeFromWorld(this);
 		this.getShip().loadBullet(this);
-		
-		
+			
 	}
 	
 	public boolean isLoadedOnShip(){
@@ -137,7 +144,7 @@ public class Bullet extends WorldObject {
 	/**
 	 * the total velocity of a bullet upon shooting.
 	 */
-	public final static int SHOOTING_VELOCITY=250;
+	public final static double SHOOTING_VELOCITY=250;
 	
 	/**
 	 * Resolves the collision between a bullet and a Ship

@@ -140,9 +140,6 @@ public class World {
 		return (worldObject != null)&&(worldObject.getWorld() == null);
 	}
 
-	public void removeFromWorld(WorldObject worldObject){
-		
-	}
 
 	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
 }
