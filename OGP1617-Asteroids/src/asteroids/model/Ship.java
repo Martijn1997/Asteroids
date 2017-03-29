@@ -76,17 +76,17 @@ public class Ship extends WorldObject{
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density, double mass)throws IllegalArgumentException{
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
 		
 		// set the single valued attributes
 		super(xPos, yPos, radius, xVel, yVel, mass);
 		this.setOrientation(orientation);
 
-		// load the 15 bullets on the ship
-		for(int index = 0; index < START_BULLETS; index++){
-			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0);
-			newBullet.loadBulletOnShip(this);
-		}
+//		// load the 15 bullets on the ship
+//		for(int index = 0; index < START_BULLETS; index++){
+//			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0);
+//			newBullet.loadBulletOnShip(this);
+//		}
 	}
 		
 	
@@ -95,7 +95,7 @@ public class Ship extends WorldObject{
 	 * @effect Ship(0,0,0,10,0,0)
 	 */
 	public Ship(){
-		this(0d,0d,0d,10d,0,0,0,0);
+		this(0d,0d,0d,10d,0,0,0);
 	}
 	
 	/**
@@ -122,11 +122,11 @@ public class Ship extends WorldObject{
 		
 	}
 	
-	/**
-	 * the amount of bullets that is loaded on the ship upon creation of the ship
-	 */
-	private final static int START_BULLETS = 15;
-	
+//	/**
+//	 * the amount of bullets that is loaded on the ship upon creation of the ship
+//	 */
+//	private final static int START_BULLETS = 15;
+//	
 	/**
 	 * the size ratio between the bullets and the ship
 	 */
@@ -197,6 +197,19 @@ public class Ship extends WorldObject{
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
 	}
+	
+	/**
+	 * Calculates the total mass of the ship (bullets + ship mass)
+	 * @return	the mass of the ship + the mass of all the loaded bullets
+	 * 			|result == getMass() + sum([bullet.getMass() for bullet in getLoadedBullets()])
+	 */
+	public double getTotalMass(){
+		double totalMass = this.getMass();
+		for(Bullet bullet: this.getLoadedBullets()){
+			totalMass += bullet.getMass();
+		}
+		return totalMass;
+	}
 
 	
 	private boolean thrustStatus;
@@ -225,8 +238,7 @@ public class Ship extends WorldObject{
 		super.move(time);
 		for(Bullet bullet: this.getLoadedBullets()){
 			bullet.syncBulletVectors();
-		}
-		
+		}	
 	}
 	
 	/**
@@ -290,7 +302,7 @@ public class Ship extends WorldObject{
 		if(this.getThrusterStatus()){
 			
 		}
-			double acceleration = this.getThrustForce()/this.getMass();
+			double acceleration = this.getThrustForce()/this.getTotalMass();
 			
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
 			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
@@ -383,9 +395,6 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 		if(!this.containsBullet(bullet))
 			throw new IllegalArgumentException();
-		//calculate the new mass of the ship (later in aggregate functions)
-		double newMass = this.getMass() - bullet.getMass();
-		this.setMass(newMass);
 		
 		// remove the bullet and transfer the bullet to the world
 		this.getLoadedBullets().remove(bullet);
@@ -413,6 +422,11 @@ public class Ship extends WorldObject{
 		return this.getLoadedBullets().contains(bullet);
 	}
 	
+	/**
+	 * Selects a bullet from the set of loaded bullets
+	 * @return 	returns a bullet from the set of bullets
+	 * 			|@see implemenation
+	 */
 	public Bullet selectBullet(){
 		for(Bullet bullet : this.getLoadedBullets())
 		{

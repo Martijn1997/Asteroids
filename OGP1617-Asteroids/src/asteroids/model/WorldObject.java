@@ -211,6 +211,10 @@ public abstract class WorldObject {
 			this.yVelocity = yVel;
 		
 	}
+	
+	/**
+	 * attribute y velocity of the ship
+	 */
 	private double yVelocity;
 	
 	
@@ -260,7 +264,10 @@ public abstract class WorldObject {
 	public static boolean isValidVelocity(double totalVel){
 		return (totalVel <= LIGHT_SPEED && totalVel >= 0);
 	}
-
+	
+	/**
+	 * constant: light speed
+	 */
 	public static final double LIGHT_SPEED = 300000;
 
 	
@@ -300,6 +307,7 @@ public abstract class WorldObject {
 	
 	// the radius will not change once the radius has been set
 	private double radius;
+	
 
 	
 	/**
@@ -324,7 +332,9 @@ public abstract class WorldObject {
 			this.Density = this.getMinimumDensity() ;
 	}
 	
-
+	/**
+	 * checker to check if the density is valid
+	 */
 	public abstract boolean isValidDensity(double density);
 	
 	public abstract double getMinimumDensity();
@@ -337,7 +347,12 @@ public abstract class WorldObject {
 	}
 	
 	/**
-	 * 
+	 * Sets the mass of a world object
+	 * @post 	if the mass is valid, set the value of the mass of the ship to the specified value
+	 * 			else calculate the minimum mass and set the ship mass to this mass
+	 * 			|if(canHaveAsMass(mass)
+	 * 			|then new.getMass() == mass
+	 * 			|else new.getMass() == calcMinMass()
 	 * @param mass
 	 */
 	@Raw
@@ -900,7 +915,6 @@ public abstract class WorldObject {
 	}
 	
 	public abstract boolean canHaveAsWorld(World world);
-	
 	
 	public abstract void resolveCollision(Ship ship);
 	
