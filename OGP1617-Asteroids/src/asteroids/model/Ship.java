@@ -299,9 +299,8 @@ public class Ship extends WorldObject{
 	 */
 	public void thrust(double deltaTime){
 		
-		if(this.getThrusterStatus()){
+		if(this.getThrusterStatus()&&isValidTime(deltaTime)){
 			
-		}
 			double acceleration = this.getThrustForce()/this.getTotalMass();
 			
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
@@ -318,9 +317,9 @@ public class Ship extends WorldObject{
 				
 				this.setVelocity(newXVel, newYVel);
 			
-		}
+				}
+			}
 	}
-
 	
 	private final double thrustForce = 1.1E21;
 	
@@ -455,6 +454,10 @@ public class Ship extends WorldObject{
 		
 		// select a bullet from the magazine
 		Bullet bullet = selectBullet();
+		
+		// chose what to do if there is no bullet loaded
+		if(bullet == null)
+			return;
 		
 		// set the position of the bullet.
 		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
