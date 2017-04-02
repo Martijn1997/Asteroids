@@ -15,16 +15,22 @@ public class ShipTestsPart2 {
 	
 	private static Ship ship1, ship2;
 	private static Bullet bullet1, bullet2;
+	
 	/**
 	 * Set up a Mutable test fixture.
 	 */
-	
 	@Before
 	public void setUpMutableFixture(){
 		ship1 = new Ship(100,100,0,10,0,0,0);
-		ship2 = new Ship(200,200,0,10,0,0,0);
+		ship2 = new Ship(200,200,Math.PI/4,10,0,0,0);
 		bullet1 = new Bullet();
 		bullet2 = new Bullet();
+	}
+	
+	// radius test
+	@Test (expected = IllegalStateException.class)
+	public final void setRadius_AlreadyInitialized(){
+		ship1.setRadius(20);
 	}
 	
 	// mass tests
@@ -134,6 +140,17 @@ public class ShipTestsPart2 {
 	public final void Thrust_thrusterNotEnabled(){
 		ship1.thrust(200);
 		assertEquals(0, ship1.getXVelocity(), EPSILON);
+	}
+	
+	@Test
+	public final void thrust45degrees1second(){
+		ship2.thrustOn();
+		ship2.thrust(1);
+		double xVel = Math.sin(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass();
+		double yVel = Math.cos(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass();
+		
+		assertEquals(xVel, ship2.getXVelocity(), EPSILON);
+		assertEquals(yVel, ship2.getYVelocity(), EPSILON);
 	}
 	
 	// collisionTests

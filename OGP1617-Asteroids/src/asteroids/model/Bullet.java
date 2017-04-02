@@ -55,6 +55,15 @@ public class Bullet extends WorldObject {
 	
 	public final static double MIN_RADIUS = 1d;
 	
+	/**
+	 * @return 	the minimumn radius of a bullet
+	 * 			|result == MIN_RADIUS
+	 */
+	@Override
+	public double getMinimumRadius(){
+		return MIN_RADIUS;
+	}
+	
 	@Override
 	public boolean isValidDensity(double density){
 		return density >= MINIMUM_DENSITY&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;

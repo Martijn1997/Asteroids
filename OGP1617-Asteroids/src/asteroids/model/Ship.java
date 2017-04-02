@@ -180,6 +180,15 @@ public class Ship extends WorldObject{
 	
 	public final static double MIN_RADIUS = 10;
 	
+	/**
+	 * @return 	the minimum radius of a ship
+	 * 			|result == MIN_RADIUS
+	 */
+	@Override
+	public double getMinimumRadius(){
+		return MIN_RADIUS;
+	}
+	
 	@Override
 	public boolean isValidDensity(double density){
 		return density >= MINIMUM_DENSITY&& density <= Double.MAX_VALUE && !Double.isNaN(density);
@@ -288,36 +297,39 @@ public class Ship extends WorldObject{
 	
 	/**
 	 * changes the velocity of the ship, according to the current orientation and the given acceleration
-	 * @param 	acc
-	 * 			the acceleration of the ship
+	 * @param 	deltaTime
+	 * 			the time that passes used to calculate the new velocity of the ship
 	 * 
-	 * @post	if the new total velocity is below light speed the new velocity is the sum
-	 * 			of the old velocity plus the acceleration, if the new velocity is greater then the speed
-	 * 			of light, the total velocity stays the same but the vector components are scaled accordingly
-	 * 			if an overflow occured, the old values are kept for the velocity
-	 * 			|@see implementation
+	 * @post	if the thruster status is false or the supplied time isn't valid no changes to the velocity are made
+	 * 			|if(!getThrusterStatus()||!isValidTime(deltaTime)
+	 * 			|then 	new.getXVelocity == getXVelocity()
+	 * 			|		new.getYVelocity == getYVelocity()
+	 * 
+	 * @post 	if the calculation of the totalVelocity caused overflow no velocity is adjusted
+	 * 			|@see Implementation
+	 * 
+	 * @effect	The new speed is set and rescaled if necessary
+	 * 			|setVelocity(getXVelocity() + acceleration * Math.cos(getOrientation())*deltaTime,
+	 * 			|				getYVelocity() + acceleration * Math.sin(getOrientation())*deltaTime)
+	 * 
 	 */
 	public void thrust(double deltaTime){
 		
 		if(this.getThrusterStatus()&&isValidTime(deltaTime)){
 			
+			// calculate the acceleration
 			double acceleration = this.getThrustForce()/this.getTotalMass();
 			
+			// calculate the new values for the velocity
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
 			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
 			
-			if (!WorldObject.causedOverflow(newXVel) && !WorldObject.causedOverflow(newYVel) ){
-				double newTotalVel = WorldObject.totalVelocity(newXVel, newYVel);
-							
-				if(!isValidVelocity(newTotalVel)){
-					double rescaleConstant = newTotalVel/(LIGHT_SPEED);
-					newXVel /= rescaleConstant;
-					newYVel /= rescaleConstant;
-				}
-				
-				this.setVelocity(newXVel, newYVel);
+			double totalVelocity = totalVelocity(newXVel, newYVel);
 			
-				}
+			// check if the totalVelocity is an overflow
+			if(!causedOverflow(totalVelocity))
+				// set the velocity to the new Values
+				this.setVelocity(newXVel, newYVel);		
 			}
 	}
 	

@@ -21,21 +21,21 @@ public class ShipTests {
 	 */
 	@Before
 	public void setUpMutableFixture() {
-		ship1 = new Ship(10, 10, 0, 10, 10, -10, 0, 0);
-		ship2 = new Ship(10, 10, Math.PI/6, 10, Math.sqrt(2)*300000/2, Math.sqrt(2)*300000/2, 0, 0);
-		ship3_100_0 = new Ship(100,0,0,10,0,0,0, 0);
+		ship1 = new Ship(10, 10, 0, 10, 10, -10, 0);
+		ship2 = new Ship(10, 10, Math.PI/6, 10, Math.sqrt(2)*300000/2, Math.sqrt(2)*300000/2, 0);
+		ship3_100_0 = new Ship(100,0,0,10,0,0,0);
 		ship4_0_0 = new Ship();
-		ship5 = new Ship(-20,0,0,10,1,0, 0, 0);
-		ship6 = new Ship(20,0,0,10,-1, 0,0, 0);
-		ship7 = new Ship(-400,-400,0,10,Math.sqrt(2)/2,Math.sqrt(2)/2,0, 0);
-		ship8 = new Ship(-545.6854249492433, 0, 0, 10, 1,0,0, 0);
+		ship5 = new Ship(-20,0,0,10,1,0, 0);
+		ship6 = new Ship(20,0,0,10,-1, 0,0);
+		ship7 = new Ship(-400,-400,0,10,Math.sqrt(2)/2,Math.sqrt(2)/2,0);
+		ship8 = new Ship(-545.6854249492433, 0, 0, 10, 1,0,0);
 		
 		
 	}
 	
 	@Test
 	public final void extendedConstructor_SingleCase() throws IllegalArgumentException{
-		Ship newShip = new Ship(10, 10, 0, 10, 10, 10, 0, 0);
+		Ship newShip = new Ship(10, 10, 0, 10, 10, 10, 0);
 		assertEquals(10, newShip.getXPosition(), EPSILON);
 		assertEquals(10, newShip.getYPosition(), EPSILON);
 		assertEquals(0, newShip.getOrientation(), EPSILON);
@@ -46,17 +46,17 @@ public class ShipTests {
 		
 	@Test(expected = IllegalArgumentException.class)
 	public final void constructShip_XIsNan() throws IllegalArgumentException{
-		new Ship(Double.NaN, 10, 0, -10, 10, 10, 0, 0);
+		new Ship(Double.NaN, 10, 0, -10, 10, 10, 0);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public final void constructShip_NegRadius() throws IllegalArgumentException{
-		new Ship(10, 10, 0, -10, 10, 10,0, 0);
+		new Ship(10, 10, 0, -10, 10, 10,0);
 	}
 
 	@Test(expected = AssertionError.class)
 	public final void constructShip_NegOrientation() throws IllegalArgumentException{
-		new Ship(10, 10, -Math.PI, 10, 10, 10,0, 0);
+		new Ship(10, 10, -Math.PI, 10, 10, 10,0);
 	}
 	
 	@Test
@@ -87,17 +87,17 @@ public class ShipTests {
 	
 	@Test
 	public final void isValidVelocity_TrueCase() {
-		assertTrue(Ship.isValidVelocity(100));
+		assertTrue(Ship.isValidTotalVelocity(100));
 	}
 	
 	@Test
 	public final void isValidVelocity_NegativeVelocity() {
-		assertFalse(Ship.isValidVelocity(-100));
+		assertFalse(Ship.isValidTotalVelocity(-100));
 	}
 	
 	@Test
 	public final void isValidVelocity_ExceedingLightSpeed() {
-		assertFalse(Ship.isValidVelocity(300001));
+		assertFalse(Ship.isValidTotalVelocity(300001));
 	}
 
 	@Test
@@ -129,79 +129,7 @@ public class ShipTests {
 	public final void isValidOrientation_FalseCase() {
 		assertFalse(Ship.isValidOrientation(3*Math.PI));
 	}
-	
-	@Test
-	public final void setDensity_legalCase(){
-		double density = 50e40;
-		ship1.setDensity(density);
-		assertEquals(50e40, ship1.getDensity(), EPSILON);
-	}
-	
-	@Test
-	public final void setDensity_illegalCase(){
-		ship1.setDensity(1);
-		assertEquals(Ship.MINIMUM_DENSITY, ship1.getDensity(), EPSILON);
-	}
-	@Test
-	public final void setDensity_illegalCaseNaN(){
-		ship1.setDensity(Double.NaN);
-		assertEquals(Ship.MINIMUM_DENSITY, ship1.getDensity(), EPSILON);
-	}
-	
-	// Test de massa functies ook nog
-	
-	@Test
-	public final void move_LegalCase() throws IllegalArgumentException{
-		ship1.move(2);
-		double xPos = ship1.getXPosition();
-		double yPos = ship1.getYPosition();
-		assertEquals(30, xPos, EPSILON);
-		assertEquals(-10, yPos, EPSILON);
-	}
-	
-	@Test (expected = IllegalArgumentException.class)
-	public final void move_IllegalCase() throws IllegalArgumentException{
-		ship1.move(-1);
-	}
-	
-	@Test
-	public final void turn_LegalCase() {
-		ship1.turn(Math.PI);
-		double angle = ship1.getOrientation();
-		assertEquals(Math.PI, angle, EPSILON);
-	}
-	
-	@Test (expected = AssertionError.class)
-	public final void turn_IllegalCase() {
-		ship1.turn(3*Math.PI);
-	}
-	
-//	@Test
-//	public final void thrust_NegAcceleration() {
-//		ship1.thrust(-3);
-//		double xVel = ship1.getXVelocity();
-//		double yVel = ship1.getYVelocity();
-//		assertEquals(10, xVel, EPSILON);
-//		assertEquals(-10, yVel, EPSILON);
-//	}
-//	
-//	@Test
-//	public final void thrust_UnderLightSpeed() {
-//		ship1.thrust(3);
-//		double xVel = ship1.getXVelocity();
-//		double yVel = ship1.getYVelocity();
-//		assertEquals(13, xVel, EPSILON);
-//		assertEquals(-10, yVel, EPSILON);
-//	}
-	
-//	@Test
-//	public final void thrust_AboveLightSpeed() {
-//		ship2.thrust(100000);
-//		double xVel = ship2.getXVelocity();
-//		double yVel = ship2.getYVelocity();
-//		assertEquals(225496, xVel, EPSILON2);
-//		assertEquals(197867, yVel, EPSILON2);
-//	}
+
 	
 	@Test
 	public final void distanceBetween_normal(){
@@ -230,7 +158,7 @@ public class ShipTests {
 	
 	@Test
 	public final void overlap_overlap(){
-		Ship shipX = new Ship(100,10,0,10,0,0,0, 0);
+		Ship shipX = new Ship(100,10,0,10,0,0,0);
 		assertTrue(shipX.overlap(ship3_100_0));
 	}
 	
@@ -254,7 +182,7 @@ public class ShipTests {
 	
 	@Test
 	public final void getTimeToCollision_noCollisionTest_Vnonzero(){
-		Ship antiVelShip1 = new Ship(-100,-100,0,10,-ship1.getXVelocity(), -ship1.getYVelocity(),0, 0);
+		Ship antiVelShip1 = new Ship(-100,-100,0,10,-ship1.getXVelocity(), -ship1.getYVelocity(),0);
 		assertEquals(Double.POSITIVE_INFINITY, ship1.getTimeToCollision(antiVelShip1), EPSILON);
 	}
 	
@@ -285,15 +213,18 @@ public class ShipTests {
 	
 	@Test (expected = ArithmeticException.class)
 	public final void getTimeToCollision_oveflow_allMax(){
-		Ship ship5 = new Ship(Double.MAX_VALUE, Double.MAX_VALUE, 0, 10, Double.MAX_VALUE, Double.MAX_VALUE,0, 0);
+		Ship ship5 = new Ship(Double.MAX_VALUE, Double.MAX_VALUE, 0, 10, Double.MAX_VALUE, Double.MAX_VALUE,0);
 		ship5.getTimeToCollision(ship1);
 	}
 	
+	/**
 	@Test (expected = ArithmeticException.class)
-	public final void getTimeToCollision_oveflow_velMax(){
-		Ship ship5 = new Ship(1000, 1000, 0, 10, Double.MAX_VALUE, Double.MAX_VALUE,0, 0);
-		ship5.getTimeToCollision(ship1);
+	public final void getTimeToCollision_overflow_velMax(){
+		Ship ship5 = new Ship(1000, 1000, 0, 10, Double.MAX_VALUE, Double.MAX_VALUE,0);
+		double time = ship5.getTimeToCollision(ship1);
+		System.out.println(time);
 	}
+	*/
 	
 	@Test
 	public final void getCollisionPosition_headOn(){
