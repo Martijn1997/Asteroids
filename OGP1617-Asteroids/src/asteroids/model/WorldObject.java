@@ -186,6 +186,14 @@ public abstract class WorldObject {
 	
 	private Vector2D position;
 	
+	
+	/**
+	 * Basic getter for the velocity vector
+	 */
+	public Vector2D getVelocity(){
+		return this.velocity;
+	}
+	
 	/**
 	 * Returns the x velocity of the WorldObject
 	 */
@@ -481,10 +489,12 @@ public abstract class WorldObject {
 		if(!isValidTime(time))
 			throw new IllegalArgumentException();
 		
-		double xPos = this.getXPosition() + time*this.getXVelocity();
-		double yPos = this.getYPosition() + time*this.getYVelocity();
+		Vector2D newPosVector = this.getPosition().vectorSum(this.getVelocity().rescale(time));
 		
-		this.setPosition(xPos, yPos);
+//		double xPos = this.getXPosition() + time*this.getXVelocity();
+//		double yPos = this.getYPosition() + time*this.getYVelocity();
+		
+		this.setPosition(newPosVector.getXComponent(), newPosVector.getYComponent());
 		
 	}
 	
@@ -639,10 +649,14 @@ public abstract class WorldObject {
 		if (this.overlap(other))
 			throw new IllegalArgumentException();
 		
-		double[] deltaR = this.getDeltaR(other);
-		double[] deltaV = this.getDeltaV(other);
+		Vector2D deltaR = this.getPosition().difference(other.getPosition());
+		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
 		
-		if(dotProduct2D(deltaV, deltaR) >= 0)
+//		double[] deltaR = this.getDeltaR(other);
+//		double[] deltaV = this.getDeltaV(other);
+//		dotProduct2D(deltaV, deltaR) >= 0
+		
+		if(deltaV.dotProduct(deltaR)>=0)
 			return Double.POSITIVE_INFINITY;
 		
 		// check if the calculations for d cause over or underflow
@@ -652,7 +666,7 @@ public abstract class WorldObject {
 			return Double.POSITIVE_INFINITY;
 		else{
 			
-			double time = -(dotProduct2D(deltaV, deltaR) + Math.sqrt(d))/dotProduct2D(deltaV,deltaV);
+			double time = -(deltaV.dotProduct(deltaR) + Math.sqrt(d))/deltaV.dotProduct(deltaV);
 			if(causedOverflow(time))
 				throw new ArithmeticException();
 			
@@ -660,130 +674,77 @@ public abstract class WorldObject {
 		}
 	}	
 	
-	public double getTimeToCollision(World other){
-		
-		if(other == null)
+	public double getTimeToCollision(World world){
+		if(world == null)
 			return Double.POSITIVE_INFINITY;
 		
-		// calculate the collision time for the x velocity and the y velocity seperatly
-		double xPosWO = this.getXPosition();
-		double yPosWO = this.getYPosition();
-		double xVelWO = this.getXVelocity();
-		double yVelWO = this.getYVelocity();
-		double RadiusWO = this.getRadius();
-		
-		// initialize the time components
 		double xTime;
 		double yTime;
 		
-		// calculate the time needed to get to the boundary using the xComponent
-		// first case: right boundary
-		if(Math.signum(xVelWO)>0){
-			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, other.getWidth(), xVelWO);
+		// first calculate the time needed to hit the x boundary
+		if(Math.signum(this.getXVelocity())>0){
+			// the boundary is on the right
+			xTime = Math.abs(world.getWidth() - (this.getXPosition()-this.getRadius()))/this.getXVelocity();
 		}
-		// case left boundary
-		else
-		{
-			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, 0, xVelWO);
-		}
-		
-		// calculate the time needed to get to the boundary using the yComponent
-		// first case: collision with the top boundary
-		if(Math.signum(yVelWO)>0){
-			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, other.getHeight(), yVelWO);
-		}
-		// case bottom boundary
-		else
-		{
-			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, 0, yVelWO);
-		}
-		
-		//Select the shortest time
-		if(xTime>=yTime)
-			return xTime;
-		else
-			return yTime;	
-	}
-	
-	public double[] getCollisionPosition(World world){
-		double collisionTime = this.getTimeToCollision(world);
-		if(collisionTime == Double.POSITIVE_INFINITY)
-			return null;
-		
-		double WOXPosAtCollision = this.getXPosition() + this.getXVelocity()*collisionTime;
-		double WOYPosAtCollision = this.getYPosition() + this.getYVelocity()*collisionTime;
-		double WORadius = this.getRadius();
-		
-		double xCollision;
-		double yCollision;
-		
-		// check if the ship collides with the right boundary of the world
-		if(0<=(WOXPosAtCollision+WORadius)-world.getWidth()&&(WOXPosAtCollision+WORadius)-world.getWidth()<EPSILON){
-			xCollision = WOXPosAtCollision + WORadius;
-			yCollision = WOYPosAtCollision;
-			
-		// check if the ship collides with the left boundary of the world
-		}else if(0<= WOXPosAtCollision-WORadius && WOXPosAtCollision-WORadius < EPSILON){
-			xCollision = WOXPosAtCollision - WORadius;
-			yCollision = WOYPosAtCollision;
-		// check if the ship collides with the bottom boundary of the world
-		}else if(0<= WOYPosAtCollision-WORadius && WOYPosAtCollision-WORadius < EPSILON){
-			xCollision = WOXPosAtCollision;
-			yCollision = WOYPosAtCollision - WORadius;
-		}
-		// in all other cases the ship collides with the top of the world
 		else{
-			xCollision = WOXPosAtCollision;
-			yCollision = WOYPosAtCollision + WORadius;
+			// boundary on the left
+			xTime =  (this.getXPosition()-this.getRadius())/Math.abs(this.getXVelocity());
+		}
+		// calculate the time needed to hit the y boundary
+		if(Math.signum(this.getYVelocity())>0){
+			// boundary on top
+			yTime = Math.abs(world.getHeight()- (this.getYPosition()-this.getRadius()))/this.getYVelocity();
+		}
+		else{
+			// boundary on bottom
+			yTime = (this.getYPosition()-this.getRadius())/Math.abs(this.getYVelocity());
 		}
 		
-		// create the return array
-		double[] collisionPosition = {xCollision, yCollision};
+		return Math.min(xTime, yTime);
+	}
 		
-		return collisionPosition;
-	}
-	
-	
-	public double calculateLinearCollisionTime(double pos1,double pos2,double objVel){
-		return (pos1-pos2)/(objVel);
-	}
-	
+//		if(other == null)
+//			return Double.POSITIVE_INFINITY;
+//		
+//		// calculate the collision time for the x velocity and the y velocity seperatly
+//		double xPosWO = this.getXPosition();
+//		double yPosWO = this.getYPosition();
+//		double xVelWO = this.getXVelocity();
+//		double yVelWO = this.getYVelocity();
+//		double RadiusWO = this.getRadius();
+//		
+//		// initialize the time components
+//		double xTime;
+//		double yTime;
+//		
+//		// calculate the time needed to get to the boundary using the xComponent
+//		// first case: right boundary
+//		if(Math.signum(xVelWO)>0){
+//			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, other.getWidth(), xVelWO);
+//		}
+//		// case left boundary
+//		else
+//		{
+//			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, 0, xVelWO);
+//		}
+//		
+//		// calculate the time needed to get to the boundary using the yComponent
+//		// first case: collision with the top boundary
+//		if(Math.signum(yVelWO)>0){
+//			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, other.getHeight(), yVelWO);
+//		}
+//		// case bottom boundary
+//		else
+//		{
+//			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, 0, yVelWO);
+//		}
+//		
+//		//Select the shortest time
+//		if(xTime>=yTime)
+//			return xTime;
+//		else
+//			return yTime;	
 
-	/**
-	 * Calculates the d value for the collision time calculation
-	 * @param 	other
-	 * 			the other WorldObject
-	 * 
-	 * @param 	deltaR
-	 * 			the vector that points from the center of the first WorldObject to the other WorldObject
-	 * 
-	 * @param 	deltaV
-	 * 			the vector of the difference in speed of both WorldObjects
-	 * 
-	 * @return 	the value d used in the collision time method
-	 * 			| result == Math.pow(dotProduct2D(deltaV, deltaR),2) - 
-	 *			| (dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV)
-	 *
-	 * @throws 	ArithmeticException
-	 * 			throws the exception if a calculation caused overflow
-	 * 			| causedOverflow()
-	 * 
-	 * @throws 	IllegalArgumentexception
-	 * 			|other == null
-	 */
-	private double calculateD(WorldObject other, double[] deltaR, double[] deltaV) throws ArithmeticException, IllegalArgumentException{
-		
-		if(other == null)
-			throw new IllegalArgumentException();
-		
-		double result = Math.pow(dotProduct2D(deltaV, deltaR),2) - 
-				(dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV);
-		
-		if(causedOverflow(result))
-			throw new ArithmeticException();
-		
-		return result;
-	}
 	
 	/**
 	 * Calculates the position of a collision
@@ -823,11 +784,11 @@ public abstract class WorldObject {
 			return null;
 		}
 		
-		double[] thisWorldObjectPos = {this.getXPosition() + this.getXVelocity()*time, this.getYPosition() + this.getYVelocity()*time};
-		double[] otherWorldObjectPos = {other.getXPosition() + other.getXVelocity()*time, other.getYPosition() + other.getYVelocity()*time};
+		Vector2D thisWorldObjectPos = this.getPosition().vectorSum(this.getVelocity().rescale(time));
+		Vector2D otherWorldObjectPos = other.getPosition().vectorSum(other.getVelocity().rescale(time));
 		
-		if(causedOverflow(thisWorldObjectPos[0])||causedOverflow(thisWorldObjectPos[1])||
-				causedOverflow(otherWorldObjectPos[0])||causedOverflow(otherWorldObjectPos[1]))
+		if(causedOverflow(thisWorldObjectPos.getXComponent())||causedOverflow(thisWorldObjectPos.getYComponent())||
+				causedOverflow(otherWorldObjectPos.getXComponent())||causedOverflow(otherWorldObjectPos.getYComponent()))
 			throw new ArithmeticException();
 		
 		double radiusRatio = this.getRadius()/(this.getSigma(other));
@@ -835,17 +796,116 @@ public abstract class WorldObject {
 		if(causedOverflow(radiusRatio))
 			throw new ArithmeticException();
 		
+		Vector2D collisionPos = (otherWorldObjectPos.difference(thisWorldObjectPos).rescale(radiusRatio)).vectorSum(thisWorldObjectPos);
 		
-		double[] collisionPos = {(otherWorldObjectPos[0] - thisWorldObjectPos[0])*radiusRatio + thisWorldObjectPos[0], 
-				(otherWorldObjectPos[1] - thisWorldObjectPos[1])*radiusRatio + thisWorldObjectPos[1]};
+//		double[] collisionPos = {(otherWorldObjectPos[0] - thisWorldObjectPos[0])*radiusRatio + thisWorldObjectPos[0], 
+//				(otherWorldObjectPos[1] - thisWorldObjectPos[1])*radiusRatio + thisWorldObjectPos[1]};
 
-		if(causedOverflow(collisionPos[0])||causedOverflow(collisionPos[1]))
+		if(causedOverflow(collisionPos.getXComponent())||causedOverflow(collisionPos.getYComponent()))
 			throw new ArithmeticException();
 		
-		return collisionPos;
+		return collisionPos.getVector2DArray();
 	}
 	
+	
+	
+	public double[] getCollisionPosition(World world){
+		
+		double time = this.getTimeToCollision(world);
+		Vector2D center = this.getPosition().vectorSum(this.getVelocity().rescale(time));
+		
+		// initialize all the possible collisions
+		Vector2D[] possibleCollisions = {new Vector2D(world.getWidth(), center.getYComponent()), new Vector2D(0, center.getYComponent()),
+				new Vector2D(center.getXComponent(),world.getHeight()), new Vector2D(center.getXComponent(), world.getHeight())};
+		
+		//check if an collision happens
+		for(Vector2D collision: possibleCollisions){
+			if(doubleEquals(this.getPosition().distanceTo(collision),this.getRadius())){
+				return collision.getVector2DArray();
+			}
+		}
+		
+		return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+			
+		}
+//		double collisionTime = this.getTimeToCollision(world);
+//		if(collisionTime == Double.POSITIVE_INFINITY)
+//			return null;
+//		
+//		double WOXPosAtCollision = this.getXPosition() + this.getXVelocity()*collisionTime;
+//		double WOYPosAtCollision = this.getYPosition() + this.getYVelocity()*collisionTime;
+//		double WORadius = this.getRadius();
+//		
+//		double xCollision;
+//		double yCollision;
+//		
+//		// check if the ship collides with the right boundary of the world
+//		if(0<=(WOXPosAtCollision+WORadius)-world.getWidth()&&(WOXPosAtCollision+WORadius)-world.getWidth()<EPSILON){
+//			xCollision = WOXPosAtCollision + WORadius;
+//			yCollision = WOYPosAtCollision;
+//			
+//		// check if the ship collides with the left boundary of the world
+//		}else if(0<= WOXPosAtCollision-WORadius && WOXPosAtCollision-WORadius < EPSILON){
+//			xCollision = WOXPosAtCollision - WORadius;
+//			yCollision = WOYPosAtCollision;
+//		// check if the ship collides with the bottom boundary of the world
+//		}else if(0<= WOYPosAtCollision-WORadius && WOYPosAtCollision-WORadius < EPSILON){
+//			xCollision = WOXPosAtCollision;
+//			yCollision = WOYPosAtCollision - WORadius;
+//		}
+//		// in all other cases the ship collides with the top of the world
+//		else{
+//			xCollision = WOXPosAtCollision;
+//			yCollision = WOYPosAtCollision + WORadius;
+//		}
+//		
+//		// create the return array
+//		double[] collisionPosition = {xCollision, yCollision};
+//		
+//		return collisionPosition;
+//	
+//	public double calculateLinearCollisionTime(double pos1,double pos2,double objVel){
+//		return (pos1-pos2)/(objVel);
+//	}
+//	
 
+	/**
+	 * Calculates the d value for the collision time calculation
+	 * @param 	other
+	 * 			the other WorldObject
+	 * 
+	 * @param 	deltaR
+	 * 			the vector that points from the center of the first WorldObject to the other WorldObject
+	 * 
+	 * @param 	deltaV
+	 * 			the vector of the difference in speed of both WorldObjects
+	 * 
+	 * @return 	the value d used in the collision time method
+	 * 			| result == Math.pow(dotProduct2D(deltaV, deltaR),2) - 
+	 *			| (dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV)
+	 *
+	 * @throws 	ArithmeticException
+	 * 			throws the exception if a calculation caused overflow
+	 * 			| causedOverflow()
+	 * 
+	 * @throws 	IllegalArgumentexception
+	 * 			|other == null
+	 */
+	private double calculateD(WorldObject other, Vector2D deltaR, Vector2D deltaV) throws ArithmeticException, IllegalArgumentException{
+		
+		if(other == null)
+			throw new IllegalArgumentException();
+		
+		double result = Math.pow(deltaV.dotProduct(deltaR),2) - 
+				(deltaR.dotProduct(deltaR) - Math.pow(this.getSigma(other), 2))*deltaV.dotProduct(deltaV);
+		
+		if(causedOverflow(result))
+			throw new ArithmeticException();
+		
+		return result;
+	}
+	
+	
 	
 	/**
 	 * Calculates the vector that connects the centers of the
@@ -864,7 +924,7 @@ public abstract class WorldObject {
 	 * 			throws the exception if the supplied other is a null reference
 	 * 			| other == null
 	 */
-	
+	@Deprecated
 	protected double[] getDeltaR(WorldObject other) throws IllegalArgumentException, ArithmeticException{
 		
 		if(other == null)
@@ -903,6 +963,7 @@ public abstract class WorldObject {
 	 * @throws 	IllegalArgumentException
 	 * 			| causedOverflow()
 	 */
+	@Deprecated
 	protected double[] getDeltaV(WorldObject other) throws ArithmeticException, IllegalArgumentException{
 		
 		if(other == null)
@@ -942,6 +1003,7 @@ public abstract class WorldObject {
 	 * @throws 	ArithmeticException
 	 * 			| causedOverflow()
 	 */
+	@Deprecated
 	protected static double dotProduct2D(double[] vector1, double[] vector2) throws IllegalArgumentException, ArithmeticException{
 		
 		// check if null reference
@@ -991,6 +1053,17 @@ public abstract class WorldObject {
 		return this.associatedWorld;
 	}
 	
+	/**
+	 * Sets the world wherein the worldObject resides
+	 * @param 	world
+	 * 	
+	 * @Post	The WorldObject is set into the world
+	 * 			| new.getWorld() == world
+	 * 
+	 * @throws 	IllegalArgumentException
+	 * 			thrown is the worldObject cannot have world as World
+	 * 			|!canHaveAsWorld(world)
+	 */
 	public void setWorld(World world) throws IllegalArgumentException{
 		if(!canHaveAsWorld(world))
 			throw new IllegalArgumentException();
@@ -1021,6 +1094,31 @@ public abstract class WorldObject {
 	 * 			| {this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
 	 */
 	public void resolveCollision(World world)throws IllegalArgumentException, IllegalStateException{
+//		if(world==null)
+//		throw new IllegalArgumentException();
+//	
+//		if(this.getWorld()!= world)
+//			throw new IllegalArgumentException();
+//		
+//		Vector2D collisionPos = Vector2D.array2Vector(this.getCollisionPosition(world));
+//		
+//		Vector2D[] possibleCollisions = {	new Vector2D(world.getWidth(), this.getPosition().getYComponent()), 
+//											new Vector2D(0, this.getPosition().getYComponent()),
+//											new Vector2D(this.getPosition().getXComponent(),world.getHeight()), 
+//											new Vector2D(this.getPosition().getXComponent(), world.getHeight())		};
+//		
+//		double index = 0;
+//		for(Vector2D collision: possibleCollisions){
+//			if(collision.equals(collisionPos)){
+//				if(index <=1){
+//					this.setVelocity(-this.getXVelocity(), this.getYVelocity());
+//				}
+//				else
+//					this.setVelocity(this.getXVelocity(), -this.getYVelocity());
+//					
+//			}
+//		}
+		
 		if(world==null)
 			throw new IllegalArgumentException();
 		

@@ -15,25 +15,25 @@ public class VectorTests {
 	
 	@Before
 	public void setUpMutableFixture(){
-		vector1 = new Vector2D(0,0);
+		vector1 = Vector2D.ORIGIN;
 		vector2 = new Vector2D(3,4);
 	}
 	
 	@Test
 	public final void getVector_vector2(){
-		double[] vector2Copy = vector2.getVector2D();
+		double[] vector2Copy = vector2.getVector2DArray();
 		assertEquals(3, vector2Copy[0], EPSILON);
 		assertEquals( 4, vector2Copy[1], EPSILON);	
 	}
 	
 	@Test
 	public final void getXComponent_vector2(){
-		assertEquals(vector2.getVector2D()[0], vector2.getXComponent(), EPSILON);
+		assertEquals(vector2.getVector2DArray()[0], vector2.getXComponent(), EPSILON);
 	}
 	
 	@Test
 	public final void getYComponent_vector2(){
-		assertEquals(vector2.getVector2D()[1], vector2.getYComponent(), EPSILON);
+		assertEquals(vector2.getVector2DArray()[1], vector2.getYComponent(), EPSILON);
 	}
 	
 	@Test
@@ -45,8 +45,8 @@ public class VectorTests {
 	
 	@Test
 	public final void equalsTest_true(){
-		Vector2D vector3 = new Vector2D(3,4);
-		assertEquals(vector2,vector3);
+		Vector2D vector = new Vector2D(3,4);
+		assertEquals(vector2,vector);
 	}
 	
 	@Test
@@ -64,4 +64,22 @@ public class VectorTests {
 	public final void dotProductTest(){
 		assertEquals(0, vector1.dotProduct(vector2), EPSILON);
 	}
+	
+	@Test
+	public final void testReferenceLeaks(){
+		double[] vector2Array = vector2.getVector2DArray();
+		vector2Array[1] = 20;
+		assertFalse(vector2Array[1] == vector2.getYComponent());
+	}
+	
+	@Test
+	public final void SumTest(){
+		assertEquals(vector2, vector1.vectorSum(vector2));
+	}
+	
+	@Test
+	public final void rescaleTest(){
+		Vector2D vector = new Vector2D(9,12);
+		assertEquals(vector, vector2.rescale(3));
+		}
 }

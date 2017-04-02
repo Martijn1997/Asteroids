@@ -42,6 +42,26 @@ public class Vector2D{
 		this.Vector2D[1] = yComponent;
 	}
 	
+	
+	// Make some tests in the test suite for this function
+	/**
+	 * Converts an array of 2 elements to an Vector2D value object
+	 * @param 	array
+	 * 			the 2 element array
+	 * @return	a Vector2D with as x and y values the values of the array element in respective order
+	 * 			|new.getVector2DArray == array
+	 * 
+	 * @throws 	IllegalArgumentException
+	 * 			Thrown if the array is not of length 2 or the array is a null reference
+	 * 			|array == null || array.lenght! = 2
+	 */
+	public static Vector2D array2Vector(double ... array)throws IllegalArgumentException{
+		if(array == null || array.length!= 2)
+			throw new IllegalArgumentException();
+		return new Vector2D(array[0], array[1]);
+		
+	}
+	
 	/**
 	 * Checks if the provided value can be used as a 2D vector component
 	 * @param 	value
@@ -74,7 +94,7 @@ public class Vector2D{
 	 * @return a 2D vector
 	 */
 	@Basic @Raw @Immutable
-	public double[] getVector2D(){
+	public double[] getVector2DArray(){
 		return this.Vector2D.clone();
 	}
 	
@@ -118,6 +138,37 @@ public class Vector2D{
 		return new Vector2D(newXComponent, newYComponent);
 	}
 	
+	/**
+	 * Calculates the sum of two vectors 
+	 * @param 	other
+	 * 			The other vector
+	 * 
+	 * @return	The difference between two vectors
+	 * 			| result == Vector1 + Vector2
+	 */
+	@Immutable
+	public Vector2D vectorSum(Vector2D other){
+		double newXComponent = this.getXComponent() + other.getXComponent();
+		double newYComponent = this.getYComponent() + other.getYComponent();
+		
+		return new Vector2D(newXComponent, newYComponent);
+	}
+	
+	/**
+	 * Rescales a vector with the given scalar
+	 * @param   scalar
+	 * 			the factor which rescales the vector
+	 * 
+	 * @return	The rescaled vector
+	 * 			| result == scalar*Vector
+	 */
+	public Vector2D rescale(double scalar){
+		
+		double newXComponent = this.getXComponent()*scalar;
+		double newYComponent = this.getYComponent()*scalar;
+		
+		return new Vector2D(newXComponent, newYComponent);
+	}
 	
 	/**
 	 * Calculates the dot product of two 2D vectors
@@ -180,6 +231,8 @@ public class Vector2D{
 		return diffVector.getXComponent() == 0 && diffVector.getYComponent() == 0;
 		
 	}
+	
+	
 	
 	public final static Vector2D ORIGIN = new Vector2D(0,0);
 }
