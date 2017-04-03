@@ -6,6 +6,8 @@ import org.junit.*;
 
 import asteroids.model.Bullet;
 import asteroids.model.Ship;
+import asteroids.model.Vector2D;
+import asteroids.model.World;
 import asteroids.model.WorldObject;
 
 public class ShipTestsPart2 {
@@ -13,8 +15,9 @@ public class ShipTestsPart2 {
 	private static final double EPSILON = 0.0001;
 	private static final double EPSILON2 = 1;
 	
-	private static Ship ship1, ship2;
+	private static Ship ship1, ship2, collisionShip1, collisionShip2, collisionShip3, collisionShip4;
 	private static Bullet bullet1, bullet2;
+	private static World world1;
 	
 	/**
 	 * Set up a Mutable test fixture.
@@ -23,6 +26,11 @@ public class ShipTestsPart2 {
 	public void setUpMutableFixture(){
 		ship1 = new Ship(100,100,0,10,0,0,0);
 		ship2 = new Ship(200,200,Math.PI/4,10,0,0,0);
+		collisionShip1 = new Ship(100,100,0,10,100,0,0);
+		collisionShip2 = new Ship(310,100,0,10,-100,0,0);
+		collisionShip3 = new Ship(100,90,0,10,0,100,0);
+		collisionShip4 = new Ship(100,910,0,10,0,-100,0);
+		world1 = new World(1000,1000);
 		bullet1 = new Bullet();
 		bullet2 = new Bullet();
 	}
@@ -53,6 +61,7 @@ public class ShipTestsPart2 {
 		assertEquals(4.0/3.0 * Math.PI*Math.pow(ship1.getRadius(),3)*ship1.getDensity(), ship1.getMass(), EPSILON);
 		
 	}
+
 	
 	// loadBullet tests
 	
@@ -60,6 +69,7 @@ public class ShipTestsPart2 {
 	public final void loadBullet_oneBullet(){
 		bullet1.loadBulletOnShip(ship1);
 		assert(ship1.containsBullet(bullet1));
+		assertEquals(ship1.getPosition(), bullet1.getPosition());
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -153,5 +163,87 @@ public class ShipTestsPart2 {
 		assertEquals(yVel, ship2.getYVelocity(), EPSILON);
 	}
 	
-	// collisionTests
+	// collisionTests world
+	@Test
+	public final void worldCollsion_rightBoundary_and_Position(){
+		world1.addWorldObject(collisionShip1);
+		assertEquals(8.9, collisionShip1.getTimeToCollision(world1), EPSILON);
+		double[] collision = collisionShip1.getCollisionPosition(world1);
+		assertEquals(1000, collision[0], EPSILON);
+		assertEquals(100, collision[1], EPSILON);
+		
+	}
+	
+	@Test
+	public final void worldCollision_leftBoundary_and_Position(){
+		world1.addWorldObject(collisionShip2);
+		assertEquals(3, collisionShip2.getTimeToCollision(world1), EPSILON);
+		double[] collision = collisionShip2.getCollisionPosition(world1);
+		assertEquals(0, collision[0], EPSILON);
+		assertEquals(100, collision[1], EPSILON);
+	}
+	
+	@Test
+	public final void worldCollision_topBoundary_and_Position(){
+		world1.addWorldObject(collisionShip3);
+		assertEquals(9, collisionShip3.getTimeToCollision(world1), EPSILON);
+		double[] collision = collisionShip3.getCollisionPosition(world1);
+		assertEquals(100, collision[0], EPSILON);
+		assertEquals(1000, collision[1], EPSILON);
+	}
+	
+	@Test
+	public final void worldCollision_bottomBoundary_and_Position(){
+		world1.addWorldObject(collisionShip4);
+		assertEquals(9, collisionShip4.getTimeToCollision(world1), EPSILON);
+		double[] collision = collisionShip4.getCollisionPosition(world1);
+		assertEquals(100, collision[0], EPSILON);
+		assertEquals(0, collision[1], EPSILON);
+	}
+	
+	//shooting bullets
+	@Test
+	public final void FireBullet_ship1_bullet1(){
+		world1.addWorldObject(ship1);
+		bullet1.loadBulletOnShip(ship1);
+		ship1.fireBullet();
+		assertEquals(bullet1.getWorld(), ship1.getWorld());
+		Vector2D supposedBulletPos = new Vector2D(100,111);
+		assertEquals(bullet1.getPosition(), supposedBulletPos);
+		Vector2D supposedBulletVel = new Vector2D(250,0);
+		assertEquals(bullet1.getVelocity(), supposedBulletVel);
+	}
+	
+	@Test
+	public final void FireBullet_Ship2_bullet1(){
+		world1.addWorldObject(ship2);
+		bullet1.loadBulletOnShip(ship2);
+		ship2.fireBullet();
+		assertEquals(11, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
+		assertEquals(250*Math.cos(ship2.getOrientation()), bullet1.getVelocity().getXComponent(), EPSILON);
+		assertEquals(250*Math.sin(ship2.getOrientation()),bullet1.getVelocity().getYComponent(),EPSILON);
+	}
+	
+	// CollisionResolve Ship - World
+	@Test
+	public final void ResolveShipWorldCollision_right(){
+		collisionShip1.setWorld(world1);
+		collisionShip1.setPosition(990, 0);
+		collisionShip1.resolveCollision(world1);
+		Vector2D supposedVelocity = new Vector2D(-100,0);
+		assertEquals(collisionShip1.getVelocity(), supposedVelocity);
+	}
+	
+	@Test
+	public final void ResolveShipWorldCollision_left(){
+		collisionShip2.setWorld(world1);
+		collisionShip2.setPosition(10, 0);
+		collisionShip2.resolveCollision(world1);
+		Vector2D supposedVelocity = new Vector2D(100,0);
+		assertEquals(collisionShip2.getVelocity(), supposedVelocity);
+	}
+	
+	
+	
+	
 }

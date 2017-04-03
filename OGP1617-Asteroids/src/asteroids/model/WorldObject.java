@@ -678,24 +678,24 @@ public abstract class WorldObject {
 		if(world == null)
 			return Double.POSITIVE_INFINITY;
 		
-		double xTime;
-		double yTime;
+		double xTime = Double.POSITIVE_INFINITY;
+		double yTime = Double.POSITIVE_INFINITY;
 		
 		// first calculate the time needed to hit the x boundary
-		if(Math.signum(this.getXVelocity())>0){
+		if(Math.signum(this.getXVelocity())>0 && this.getXVelocity()>0){
 			// the boundary is on the right
-			xTime = Math.abs(world.getWidth() - (this.getXPosition()-this.getRadius()))/this.getXVelocity();
+			xTime = Math.abs(world.getWidth() - (this.getXPosition()+this.getRadius()))/this.getXVelocity();
 		}
-		else{
+		else if(this.getXVelocity()<0){
 			// boundary on the left
 			xTime =  (this.getXPosition()-this.getRadius())/Math.abs(this.getXVelocity());
 		}
 		// calculate the time needed to hit the y boundary
-		if(Math.signum(this.getYVelocity())>0){
+		if(Math.signum(this.getYVelocity())>0 &&this.getYVelocity()>0){
 			// boundary on top
-			yTime = Math.abs(world.getHeight()- (this.getYPosition()-this.getRadius()))/this.getYVelocity();
+			yTime = Math.abs(world.getHeight()- (this.getYPosition()+this.getRadius()))/this.getYVelocity();
 		}
-		else{
+		else if(this.getYVelocity()<0){
 			// boundary on bottom
 			yTime = (this.getYPosition()-this.getRadius())/Math.abs(this.getYVelocity());
 		}
@@ -812,15 +812,16 @@ public abstract class WorldObject {
 	public double[] getCollisionPosition(World world){
 		
 		double time = this.getTimeToCollision(world);
+		
 		Vector2D center = this.getPosition().vectorSum(this.getVelocity().rescale(time));
 		
 		// initialize all the possible collisions
 		Vector2D[] possibleCollisions = {new Vector2D(world.getWidth(), center.getYComponent()), new Vector2D(0, center.getYComponent()),
-				new Vector2D(center.getXComponent(),world.getHeight()), new Vector2D(center.getXComponent(), world.getHeight())};
+				new Vector2D(center.getXComponent(),world.getHeight()), new Vector2D(center.getXComponent(), 0)};
 		
 		//check if an collision happens
 		for(Vector2D collision: possibleCollisions){
-			if(doubleEquals(this.getPosition().distanceTo(collision),this.getRadius())){
+			if(doubleEquals(center.distanceTo(collision),this.getRadius())){
 				return collision.getVector2DArray();
 			}
 		}
@@ -1127,8 +1128,8 @@ public abstract class WorldObject {
 		
 		double[] collisionPosition = this.getCollisionPosition(world);
 		
-		if(!(doubleEquals(collisionPosition[0], this.getXPosition())&&doubleEquals(collisionPosition[0], this.getYPosition())))
-			throw new IllegalStateException();
+//		if(!(doubleEquals(collisionPosition[0], this.getXPosition())&&doubleEquals(collisionPosition[0], this.getYPosition())))
+//			throw new IllegalStateException();
 		
 		double worldWidth = world.getWidth();
 		

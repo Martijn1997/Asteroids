@@ -543,14 +543,14 @@ public class Ship extends WorldObject{
 	public void resolveCollision(Ship other){
 		
 		//prepare all the varriables
-		double[] deltaR = this.getDeltaR(other);
-		double[] deltaV = this.getDeltaV(other);
+		Vector2D deltaR = this.getPosition().difference(other.getPosition());
+		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
 		double massShip1 = this.getMass();
 		double massShip2 = other.getMass();
 		double sigma = this.getSigma(other);
 		
 		// run the calculations provided
-		double energy = (2*massShip1*massShip2*WorldObject.dotProduct2D(deltaR,deltaV))/(sigma*(massShip1+massShip2));
+		double energy = (2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2));
 		double xEnergy = energy*(this.getXPosition()-other.getXPosition())/sigma;
 		double yEnergy = energy*(this.getYPosition()-other.getYPosition())/sigma;
 		
