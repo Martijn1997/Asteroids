@@ -1,7 +1,15 @@
 package asteroids.model;
 
-import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * 
+ * @author Martijn & Flor
+ *
+ * @Invar	If a bullet belongs to a world, the total velocity of the bullet equals SHOOTING_VELOCITY
+ * 			|if(getWorld() != null)
+ * 			|then WorldObject.getTotalVelocity(getXVelocity(), getYVelocity()) == SHOOTING_VELOCITY
+ */
 public class Bullet extends WorldObject {
 	
 	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double mass){
@@ -12,8 +20,23 @@ public class Bullet extends WorldObject {
 		this(0,0,MIN_RADIUS,0,0,1);
 	}
 	
+	
+	/**
+	 * Terminator for a bullet class object
+	 * @effect		if the bullet has still a bidirectional relation with a ship
+	 * 				unload the bullet from the ship
+	 * 				|if(getShip().containsBullet(this)
+	 * 				|then getShip().unloadBullet(this)
+	 * @post 		the unidirectional relation between the bullet and the ship is broken
+	 * 				|new.getShip() = null
+	 */
 	@Override
 	public void terminate(){
+		
+		// if there still exists a bidirectional relation between the bullet and a ship
+		// unload the bullet from the ship
+		if(this.getShip().containsBullet(this))
+			this.getShip().unloadBullet(this);
 		this.associatedShip = null;
 		super.terminate();
 	}
@@ -31,6 +54,15 @@ public class Bullet extends WorldObject {
 	}
 	
 	public final static double MIN_RADIUS = 1d;
+	
+	/**
+	 * @return 	the minimumn radius of a bullet
+	 * 			|result == MIN_RADIUS
+	 */
+	@Override
+	public double getMinimumRadius(){
+		return MIN_RADIUS;
+	}
 	
 	@Override
 	public boolean isValidDensity(double density){
@@ -51,9 +83,9 @@ public class Bullet extends WorldObject {
 	// do we want changes to the prime object by the clients?
 	// gaat de bullet weldegelijk null teruggeven?
 	// maak ook functie om associated ship los te koppelen van bullet (zodat we transitie naar de wereld kunnen maken)
+	
 	/**
 	 * returns the associated ship of the bullet, if there is no such ship, return null
-	 * @return |@see implementation
 	 */
 	public Ship getShip(){
 		return this.associatedShip;
@@ -62,22 +94,46 @@ public class Bullet extends WorldObject {
 	/**
 	 * Associates the bullet with the specified ship if the bullet can be loaded
 	 * @param ship
-	 * @post	the specified ship is associated with the bullet	
-	 * 			|@see implementation
-	 * @throws 	IllegalArgumentException
+	 * @effect	first the unidirectional between the bullet and the ship is established
+	 * 			|setShip(ship)
+	 * @effect	the ship is associated with the bullet (bidirectional relation)
+	 * 			|ship.loadBullet(this)
+	 * @effect	the bullets position and velocity are synced with the ship
+	 * 			|syncBulletVectors();
 	 */
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
-		if((!this.isAssociated())&&(this.canBeLoadedOnShip(ship))){
-				this.associatedShip = ship;
-				this.getWorld().removeFromWorld(this);
+				this.setShip(ship);
 				ship.loadBullet(this);
 				this.syncBulletVectors();
-		}
-		else 
-			throw new IllegalArgumentException();
-		
 	}
 	
+	/**
+	 * sets up an unidirectional relation between the bullet and the ship
+	 * @param 	ship
+	 * 			the ship that needs to be associated
+	 * 
+	 * @post	The bullet is associated with the ship in an unidirectional way
+	 * 			| new.getShip() == ship
+	 * @throws  IllegalArgumentException
+	 * 			thrown if the bullet is already associated or the bullet cannot be loaded on the ship
+	 * 			| isAssociated()||!canBeLoadedOnShip()
+	 */
+	@Basic @Model
+	private void setShip(Ship ship){
+		if(this.isAssociated()||! this.canBeLoadedOnShip(ship))
+			throw new IllegalArgumentException();
+		this.associatedShip = ship;
+	}
+	
+	
+	/**
+	 * checker if the bullet can be loaded on the given ship
+	 * @param 	ship
+	 * 			the ship that is checked
+	 * @return  true if and only if the ship isn't a null reference and the radius of the bullet
+	 * 			is smaller than the ships radius
+	 * 			|@see implementation
+	 */
 	public boolean canBeLoadedOnShip(Ship ship){
 		return (ship!=null) && (this.getRadius() < ship.getRadius());
 	}
@@ -97,12 +153,11 @@ public class Bullet extends WorldObject {
 	public void transferToShip(){
 		this.getWorld().removeFromWorld(this);
 		this.getShip().loadBullet(this);
-		
-		
+			
 	}
 	
 	public boolean isLoadedOnShip(){
-		return this.getWorld() != null;
+		return this.getWorld() == null;
 	}
 	
 	
@@ -137,7 +192,7 @@ public class Bullet extends WorldObject {
 	/**
 	 * the total velocity of a bullet upon shooting.
 	 */
-	public final static int SHOOTING_VELOCITY=250;
+	public final static double SHOOTING_VELOCITY=250;
 	
 	/**
 	 * Resolves the collision between a bullet and a Ship
