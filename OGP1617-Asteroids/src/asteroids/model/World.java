@@ -99,13 +99,39 @@ public class World {
 				if (object2 == null)
 					object1.resolveCollision(this);
 				else
-					object2.resolveCollision(object1);
+					resolveCollisionObjects(object1, object2);
 			}else {
 				for (WorldObject i : allObjects){
 					i.move(dt);
 				}
 			}
 		}
+	}
+	
+	public void resolveCollisionObjects(WorldObject object1, WorldObject object2){
+		Ship ship1 = null;
+		Ship ship2 = null;
+		Bullet bullet1 = null;
+		Bullet bullet2 = null;
+		if (object1 instanceof Ship) {
+			ship1 = (Ship) object1;
+			if (object2 instanceof Ship){
+				ship2 = (Ship) object2;
+				ship2.resolveCollision(ship1);
+			}
+			else
+				bullet2 = (Bullet) object2;
+				bullet2.resolveCollision(ship1);
+		}
+		else
+			bullet1 =(Bullet) object1;
+			if (object2 instanceof Ship){
+				ship2 = (Ship) object2;
+				ship2.resolveCollision(bullet1);
+			}
+			else
+				bullet2 = (Bullet) object2;
+				bullet2.resolveCollision(bullet1);
 	}
 
 	public double getTimeNextCollision() throws IllegalArgumentException, ArithmeticException{
