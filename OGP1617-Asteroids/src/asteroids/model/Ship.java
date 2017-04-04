@@ -424,6 +424,15 @@ public class Ship extends WorldObject{
 	}
 	
 	/**
+	 * Getter for the loaded bullets creates a copy of the loaded bullets
+	 * @return 	a cloned set of the associated bullets
+	 * 			|result == new HashSet<Bullet>(getLoadedBullets())
+	 */
+	public Set<Bullet> getBulletSet(){
+		return new HashSet<Bullet>(this.getLoadedBullets());
+	}
+	
+	/**
 	 * Checks if a ship has the specified bullet associated with itself
 	 * @param bullet
 	 * @return	Whether the bullet is associated with the ship
@@ -431,6 +440,15 @@ public class Ship extends WorldObject{
 	 */
 	public boolean containsBullet(Bullet bullet){
 		return this.getLoadedBullets().contains(bullet);
+	}
+	
+	/**
+	 * A getter for the total amount of bullets
+	 * @return 	the total amount of bullets
+	 * 			|result == getLoadedBullets().size();
+	 */
+	public int getTotalAmountOfBullets(){
+		return this.getLoadedBullets().size();
 	}
 	
 	/**

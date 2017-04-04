@@ -88,7 +88,18 @@ public abstract class WorldObject {
 	public void terminate(){
 		this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
+		this.terminated = true;
 	}
+	
+	/**
+	 * checker if a world object is terminated
+	 * @return if the world object is terminated or not
+	 */
+	public boolean isTerminated(){
+		return this.terminated;
+	}
+	
+	private boolean terminated = false;
 	
 	/**
 	 * Basic setter for the position
