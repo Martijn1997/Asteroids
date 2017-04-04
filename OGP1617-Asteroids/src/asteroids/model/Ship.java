@@ -518,7 +518,7 @@ public class Ship extends WorldObject{
 	 * 			|result == (world != null &&this.getWorld()==null)
 	 */
 	public boolean canHaveAsWorld(World world){
-		return (world != null &&this.getWorld()==null);
+		return ((world != null &&this.getWorld()==null)||(this.isTerminated() && world == null));
 	}
 	
 	/**
@@ -545,18 +545,23 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-		if(!this.overlap(bullet))
+		if(!World.significantOverlap(this,bullet))
 			throw new IllegalStateException();
 		if(bullet == null)
 			throw new IllegalArgumentException();
 		if(bullet.getShip() == this){
 			bullet.transferToShip();
-		}else
+		}else{
 			bullet.terminate();
 			this.terminate();
+		}
 	}
 	
-	
+	/**
+	 * resolves the collision between a ship and another ship
+	 * @post	the collision is resolved and the velocity of both ships is set accordingly
+	 * 		 	|@see implementation
+	 */
 	@Override
 	public void resolveCollision(Ship other){
 		
@@ -575,8 +580,6 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+xEnergy/massShip1, this.getYVelocity()+yEnergy/massShip1);
 		other.setVelocity(other.getXVelocity() - xEnergy/massShip2, other.getYVelocity() - yEnergy/massShip2);
-		
-		
 	}
 
 }

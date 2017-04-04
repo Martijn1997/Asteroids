@@ -10,7 +10,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 // Create Boundry collision method
 // adjust the collision function to check wether two colliding objects reside within the same world.
 // documentatie voor de massa
-// documentatie voor termination
+// de overlap functie aanpassen om met de 99% overlap overweg te kunnen
 
 /*
  * Design choices:
@@ -68,8 +68,8 @@ public abstract class WorldObject {
 	 */
 	@Model @Raw
 	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
-		this.setPosition(xPos, yPos);
 		this.setRadius(radius);
+		this.setPosition(xPos, yPos);
 		this.setVelocity(xVel, yVel);
 		this.setDensity(this.getMinimumDensity());
 		this.setMass(mass);
@@ -85,10 +85,31 @@ public abstract class WorldObject {
 		this(0d,0d,10d,0,0,1);
 	}
 	
+	/**
+	 * Terminator for a world object
+	 * @effect  removes the world object from the associated world
+	 * 			|getWorld().removeFromWorld(this)
+	 * 
+	 * @post	the association between the World object and the world is broken
+	 * 			|new.getWorld() == null
+	 * 
+	 * @post	the world object position vector is set to a null reference
+	 * 			|new.getPosition() == null
+	 * 
+	 * @post 	the world object velocity vector is set to a null reference
+	 * 			|new.getVelocity() == null
+	 * 
+	 * @post	the flag that the object is terminated is raised
+	 * 			|new.isTerminated() == true
+	 * 
+	 */
 	public void terminate(){
+		this.terminated = true;
 		this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
-		this.terminated = true;
+		this.position = null;
+		this.velocity = null;
+		
 	}
 	
 	/**
@@ -119,7 +140,7 @@ public abstract class WorldObject {
 	 */
 	@Basic @Raw
 	public void setPosition(double xPos, double yPos)throws IllegalArgumentException{
-		if(!isValidPosition(xPos)||!isValidPosition(yPos))
+		if(!isValidPosition(xPos,yPos))
 			throw new IllegalArgumentException();
 		this.position = new Vector2D(xPos, yPos);	
 	}
@@ -155,17 +176,33 @@ public abstract class WorldObject {
 	 */
 	@Basic @Raw
 	public void setXPosition(double xPos) throws IllegalArgumentException{
-		if(!isValidPosition(xPos))
+		if(!isValidPosition(xPos, this.getYPosition()))
 			throw new IllegalArgumentException();
 		this.position = new Vector2D(xPos,this.getYPosition());
 	}
 	
 	/**
 	 * Checks if the Position is a Valid position
+	 * @return 	returns true if the the world object is not associated with a world
+	 * 			and the position is not NaN
+	 * 			|if(this.getWorld() == null && !isNan(xPos) && !isNaN(yPos))
+	 * 			|then result == true
+	 * @return 	returns true if the world object lies within the associated world bounds
+	 * 			|if(this.getWorld() != null)
+	 * 			|then @see implementation
 	 */
-	public static boolean isValidPosition(double Pos){
-		return !((Double.isNaN(Pos))||(Pos == Double.POSITIVE_INFINITY)
-				||(Pos == Double.NEGATIVE_INFINITY));
+	@Basic @Raw
+	public boolean isValidPosition(double xPos,double yPos){
+		if(Double.isNaN(xPos) || Double.isNaN(yPos))
+			return false;
+		if(this.getWorld() == null)
+			return true;
+		World thisWorld = this.getWorld();
+		if(thisWorld.getWidth()-this.getRadius() <= xPos || thisWorld.getHeight() - this.getRadius()<= yPos 
+				|| this.getRadius() >= xPos || this.getRadius() >= yPos)
+			return false;
+		else
+			return true;
 	}
 	
 	/**
@@ -186,11 +223,11 @@ public abstract class WorldObject {
 	 * 			|new.getYPosition() == yPos
 	 * 
 	 * @throws 	IllegalArgumentException
-	 * 			| !isValidPosition(yPos)
+	 * 			| !isValidPosition(getXPosition(), yPos)
 	 */
 	@Basic @Raw
 	public void setYPosition(double yPos) throws IllegalArgumentException{
-		if(!isValidPosition(yPos))
+		if(!isValidPosition(this.getXPosition(), yPos))
 			throw new IllegalArgumentException();
 		this.position = new Vector2D(this.getXPosition(),yPos);
 	}

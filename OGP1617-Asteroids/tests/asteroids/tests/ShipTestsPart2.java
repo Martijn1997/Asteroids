@@ -227,8 +227,8 @@ public class ShipTestsPart2 {
 	// CollisionResolve Ship - World
 	@Test
 	public final void ResolveShipWorldCollision_right(){
-		collisionShip1.setWorld(world1);
 		collisionShip1.setPosition(990, 0);
+		collisionShip1.setWorld(world1);
 		collisionShip1.resolveCollision(world1);
 		Vector2D supposedVelocity = new Vector2D(-100,0);
 		assertEquals(collisionShip1.getVelocity(), supposedVelocity);
@@ -236,11 +236,39 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void ResolveShipWorldCollision_left(){
+		collisionShip2.setPosition(10, 100);
 		collisionShip2.setWorld(world1);
-		collisionShip2.setPosition(10, 0);
 		collisionShip2.resolveCollision(world1);
 		Vector2D supposedVelocity = new Vector2D(100,0);
 		assertEquals(collisionShip2.getVelocity(), supposedVelocity);
+	}
+	
+	// collisionResolve Ship-Bullet
+	
+	@Test
+	public final void ResolveShipBulletCollision_own_bullet(){
+		world1.addWorldObject(ship1);
+		bullet1.loadBulletOnShip(ship1);
+		ship1.fireBullet();
+		bullet1.setPosition(99, 100);
+		bullet1.setVelocity(500, 0);
+		assert(World.significantOverlap(bullet1, ship1));
+		assertEquals(ship1, bullet1.getShip());
+		ship1.resolveCollision(bullet1);
+		assert(ship1.containsBullet(bullet1));
+	}
+	
+	@Test
+	public final void ResolveShipBulletCollision_other_bullet(){
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(bullet1);
+		bullet1.setPosition(99, 100);
+		bullet1.setVelocity(100, 0);
+		assert(World.significantOverlap(bullet1,  ship1));
+		assertFalse(bullet1.getShip()==ship1);
+		ship1.resolveCollision(bullet1);
+		assert(ship1.isTerminated());
+		assert(bullet1.isTerminated());
 	}
 	
 	

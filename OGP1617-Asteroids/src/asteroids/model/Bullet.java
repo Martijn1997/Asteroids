@@ -35,7 +35,7 @@ public class Bullet extends WorldObject {
 		
 		// if there still exists a bidirectional relation between the bullet and a ship
 		// unload the bullet from the ship
-		if(this.getShip().containsBullet(this))
+		if(this.getShip() != null && this.getShip().containsBullet(this))
 			this.getShip().unloadBullet(this);
 		this.associatedShip = null;
 		super.terminate();
@@ -179,7 +179,7 @@ public class Bullet extends WorldObject {
 	}
 	
 	public boolean canHaveAsWorld(World world){
-		return (world!=null) || (world==null && this.getShip()!= null);
+		return (world!=null) || (world==null && this.getShip()!= null) ||(this.isTerminated()&&world==null);
 		
 	}
 	
