@@ -8,6 +8,10 @@ import be.kuleuven.cs.som.annotate.*;
 
 public class World {
 	
+	public World(double width, double height){
+		this.setHeight(height);
+		this.setWidth(width);
+	}
 
 	@Basic @Raw
 	public double getWidth(){
