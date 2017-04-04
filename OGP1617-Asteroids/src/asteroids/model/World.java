@@ -9,6 +9,11 @@ import be.kuleuven.cs.som.annotate.*;
 public class World {
 	
 
+	public World(double width, double height){
+		this.setWidth(width);
+		this.setHeight(height);
+	}
+
 	@Basic @Raw
 	public double getWidth(){
 		return this.width;
@@ -37,6 +42,23 @@ public class World {
 	
 	private double height;
 
+	
+	public void terminate(){
+		if (!isTerminated()) {
+			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
+			for (WorldObject i : allObjects){
+				removeFromWorld(i);
+			}
+		}
+	}
+	
+	@Basic @Raw
+	public boolean isTerminated(){
+		return this.isTerminated;
+	}
+	
+	private boolean isTerminated;
+	
 	
 	public static boolean isValidBoundary(double boundary){
 		return (boundary <= Double.MAX_VALUE && boundary >= 0);
@@ -77,20 +99,54 @@ public class World {
 		
 	}
 	
+	public HashSet<WorldObject> getAllWorldObjects(){
+		HashSet<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		return allObjects;
+	}
+	
+	public HashSet<Ship> getAllShips(){
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		HashSet<Ship> allShips = new HashSet<Ship>();
+		Ship ship = null;
+		for (WorldObject i : allObjects){
+			if (i instanceof Ship) {
+				ship = (Ship) i;
+				allShips.add(ship);
+			}
+		}
+		return allShips;
+	}
+	
 	public HashSet<Bullet> getAllBullets(){
-		return null;
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		HashSet<Bullet> allBullets = new HashSet<Bullet>();
+		Bullet bullet = null;
+		for (WorldObject i : allObjects){
+			if (i instanceof Bullet) {
+				bullet =(Bullet) i;
+				allBullets.add(bullet);
+			}
+		}
+		return allBullets;
 	}
 	
 	public void evolve(double dt) throws IllegalArgumentException, ArithmeticException{
 		if (dt < 0)
 			throw new IllegalArgumentException();
 		double tc = 0;
+		Vector2D oldPos = null;
+		Vector2D newPos = null;
 		for (double timeLeft = dt; timeLeft > 0; timeLeft -= tc){
 			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 			tc = getTimeNextCollision();
 			if (tc <= dt) {
 				for (WorldObject i : allObjects){
+					oldPos = i.getPosition();
 					i.move(tc);
+					newPos = i.getPosition();
+					worldObjects.put(newPos, worldObjects.remove(oldPos));
+					if (i instanceof Ship)
+						((Ship) i).thrust(tc);
 				}
 				WorldObject object1 = getObjectsNextCollision()[0];
 				WorldObject object2 = getObjectsNextCollision()[1];
@@ -100,7 +156,12 @@ public class World {
 					resolveCollisionObjects(object1, object2);
 			}else {
 				for (WorldObject i : allObjects){
+					oldPos = i.getPosition();
 					i.move(dt);
+					newPos = i.getPosition();
+					worldObjects.put(newPos, worldObjects.remove(oldPos));
+					if (i instanceof Ship)
+						((Ship) i).thrust(tc);
 				}
 			}
 		}
@@ -188,16 +249,20 @@ public class World {
 		return nextCollision;
 	}
 
-	
+	//worldObjects.remove(worldObject) werkt niet want worldObject is de Value en niet de key
 	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
 		if (worldObject.getWorld() == null)
 			throw new IllegalArgumentException();
-		worldObjects.remove(worldObject);
+		Vector2D position = worldObject.getPosition();
+		worldObjects.remove(position);
 		worldObject.setWorld(null);
 	}
 	
+	public WorldObject getEntityAt(Vector2D position){
+		WorldObject entity = worldObjects.get(position);
+		return entity;
+	}
 
-	
 	public boolean canHaveAsWorldObject(WorldObject worldObject){
 		return (worldObject != null)&&(worldObject.getWorld() == null);
 	}

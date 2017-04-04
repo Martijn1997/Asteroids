@@ -37,7 +37,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @Invar 	The orientation of the ship is always an angle between 0 and 2*Math.PI
  * 			|isValidOrientation(angle)
  * 
- * @Invar	The Density of the ship is always larger than or equalt to the MINIMUM_DENISTY
+ * @Invar	The Density of the ship is always larger than or equals to the MINIMUM_DENISTY
  * 			|isValidDensity()
  * 
  * @Invar 	The mass of the ship is larger than or equal to the volume of a sphere with the radius of the ship multiplied
@@ -293,6 +293,11 @@ public class Ship extends WorldObject{
 	
 	public double getThrustForce(){
 		return this.thrustForce;
+	}
+	
+	public double getAcceleration(){
+		double a = this.getThrustForce()/this.getMass();
+		return a;
 	}
 	
 	/**
