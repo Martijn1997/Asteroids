@@ -69,9 +69,7 @@ public class World {
 			throw new IllegalArgumentException();
 		
 		//get the position of the WO
-		double xPos = worldObject.getXPosition();
-		double yPos = worldObject.getYPosition();
-		double[] position = {xPos, yPos};
+		Vector2D position = worldObject.getPosition();
 		
 		//set the WO in the map
 		worldObjects.put(position , worldObject);
@@ -205,7 +203,7 @@ public class World {
 	}
 
 
-	private Map<double[],WorldObject> worldObjects = new HashMap<double[],WorldObject>();
+	private Map<Vector2D,WorldObject> worldObjects = new HashMap<Vector2D,WorldObject>();
 }
 
 
