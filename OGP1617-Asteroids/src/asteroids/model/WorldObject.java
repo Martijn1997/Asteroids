@@ -198,8 +198,8 @@ public abstract class WorldObject {
 		if(this.getWorld() == null)
 			return true;
 		World thisWorld = this.getWorld();
-		if(thisWorld.getWidth()-this.getRadius() <= xPos || thisWorld.getHeight() - this.getRadius()<= yPos 
-				|| this.getRadius() >= xPos || this.getRadius() >= yPos)
+		if(thisWorld.getWidth()<= xPos || thisWorld.getHeight()<= yPos 
+				|| 0 >= xPos || 0 >= yPos)
 			return false;
 		else
 			return true;

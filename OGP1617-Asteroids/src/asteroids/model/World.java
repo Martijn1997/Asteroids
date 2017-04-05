@@ -13,10 +13,6 @@ public class World {
 		this.setWidth(width);
 	}
 
-	public World(double width, double height){
-		this.setWidth(width);
-		this.setHeight(height);
-	}
 
 	@Basic @Raw
 	public double getWidth(){
@@ -87,7 +83,16 @@ public class World {
 		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
 	}
 	
-
+	/**
+	 * Adds a world object to the world 
+	 * @Post	the world object in placed within the world
+	 * 			| worldObject.getWorld() == World
+	 * 
+	 * @param worldObject
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the worldObject is not legal
+	 * 			|canHaveAsWorldObject(worldObject)
+	 */
 	public void addWorldObject(WorldObject worldObject) throws IllegalArgumentException{
 		
 		// checker if valid object
@@ -102,6 +107,49 @@ public class World {
 		worldObject.setWorld(this);
 		
 	}
+	
+	/**
+	 * checker if a WorldObject can be set in the world
+	 * 
+	 * @param 	worldObject
+	 * 			the WorldObject that will be placed in the world
+	 * 
+	 * @return	false if the worldObject is a null reference
+	 * 			|result == (worldObject == null)
+	 * 
+	 * @return  false if the worldObject is already part of another world
+	 * 			|result == (worldObject.getWorld != null)
+	 * 
+	 * @true 	true if the world object has no significant overlap with another object in the world
+	 * 			| WorldObjectSet == getAllWorldObjects()
+	 * 			| for all objects in WorldObjectSet if not significantOverlap(object, worldObject)
+	 * 			| then return true
+	 */
+	public boolean canHaveAsWorldObject(WorldObject worldObject){
+		// first check if the world object is a null reference
+		if((worldObject != null)&&(worldObject.getWorld() == null)){
+			HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
+			// check if another world object is within overlapping radius
+			for(WorldObject other: WorldObjectsInWorld){
+				if(World.significantOverlap(worldObject, other)){
+					return false;
+				}	
+			}
+			// return true if no such object can be found	
+			return true;
+		}
+		
+		else 
+			return false;
+		
+	}
+	/**
+	 * @return all the positions of the WorldObjects placed in the world
+	 */
+	public HashSet<Vector2D> getAllWorldObjectPositions(){
+		return new HashSet<Vector2D>(worldObjects.keySet());
+	}
+
 	
 	public HashSet<WorldObject> getAllWorldObjects(){
 		HashSet<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
@@ -234,24 +282,27 @@ public class World {
 		double timeToCollision = Double.POSITIVE_INFINITY;
 		double collisionXPosition = Double.POSITIVE_INFINITY;
 		double collisionYPosition = Double.POSITIVE_INFINITY;
+		double[] collisionPosition = {collisionXPosition,collisionYPosition};
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
-		for (WorldObject i : allObjects){
-			copyAllObjects.remove(i);
-			if (i.getTimeToCollision(this) < timeToCollision)
-				timeToCollision = i.getTimeToCollision(this);
-				collisionXPosition = i.getCollisionPosition(this)[0];
-				collisionYPosition = i.getCollisionPosition(this)[1];
-			for (WorldObject j : copyAllObjects){
-				if (i.getTimeToCollision(j) < timeToCollision)
-					timeToCollision = i.getTimeToCollision(j);
-					collisionXPosition = i.getCollisionPosition(j)[0];
-					collisionYPosition = i.getCollisionPosition(j)[1];
+		for (WorldObject object1 : allObjects){
+			copyAllObjects.remove(object1);
+			double collWorldTime = object1.getTimeToCollision(this);
+			if (collWorldTime < timeToCollision)
+				timeToCollision = collWorldTime;
+				collisionPosition = object1.getCollisionPosition(this);
+			for (WorldObject object2 : copyAllObjects){
+				double collWOTime = object1.getTimeToCollision(object2);
+				if (object1.getTimeToCollision(object2) < timeToCollision)
+					timeToCollision = collWOTime;
+					collisionPosition = object1.getCollisionPosition(object2);
+
 			}
 		}
-		double[] nextCollision = {timeToCollision, collisionXPosition, collisionYPosition};
-		return nextCollision;
+		return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
+	
+	
 
 	//worldObjects.remove(worldObject) werkt niet want worldObject is de Value en niet de key
 	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
@@ -267,9 +318,6 @@ public class World {
 		return entity;
 	}
 
-	public boolean canHaveAsWorldObject(WorldObject worldObject){
-		return (worldObject != null)&&(worldObject.getWorld() == null);
-	}
 
 
 	private Map<Vector2D,WorldObject> worldObjects = new HashMap<Vector2D,WorldObject>();
