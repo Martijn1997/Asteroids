@@ -90,6 +90,15 @@ public class ShipTestsPart2 {
 		Bullet nullBullet = null;
 		ship1.loadBullets(bullet1, bullet2, nullBullet);
 	}
+	// termination test
+	public final void Temination(){
+		ship1.terminate();
+		assert(ship1.isTerminated());
+		assert(ship1.getWorld() == null);
+		for(Bullet bullet: ship1.getBulletSet()){
+			assert(bullet.isTerminated());
+		}
+	}
 	
 	// total mass tests
 	
@@ -208,7 +217,7 @@ public class ShipTestsPart2 {
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
 		assertEquals(bullet1.getWorld(), ship1.getWorld());
-		Vector2D supposedBulletPos = new Vector2D(100,111);
+		Vector2D supposedBulletPos = new Vector2D(100,100 + (ship1.getRadius()+bullet1.getRadius())*Ship.BULLET_OFFSET);
 		assertEquals(bullet1.getPosition(), supposedBulletPos);
 		Vector2D supposedBulletVel = new Vector2D(250,0);
 		assertEquals(bullet1.getVelocity(), supposedBulletVel);
@@ -219,7 +228,7 @@ public class ShipTestsPart2 {
 		world1.addWorldObject(ship2);
 		bullet1.loadBulletOnShip(ship2);
 		ship2.fireBullet();
-		assertEquals(11, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
+		assertEquals((ship2.getRadius() + bullet1.getRadius())*Ship.BULLET_OFFSET, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
 		assertEquals(250*Math.cos(ship2.getOrientation()), bullet1.getVelocity().getXComponent(), EPSILON);
 		assertEquals(250*Math.sin(ship2.getOrientation()),bullet1.getVelocity().getYComponent(),EPSILON);
 	}
@@ -243,6 +252,26 @@ public class ShipTestsPart2 {
 		assertEquals(collisionShip2.getVelocity(), supposedVelocity);
 	}
 	
+	
+	@Test
+	public final void ResolveShipWorldCollision_top(){
+		collisionShip2.setPosition(100, 990);
+		collisionShip2.setVelocity(0, 100);
+		collisionShip2.setWorld(world1);
+		collisionShip2.resolveCollision(world1);
+		Vector2D supposedVelocity = new Vector2D(0,-100);
+		assertEquals(collisionShip2.getVelocity(), supposedVelocity);
+	}
+	
+	@Test
+	public final void ResolveShipWorldCollision_bottom(){
+		collisionShip2.setPosition(100, 10);
+		collisionShip2.setVelocity(0, -100);
+		collisionShip2.setWorld(world1);
+		collisionShip2.resolveCollision(world1);
+		Vector2D supposedVelocity = new Vector2D(0,100);
+		assertEquals(collisionShip2.getVelocity(), supposedVelocity);
+	}
 	// collisionResolve Ship-Bullet
 	
 	@Test
@@ -272,6 +301,77 @@ public class ShipTestsPart2 {
 	}
 	
 	
+	// collisionResolve Ship-Ship
+	@Test
+	public final void ResolveShipShipCollsion_headOn_xAxis(){
+		
+		// set the ships in the world
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(ship2);
+		
+		// set the ships such that they overlap
+		ship1.setPosition(100, 100);
+		ship2.setPosition(120,100);
+		
+		// set the velocity of the ships
+		ship1.setVelocity(100, 0);
+		ship2.setVelocity(-100, 0);
+		
+		// resolve the collision
+		ship1.resolveCollision(ship2);
+		
+		Vector2D expected1 = new Vector2D(-100,0);
+		Vector2D expected2 = new Vector2D(100, 0);
+
+		assertEquals(expected1.getXComponent(),ship1.getXVelocity(), EPSILON);
+		assertEquals(expected1.getYComponent(),ship1.getYVelocity(), EPSILON);
+		assertEquals(expected2.getXComponent(),ship2.getXVelocity(), EPSILON);
+		assertEquals(expected2.getYComponent(),ship2.getYVelocity(), EPSILON);
+		
+	}
+	
+	@Test
+	public final void ResolveShipCollision_head_on_Angle(){
+		// set the ships in the world
+				world1.addWorldObject(ship1);
+				world1.addWorldObject(ship2);
+				
+				// test multiple angles
+				for(int index = 0 ; index<20; index++){
+					double angle = index * Math.PI/20;
+					ship1.setPosition(100, 100);
+					ship2.setPosition(100 + 20*Math.cos(angle), 100+20*Math.sin(angle));
+					
+					// set the velocity of the ships
+					ship1.setVelocity(100*Math.cos(angle), 100*Math.sin(angle));
+					ship2.setVelocity(-100*Math.cos(angle), -100*Math.sin(angle));
+					
+					// resolve the collision
+					ship1.resolveCollision(ship2);
+					
+					Vector2D expected1 = new Vector2D(-100*Math.cos(angle), -100*Math.sin(angle));
+					Vector2D expected2 = new Vector2D(100*Math.cos(angle), 100*Math.sin(angle));
+					
+					/*
+					System.out.println("current angle: " + angle);
+					System.out.println(ship1.getXVelocity());
+					//System.out.println(expected1.getXComponent());
+					System.out.println(ship1.getYVelocity());
+					//System.out.println(expected1.getYComponent());
+					System.out.println(ship2.getXVelocity());
+					//System.out.println(expected2.getXComponent());
+					System.out.println(ship2.getYVelocity());
+					//System.out.println(expected2.getYComponent());
+					 */
+					
+					assertEquals(expected1.getXComponent(),ship1.getXVelocity(), EPSILON);
+					assertEquals(expected1.getYComponent(),ship1.getYVelocity(), EPSILON);
+					assertEquals(expected2.getXComponent(),ship2.getXVelocity(), EPSILON);
+					assertEquals(expected2.getYComponent(),ship2.getYVelocity(), EPSILON);
+					
+				}
+				
+	}
 	
 	
 }

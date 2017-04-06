@@ -13,41 +13,76 @@ public class World {
 		this.setWidth(width);
 	}
 
-
+	/**
+	 * Basic getter for the width of the world
+	 * @return the width of the world
+	 */
 	@Basic @Raw
 	public double getWidth(){
 		return this.width;
 	}
 	
-	
+	/**
+	 * Basic setter for the width of the world
+	 * @param 	width
+	 * 			the width desired for the world
+	 * @Post	if the width is valid the width of the world is set to the provided value
+	 * 			| if isValidBoundary(width)
+	 * 			| then new.getWidth() == width
+	 * 
+	 * @Post 	if the width is not valid, the boundary is set to Double.POSITIVE_INFINITY
+	 * 			| if !isValidBoundary(width)
+	 * 			| then new.getWidth() = Double.POSITIVE_INFINITY
+	 */
 	@Basic @Raw
 	public void setWidth(double width){
 		if (isValidBoundary(width))
 			this.width = width;	
+		else 
+			this.width = Double.POSITIVE_INFINITY;
 	}
 	
 	private double width;
 	
-	
+	/**
+	 * Basic getter for the Height of the world
+	 * @return the height of the world
+	 */
 	@Basic @Raw
 	public double getHeight(){
 		return this.height;
 	}
 	
+	/****
+	 * Basic setter for the height of the world
+	 * @param 	height
+	 * 			the width desired for the world
+	 * @Post	if the height is valid the height of the world is set to the provided value
+	 * 			| if isValidBoundary(width)
+	 * 			| then new.getHeight() == height
+	 * 
+	 * @Post 	if the height is not valid, the boundary is set to Double.POSITIVE_INFINITY
+	 * 			| if !isValidBoundary(height)
+	 * 			| then new.getHeight() = Double.POSITIVE_INFINITY
+	 */
 	@Basic @Raw
 	public void setHeight(double height){
 		if (isValidBoundary(height))
 			this.height = height;	
+		else
+			this.height = Double.POSITIVE_INFINITY;
 	}
 	
 	private double height;
 
-	
+	// add functionality to set the references to this world to null in the associated WO
 	public void terminate(){
+		this.isTerminated = true;
 		if (!isTerminated()) {
 			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
-			for (WorldObject i : allObjects){
-				removeFromWorld(i);
+			for (WorldObject  object : allObjects){
+				object.setWorld(null);
+				removeFromWorld(object);
 			}
 		}
 	}
@@ -69,7 +104,7 @@ public class World {
 			throw new IllegalArgumentException();
 		if(worldObject1 == worldObject2)
 			return true;
-		return worldObject1.getDistanceBetween(worldObject2) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());
+		return worldObject1.getPosition().distanceTo(worldObject2.getPosition()) < 0.99*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
 	
 
@@ -132,6 +167,9 @@ public class World {
 			// check if another world object is within overlapping radius
 			for(WorldObject other: WorldObjectsInWorld){
 				if(World.significantOverlap(worldObject, other)){
+					System.out.println("a siginificant overlap");
+					double overlap = (worldObject.getRadius() + other.getRadius())*0.99 - worldObject.getDistanceBetween(other);
+					System.out.println(overlap);
 					return false;
 				}	
 			}

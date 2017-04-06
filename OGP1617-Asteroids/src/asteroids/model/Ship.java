@@ -495,8 +495,8 @@ public class Ship extends WorldObject{
 			return;
 		
 		// set the position of the bullet.
-		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius());
-		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius());
+		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
 		
 		//if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
 		//	throw new ArithmeticException();
@@ -517,13 +517,25 @@ public class Ship extends WorldObject{
 		bullet.transferToWorld();
 	}
 	
+	public final static double BULLET_OFFSET = 1.0;
+	
 	/**
 	 * Checker for adding a ship to a world
-	 * @return  true if and only if the world is not a null reference and the ship isn't already in a world.
-	 * 			|result == (world != null &&this.getWorld()==null)
+	 * @return  true if the world is not a null reference and the ship isn't already in a world.
+	 * 			|result == ((world != null &&this.getWorld()==null)
+	 * @return 	true if the Ship is terminated and the provided world is a null reference
+	 * 			|result == (this.isTerminated() && world == null))
+	 * @return  true if the world is a null reference and the current associated world is terminated
 	 */
 	public boolean canHaveAsWorld(World world){
-		return ((world != null &&this.getWorld()==null)||(this.isTerminated() && world == null));
+		if ((world != null &&this.getWorld()==null&&!this.isTerminated()))
+			return true;
+		else if (this.isTerminated() && world == null)
+			return true;
+		else if (this.getWorld().isTerminated() && world == null)
+			return true;
+		else 
+			return false;
 	}
 	
 	/**
@@ -578,13 +590,12 @@ public class Ship extends WorldObject{
 		double sigma = this.getSigma(other);
 		
 		// run the calculations provided
-		double energy = (2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2));
-		double xEnergy = energy*(this.getXPosition()-other.getXPosition())/sigma;
-		double yEnergy = energy*(this.getYPosition()-other.getYPosition())/sigma;
+		double energy = Math.abs((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
+		Vector2D energyVector = this.getPosition().difference(other.getPosition()).rescale(energy/sigma);
 		
 		// set the velocities
-		this.setVelocity(this.getXVelocity()+xEnergy/massShip1, this.getYVelocity()+yEnergy/massShip1);
-		other.setVelocity(other.getXVelocity() - xEnergy/massShip2, other.getYVelocity() - yEnergy/massShip2);
+		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
+		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
 	}
 
 }

@@ -178,8 +178,37 @@ public class Bullet extends WorldObject {
 		this.setVelocity(matchedShip.getXVelocity(), matchedShip.getYVelocity());
 	}
 	
+	/**
+	 * checker for the association between bullet and world
+	 * @param 	world
+	 * 			the world that needs to be associated with the prime object
+	 * @return	true if the world is not a null reference and the bullet is currently not in a world
+	 * 			| result == (world != null&&getWorld() == null &&!isTerminated())
+	 * 
+	 * @return  true if the world is a null reference and the bullet is associated with a ship
+	 * 			| result == (world==null && getShip()!= null&&!isTerminated())
+	 * 
+	 * @return 	true if the bullet is terminated and the provided world is a null reference
+	 * 			| result == ( world==null && isTerminated())
+	 * @return 	true if the current world is terminated and the provided world is a null reference
+	 * 			| result == ( world ==null && this.getWorld().isTerminated())
+	 */
 	public boolean canHaveAsWorld(World world){
-		return (world!=null) || (world==null && this.getShip()!= null) ||(this.isTerminated()&&world==null);
+		// the world is not a null reference and the current bullet is not associated with another world
+		if(world != null&&this.getWorld() == null &&!this.isTerminated())
+			return true;
+		// the world is null but the bullet is associated with as ship --> case a bullet is loaded onto the
+		// ship to resolve a collision
+		else if(world==null && this.getShip()!= null&&!this.isTerminated())
+			return true;
+		// can have as world null if the bullet is terminated
+		else if(this.isTerminated()&&world==null)
+			return true;
+		// can have a null reference for the world if the current world is terminated
+		else if( world==null && this.getWorld().isTerminated())
+			return true;
+		else
+			return false;
 		
 	}
 	
