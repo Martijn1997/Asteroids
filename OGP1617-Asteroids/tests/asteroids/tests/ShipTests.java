@@ -80,10 +80,11 @@ public class ShipTests {
 //		assertFalse(Ship.isValidPosition(Double.POSITIVE_INFINITY));
 //	}
 //	
-//	@Test
-//	public final void isValidPosition_FalseCase2() {
-//		assertFalse(Ship.isValidPosition(Double.NaN));
-//	}
+	
+	@Test
+	public final void isValidPosition_FalseCase2() {
+		assertFalse(ship1.isValidPosition(Double.NaN, Double.NaN));
+	}
 	
 	@Test
 	public final void isValidVelocity_TrueCase() {
