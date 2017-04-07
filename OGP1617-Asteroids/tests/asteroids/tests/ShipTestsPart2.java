@@ -48,16 +48,16 @@ public class ShipTestsPart2 {
 	}
 	
 	@Test
-	public final void setMass_valid(){
-		double oldShipMass = ship1.getMass();
-		ship1.setMass(oldShipMass+20);
-		assertEquals( oldShipMass + 20, ship1.getMass(), EPSILON);
+	public final void setDensity_valid(){
+		double oldShipMass = ship1.getDensity();
+		ship1.setDensity(oldShipMass+20);
+		assertEquals( oldShipMass + 20, ship1.getDensity(), EPSILON);
 	}
 	
 	@Test
-	public final void setMass_invalidMass(){
-		double oldShipMass = ship1.getMass();
-		ship1.setMass(oldShipMass - 20);
+	public final void setDensity_invalidDensity(){
+		double oldShipMass = ship1.getDensity();
+		ship1.setDensity(oldShipMass - 20);
 		assertEquals(4.0/3.0 * Math.PI*Math.pow(ship1.getRadius(),3)*ship1.getDensity(), ship1.getMass(), EPSILON);
 		
 	}
@@ -285,10 +285,12 @@ public class ShipTestsPart2 {
 		assertEquals(ship1, bullet1.getShip());
 		ship1.resolveCollision(bullet1);
 		assert(ship1.containsBullet(bullet1));
+		assert(bullet1.getLoadedOnShip());
 	}
 	
 	@Test
 	public final void ResolveShipBulletCollision_other_bullet(){
+		bullet1.setPosition(10, 10);
 		world1.addWorldObject(ship1);
 		world1.addWorldObject(bullet1);
 		bullet1.setPosition(99, 100);

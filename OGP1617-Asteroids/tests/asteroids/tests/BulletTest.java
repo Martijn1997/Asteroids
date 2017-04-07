@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import asteroids.model.Bullet;
 import asteroids.model.Ship;
+import asteroids.model.WorldObject;
 public class BulletTest {
 	
 	private static final double EPSILON = 0.0001;
@@ -21,17 +22,23 @@ public class BulletTest {
 		bullet1 = new Bullet();
 	}
 	
+	
+	// mass & density tests
 	@Test
-	public final void setShip_test(){
-		bullet1.loadBulletOnShip(ship1);
-		assertEquals(ship1, bullet1.getShip());
-//		Ship newShip = bullet1.getShip();
-//		newShip.setVelocity(10, 10);
-//		System.out.println(ship1.getXVelocity());
-//		assertFalse(newShip.getXVelocity() == ship1.getXVelocity());
+	public final void setDensity_Valid(){
+		bullet1.setDensity(bullet1.getMinimumDensity() + 1);
+		assertEquals(bullet1.getMinimumDensity()+1, bullet1.getDensity(), EPSILON);
+		assertEquals(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getDensity(), bullet1.getMass(), EPSILON);
 	}
+	
 	@Test
-	public final void getShip_nullTest(){
-		assertEquals(null, bullet1.getShip());
+	public final void setDensity_False(){
+		bullet1.setDensity(bullet1.getMinimumDensity() - 1);
+		assertEquals(bullet1.getMinimumDensity(), bullet1.getDensity(), EPSILON);
 	}
+	
+	// bullet-ship interaction
+	
+		
+		
 }

@@ -108,15 +108,39 @@ public class World {
 	}
 	
 
-
+	/**
+	 * checker if the world object is within the world boundaries
+	 * @param worldObject
+	 * @return	true if the worldObject is located within the world boundaries
+	 * 			| result == (0 + worldObject.getRadius() * 0.99< worldObject.getXPosition < getWidth() - worldObject.getRadius() * 0.99 &&
+	 * 			| 0 + worldObject.getRadius()*0.99 < worldObject.getYPosition() < getHeight() - worldObject.getRadius()*0.99)
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the worldObject is a null reference
+	 * 			| this == null
+	 */
 	public boolean withinBoundary(WorldObject worldObject) throws IllegalArgumentException{	
 		if (worldObject == null)
 			throw new IllegalArgumentException();
+		
+		// get the boundaries of the world
+		double[] xBoundary = {0, this.getWidth()};
+		double[] yBoundary = {0, this.getHeight()};
+		
+		// set variables for the radius
+		double percentage = 0.99;
+		double radius = worldObject.getRadius();
+		
+		// check if the WO lies within the world boundaries
+		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage)
+			return true;
+		if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
+			return true;
+		
+		return false;
 
-		if ((worldObject.getXPosition() + worldObject.getRadius())*0.99 >= this.getWidth())
-				return false;
-		return (!((worldObject.getYPosition() + worldObject.getRadius())*0.99 >= this.getHeight()));
 	}
+	
+	
 	
 	/**
 	 * Adds a world object to the world 
@@ -124,9 +148,10 @@ public class World {
 	 * 			| worldObject.getWorld() == World
 	 * 
 	 * @param worldObject
+	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the worldObject is not legal
-	 * 			|canHaveAsWorldObject(worldObject)
+	 * 			|!canHaveAsWorldObject(worldObject)
 	 */
 	public void addWorldObject(WorldObject worldObject) throws IllegalArgumentException{
 		
@@ -155,6 +180,9 @@ public class World {
 	 * @return  false if the worldObject is already part of another world
 	 * 			|result == (worldObject.getWorld != null)
 	 * 
+	 * @return  false if the worldObject does overlap with the world boundaries
+	 * 			|result == (withinBoundary(worldObject))
+	 * 
 	 * @true 	true if the world object has no significant overlap with another object in the world
 	 * 			| WorldObjectSet == getAllWorldObjects()
 	 * 			| for all objects in WorldObjectSet if not significantOverlap(object, worldObject)
@@ -162,14 +190,11 @@ public class World {
 	 */
 	public boolean canHaveAsWorldObject(WorldObject worldObject){
 		// first check if the world object is a null reference
-		if((worldObject != null)&&(worldObject.getWorld() == null)){
+		if((worldObject != null)&&(worldObject.getWorld() == null)&&this.withinBoundary(worldObject)){
 			HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
 			// check if another world object is within overlapping radius
 			for(WorldObject other: WorldObjectsInWorld){
 				if(World.significantOverlap(worldObject, other)){
-					System.out.println("a siginificant overlap");
-					double overlap = (worldObject.getRadius() + other.getRadius())*0.99 - worldObject.getDistanceBetween(other);
-					System.out.println(overlap);
 					return false;
 				}	
 			}
