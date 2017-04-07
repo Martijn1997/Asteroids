@@ -103,9 +103,10 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void terminate(){
-		
-		for(Bullet bullet: this.getLoadedBullets()){
-			bullet.terminate();
+		if(this.getLoadedBullets()!= null){
+			for(Bullet bullet: this.getLoadedBullets()){
+				bullet.terminate();
+			}
 		}
 
 		super.terminate();
@@ -122,16 +123,46 @@ public class Ship extends WorldObject{
 		
 	}
 	
-//	/**
-//	 * the amount of bullets that is loaded on the ship upon creation of the ship
-//	 */
-//	private final static int START_BULLETS = 15;
-//	
 	/**
 	 * the size ratio between the bullets and the ship
 	 */
 	public final static double STANDARD_BULLET_SIZE_RATIO = 0.10;
-
+	
+	
+	 /**
+	  * set the position of the ship to the provided values
+	  * @effect super.setPosition()
+	  * 
+	  * @effect synchronize the loaded bullets with the ship
+	  * 		| for bullet in getLoadedBullets() do bullet.syncBulletVectors();
+	  */
+	@Override @Basic @Raw
+	public void setPosition(double xPos, double yPos){
+		super.setPosition(xPos, yPos);
+		if(this.getLoadedBullets()!= null){
+			for(Bullet bullet : this.getLoadedBullets()){
+				bullet.syncBulletVectors();
+			}
+		}
+	}
+	
+	 /**
+	  * set the velocity of the ship to the provided values
+	  * @effect super.setVelocity()
+	  * 
+	  * @effect synchronize the loaded bullets with the ship
+	  * 		| for bullet in getLoadedBullets() do bullet.syncBulletVectors();
+	  */
+	@Override @Basic @Raw
+	public void setVelocity(double xVel, double yVel){
+		super.setVelocity(xVel, yVel);
+		if(this.getLoadedBullets() != null){
+			for(Bullet bullet : this.getLoadedBullets()){
+				bullet.syncBulletVectors();
+			}
+		}
+	}
+	
 	/**
 	 * Returns the orientation of the Ship
 	 */
@@ -196,11 +227,6 @@ public class Ship extends WorldObject{
 	
 	public final static double MINIMUM_DENSITY = 1.42e12;
 	
-	@Override
-	public boolean canHaveAsMass(double mass){
-		// causes overflow if the radius is to big or the density is to high
-		return mass >= this.calcMinMass()&&!Double.isNaN(mass)&&mass <= Double.MAX_VALUE;
-	}
 	
 	@Override
 	public double getMinimumDensity(){
@@ -358,8 +384,7 @@ public class Ship extends WorldObject{
 	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
 		if(bullet.getShip()==this){
 			loadedBullets.add(bullet);
-			double newMass = this.getMass() + bullet.getMass();
-			this.setMass(newMass);
+			bullet.setLoadedOnShip(true);
 		}
 		else
 			throw new IllegalArgumentException();
@@ -395,13 +420,14 @@ public class Ship extends WorldObject{
 		// load the bullet on the ship
 		for(Bullet bullet : bulletSet){
 			bullet.loadBulletOnShip(this);
+			bullet.setLoadedOnShip(true);
 		}
 		
 	}
 	
 	/**
 	 * unloads the specified bullet
-	 * @param bullet
+	 * @param 	bullet
 	 * @post	The association between the ship and the bullet is broken 
 	 * @throws 	IllegalArgumentException
 	 * 			|bullet == null || !containsBullet(bullet)
@@ -414,6 +440,8 @@ public class Ship extends WorldObject{
 		
 		// remove the bullet and transfer the bullet to the world
 		this.getLoadedBullets().remove(bullet);
+		bullet.setLoadedOnShip(false);
+
 		
 	}
 	
@@ -475,7 +503,7 @@ public class Ship extends WorldObject{
 	 * @param 	bullet
 	 * 
 	 * @effect	The bullet is removed from the arsenal of the ship and the bullet is cast into the world
-	 * 			|unloadBullet()
+	 * 			|transferToWorld()
 	 * 
 	 * @post  	The fired bullet is positioned next to the ship (on the relative y-axis at a distance equal to the total radii)
 	 * 			|(new bullet).getXPosition()== this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius())
@@ -567,7 +595,8 @@ public class Ship extends WorldObject{
 		if(bullet == null)
 			throw new IllegalArgumentException();
 		if(bullet.getShip() == this){
-			bullet.transferToShip();
+			bullet.getWorld().removeFromWorld(bullet);
+			this.loadBullet(bullet);
 		}else{
 			bullet.terminate();
 			this.terminate();

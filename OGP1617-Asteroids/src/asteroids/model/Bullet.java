@@ -72,10 +72,6 @@ public class Bullet extends WorldObject {
 	public final static double MINIMUM_DENSITY = 7.8E12;
 	
 	@Override
-	public boolean canHaveAsMass(double mass){
-		return mass == calcMinMass()&&!Double.isNaN(mass)&&mass <= Double.MAX_VALUE;
-	}
-	@Override
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
 	}
@@ -91,6 +87,7 @@ public class Bullet extends WorldObject {
 		return this.associatedShip;
 	}
 	
+	
 	/**
 	 * Associates the bullet with the specified ship if the bullet can be loaded
 	 * @param ship
@@ -104,6 +101,7 @@ public class Bullet extends WorldObject {
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
 				this.setShip(ship);
 				ship.loadBullet(this);
+				this.setLoadedOnShip(true);
 				this.syncBulletVectors();
 	}
 	
@@ -141,25 +139,38 @@ public class Bullet extends WorldObject {
 	/**
 	 * Basic setter for the loadedOnShip variable
 	 * @post 	the bullet is transfered to the World
-	 * 			|this.loadedOnShip = false;
+	 * 			|new.loadedOnShip() == false;
+	 * 
+	 * @effect	transfer the bullet to the same world as the ship
+	 * 			|new.getWorld() == getShip().getWorld().addWorldObject(this)
+	 * 
+	 * @effect	unload the bullet from the ship
+	 * 			|getShip().unLoadBullet(this)
 	 */
-	public void transferToWorld(){
+	@Model
+	protected void transferToWorld(){
+		// select the current world of the ship
 		World shipWorld = this.getShip().getWorld();
 		shipWorld.addWorldObject(this);
+		// unload the bullet
 		this.getShip().unloadBullet(this);
-		
 	}
 	
-	public void transferToShip(){
-		this.getWorld().removeFromWorld(this);
-		this.getShip().loadBullet(this);
-			
+	
+	/**
+	 * checks if the bullet is loaded on a ship
+	 * @return
+	 */
+	public boolean getLoadedOnShip(){
+		return loadedOnShip;
 	}
 	
-	public boolean isLoadedOnShip(){
-		return this.getWorld() == null;
+	
+	public void setLoadedOnShip(boolean value){
+		this.loadedOnShip = value;
 	}
 	
+	private boolean loadedOnShip = false;
 	
 	/**
 	 * Checks if a Bullet is associated with a World or a Ship.
@@ -169,8 +180,16 @@ public class Bullet extends WorldObject {
 		return (this.getShip()!= null)||(this.getWorld() != null);
 	}
 	
+	/**
+	 * synchronize the position and the velocity of the bullet with the associated ship
+	 * @Post	the velocity of the bullet is equal to the velocity of the associated ship
+	 * 			| new.getVelocity() == this.getShip().getVelocity()
+	 * @Post	the position of the bullet is equal to the position of the associated ship
+	 * 			| new.getPosition() == this.getShip().getVelocity()
+	 * @throws 	IllegalStateException
+	 */
 	protected void syncBulletVectors()throws IllegalStateException{
-		if(!isLoadedOnShip())
+		if(!getLoadedOnShip())
 			throw new IllegalStateException();
 		Ship matchedShip = this.getShip();
 		this.setXPosition(matchedShip.getXPosition());

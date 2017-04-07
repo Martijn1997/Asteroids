@@ -317,7 +317,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * This method must return null if a bullet is not positioned on a ship.
 	 */
 	public Ship getBulletShip(Bullet bullet) throws ModelException{
-		if (bullet.isLoadedOnShip())
+		if (bullet.getLoadedOnShip())
 			return bullet.getShip();
 		else
 			return null;

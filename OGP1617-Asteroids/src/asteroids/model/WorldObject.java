@@ -67,12 +67,12 @@ public abstract class WorldObject {
 	 * 			| setMass(mass)
 	 */
 	@Model @Raw
-	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
+	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
 		this.setRadius(radius);
 		this.setPosition(xPos, yPos);
 		this.setVelocity(xVel, yVel);
-		this.setDensity(this.getMinimumDensity());
-		this.setMass(mass);
+		this.setDensity(density);
+		this.setMass();
 	}
 		
 	protected static final double EPSILON = 0.0001;
@@ -433,11 +433,12 @@ public abstract class WorldObject {
 	 * 			| then new.getDensity() == getMinimumDensity()
 	 */
 	@Raw @Basic
-	private void setDensity(double density){
+	public void setDensity(double density){
 		if(this.isValidDensity(density))
 			this.Density = density;
 		else
-			this.Density = this.getMinimumDensity() ;
+			this.Density = this.getMinimumDensity();
+		this.setMass();
 	}
 	
 	/**
@@ -455,30 +456,34 @@ public abstract class WorldObject {
 	}
 	
 	/**
-	 * Sets the mass of a world object
-	 * @param mass
+	 * sets the mass of a world object
+	 * @effect 	the mass is set according to the density and the radius of the world object
+	 * 		 	|new.getMass == calcMass();
 	 * 
-	 * @post 	if the mass is valid, set the value of the mass of the ship to the specified value
-	 * 			|if(canHaveAsMass(mass)
-	 * 			|then new.getMass() == mass
-	 * @post 	if the mass isn't valid, set the mass to the minimum mass
-	 * 			|if(!canHaveAsMass(mass))
-	 * 			|then new.getMass() == calcMinMass()
-	 * @post	if the radius or the density have not been initialized the mass is set according to the standard values
-	 * 			|if(!isValidensity(getDensity() || !getValidRadius(getRadius())
-	 * 			|then new.getMass() == volumeSphere(getMinimumRadius())*getMinimumDensity()
+	 * @effect 	if the radius of the world object is not initialized the radius is set to the minimal radius
+	 * 			|if(hasUninitializedRadius())
+	 * 			|then 	setRadius(getMinRadius);
+	 * 			|		new.getMass == calcMass;
 	 */
 	@Raw @Basic
-	public void setMass(double mass){
-		if(this.canHaveAsMass(mass))
-			this.mass = mass;
-		else{
-			if(this.isValidDensity(this.getDensity())&&this.isValidRadius(this.getRadius())){
-				this.mass = calcMinMass();
-			}
-			else
-				this.mass = volumeSphere(this.getMinimumRadius())*this.getMinimumDensity();
+	public void setMass(){
+		
+		if(!this.hasUnInitalizedRadius()){
+			this.mass = this.calcMass();
+		}else{
+			this.setRadius(this.getMinimumRadius());
+			this.mass = this.calcMass();
 		}
+			
+//		if(this.canHaveAsMass(mass))
+//			this.mass = mass;
+//		else{
+//			if(this.isValidDensity(this.getDensity())&&this.isValidRadius(this.getRadius())){
+//				this.mass = calcMinMass();
+//			}
+//			else
+//				this.mass = volumeSphere(this.getMinimumRadius())*this.getMinimumDensity();
+//		}
 	}
 	
 	/**
@@ -486,12 +491,6 @@ public abstract class WorldObject {
 	 */
 	private double mass;
 	
-	/**
-	 * checker for the valid mass
-	 * @param mass
-	 * @return	true if and only if the mass is valid
-	 */
-	public abstract boolean canHaveAsMass(double mass);
 	
 	/**
 	 * calculates the volume of a sphere with the given radius
@@ -499,8 +498,7 @@ public abstract class WorldObject {
 	 * @return 	the volume of a sphere with the given radius
 	 * 			| result == 4/3*Math.PI*Math.pow(radius,3)
 	 */
-	@Model
-	protected static double volumeSphere(double radius){
+	public static double volumeSphere(double radius){
 		return 4.0/3.0 * Math.PI*Math.pow(radius,3);
 	}
 	
@@ -510,7 +508,7 @@ public abstract class WorldObject {
 	 * 			| result == volumeSphere(getRadius()) * getDensity()
 	 */
 	@Model
-	protected double calcMinMass(){
+	protected double calcMass(){
 		return volumeSphere(this.getRadius())*this.getDensity();
 	}
 	
