@@ -78,12 +78,10 @@ public class World {
 	// add functionality to set the references to this world to null in the associated WO
 	public void terminate(){
 		this.isTerminated = true;
-		if (!isTerminated()) {
-			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
-			for (WorldObject  object : allObjects){
-				object.setWorld(null);
-				removeFromWorld(object);
-			}
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
+		for (WorldObject  object : allObjects){
+			object.setWorld(null);
+			removeFromWorld(object);
 		}
 	}
 	
@@ -95,7 +93,7 @@ public class World {
 	private boolean isTerminated;
 	
 	
-	public static boolean isValidBoundary(double boundary){
+	private static boolean isValidBoundary(double boundary){
 		return (boundary <= Double.MAX_VALUE && boundary >= 0);
 	}
 	
@@ -160,7 +158,7 @@ public class World {
 	 * 			| for all objects in WorldObjectSet if not significantOverlap(object, worldObject)
 	 * 			| then return true
 	 */
-	public boolean canHaveAsWorldObject(WorldObject worldObject){
+	private boolean canHaveAsWorldObject(WorldObject worldObject){
 		// first check if the world object is a null reference
 		if((worldObject != null)&&(worldObject.getWorld() == null)){
 			HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
@@ -257,7 +255,7 @@ public class World {
 		}
 	}
 	
-	public void resolveCollisionObjects(WorldObject object1, WorldObject object2){
+	private void resolveCollisionObjects(WorldObject object1, WorldObject object2){
 		Ship ship1 = null;
 		Ship ship2 = null;
 		Bullet bullet1 = null;
