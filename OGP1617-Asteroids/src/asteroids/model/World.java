@@ -81,7 +81,7 @@ public class World {
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
 		for (WorldObject  object : allObjects){
 			object.setWorld(null);
-			removeFromWorld(object);
+		worldObjects.clear();
 		}
 	}
 	

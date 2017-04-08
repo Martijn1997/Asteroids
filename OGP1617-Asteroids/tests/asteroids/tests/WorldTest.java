@@ -24,8 +24,8 @@ public class WorldTest {
 	
 	@Before
 	public void setUpMutableFixture(){
-		world1 = new World(50,40);
-		world2 = new World(100,100);
+		world1 = new World(500000,400000);
+		world2 = new World(1000000,1000000);
 		ship1 = new Ship(100,100,0,10,0,0,0);
 		ship2 = new Ship(103,100,0,10,0,0,0);
 		ship3 = new Ship(200,50,0,10,0,0,0);
@@ -35,8 +35,8 @@ public class WorldTest {
 	
 	@Test
 	public final void Constructor() {
-		assertEquals(50, world1.getWidth(), EPSILON);
-		assertEquals(40, world1.getHeight(), EPSILON);
+		assertEquals(500000, world1.getWidth(), EPSILON);
+		assertEquals(400000, world1.getHeight(), EPSILON);
 	}
 	
 	@Test
