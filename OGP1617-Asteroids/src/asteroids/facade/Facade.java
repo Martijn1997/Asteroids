@@ -267,8 +267,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Check whether <code>bullet</code> is terminated.
 	 */
 	public boolean isTerminatedBullet(Bullet bullet) throws ModelException{
-		//bullet.isTerminated();
-		return true;
+		return bullet.isTerminated();
 	}
 	
 	/**
@@ -336,8 +335,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * For students working alone, this method may return null.
 	 */
 	public Set<? extends Bullet> getBulletsOnShip(Ship ship) throws ModelException{
-		//return ship.getBulletSet();
-		return null;
+		return ship.getBulletSet();
 	}
 	
 	/**
@@ -533,7 +531,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * notify methods.
 	 */
 	public void evolve(World world, double dt, CollisionListener collisionListener) throws ModelException{
-		world.evolve(dt);
+		try{
+		world.evolve(dt, collisionListener);
+		} catch (IllegalArgumentException exc){
+			throw new ModelException(exc);
+		}
 	}
 
 	/**

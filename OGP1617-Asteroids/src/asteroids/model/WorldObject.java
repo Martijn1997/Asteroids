@@ -693,7 +693,7 @@ public abstract class WorldObject {
 			throw new IllegalArgumentException();
 		
 		if (this.overlap(other))
-			throw new IllegalArgumentException();
+			return 0;
 		
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());

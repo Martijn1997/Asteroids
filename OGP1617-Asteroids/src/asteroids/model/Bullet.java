@@ -53,6 +53,9 @@ public class Bullet extends WorldObject {
 		return radius >= MIN_RADIUS;
 	}
 	
+	/**
+	 * the minimum radius of a bullet
+	 */
 	public final static double MIN_RADIUS = 1d;
 	
 	/**
@@ -64,13 +67,24 @@ public class Bullet extends WorldObject {
 		return MIN_RADIUS;
 	}
 	
+	/**
+	 * Checker for the denisty
+	 * @return 	true if the density is larger than or equal to the minimum density
+	 * 			| result == density >= getMinimumDensity()
+	 * @return 	false if the denisty is NaN or the maximum value of type double
+	 * 			| result == (!Double.isNaN(density)||!(density > Double.MAX_VALUE))
+	 */
 	@Override
 	public boolean isValidDensity(double density){
-		return density >= MINIMUM_DENSITY&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
+		return density >= this.getMinimumDensity()&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
 	}
 	
 	public final static double MINIMUM_DENSITY = 7.8E12;
 	
+	/**
+	 * Getter for the minimum density of the bullet
+	 * @return minimum density
+	 */
 	@Override
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
@@ -284,6 +298,11 @@ public class Bullet extends WorldObject {
 		return this.bounceCount;
 	}
 	
+	/**
+	 * increments the bounce count of the bullet
+	 * @post 	the bounce count is incremented by one
+	 * 			|new.getBounceCount() ==  getBounceCount() + 1
+	 */
 	@Basic
 	public void incementBounceCount(){
 		this.bounceCount++;

@@ -359,10 +359,12 @@ public class Ship extends WorldObject{
 			
 			// check if the totalVelocity is an overflow
 			if(!causedOverflow(totalVelocity))
+				System.out.println("thrust added");
 				// set the velocity to the new Values
 				this.setVelocity(newXVel, newYVel);		
 			}
 	}
+	
 	
 	private final double thrustForce = 1.1E21;
 	
@@ -625,6 +627,7 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
+
 	}
 
 }

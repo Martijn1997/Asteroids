@@ -152,6 +152,8 @@ public class WorldTest {
 		assert(null == world1.getEntityAt(position));
 	}
 	
+
+	
 }
 
 
