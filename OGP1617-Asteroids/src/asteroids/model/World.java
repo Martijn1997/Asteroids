@@ -130,9 +130,8 @@ public class World {
 		
 		// check if the WO lies within the world boundaries
 		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage)
-			return true;
-		if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
-			return true;
+			if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
+				return true;
 		
 		return false;
 
@@ -371,7 +370,7 @@ public class World {
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
 		worldObjects.remove(position);
-		worldObject.setWorld(null);
+		worldObject.setWorldToNull();
 	}
 	
 	public WorldObject getEntityAt(Vector2D position){

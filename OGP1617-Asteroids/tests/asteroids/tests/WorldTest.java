@@ -19,7 +19,7 @@ public class WorldTest {
 	private static final double EPSILON = 0.0001;
 	
 	private static World world1, world2;
-	private static Ship ship1, ship2, ship3;
+	private static Ship ship1, ship2, ship3, ship4;
 	private static Bullet bullet1;
 	
 	@Before
@@ -29,6 +29,7 @@ public class WorldTest {
 		ship1 = new Ship(100,100,0,10,0,0,0);
 		ship2 = new Ship(103,100,0,10,0,0,0);
 		ship3 = new Ship(200,50,0,10,0,0,0);
+		ship4 = new Ship(-90,50,0,10,0,0,0);
 		bullet1 = new Bullet(500, 400, 2, 0, 0, 1);
 	}
 	
@@ -65,6 +66,11 @@ public class WorldTest {
 	public final void addWO_Overlap(){
 		world1.addWorldObject(ship1);
 		world1.addWorldObject(ship2);
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public final void addWO_NotInBoundary(){
+		world1.addWorldObject(ship4);
 	}
 	
 	@Test
@@ -132,6 +138,11 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		world1.removeFromWorld(ship2);
+	}
+	
+	@Test
+	public final void evolve_IllegalCase(){
+		
 	}
 	
 	@Test
