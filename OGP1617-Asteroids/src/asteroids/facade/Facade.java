@@ -233,7 +233,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * of the parameter <code>active</code>.
 	 */
 	public void setThrusterActive(Ship ship, boolean active) throws ModelException{
-		ship.thrustOn();
+		if(active){
+			ship.thrustOn();
+		}else{
+			ship.thrustOff();
+		}
 	}
 	
 	/**
@@ -476,7 +480,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * boundaries of its world.
 	 */
 	public double getTimeCollisionBoundary(Object object) throws ModelException{
+		try{
 		return ((WorldObject) object).getTimeToCollision(((WorldObject) object).getWorld());
+		} catch (IllegalArgumentException exc){
+			throw new ModelException(exc);
+		}
 	}
 
 	/**
@@ -534,6 +542,8 @@ public class Facade implements asteroids.part2.facade.IFacade{
 		try{
 		world.evolve(dt, collisionListener);
 		} catch (IllegalArgumentException exc){
+			throw new ModelException(exc);
+		} catch (IllegalStateException exc){
 			throw new ModelException(exc);
 		}
 	}

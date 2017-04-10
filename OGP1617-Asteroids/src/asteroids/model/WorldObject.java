@@ -105,9 +105,10 @@ public abstract class WorldObject {
 	 */
 	public void terminate(){
 		this.terminated = true;
-		this.getWorld().removeFromWorld(this);
+		if(this.getWorld() != null)
+			this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
-		this.position = null;
+//		this.position = null;
 		this.velocity = null;
 		
 	}
@@ -693,7 +694,7 @@ public abstract class WorldObject {
 			throw new IllegalArgumentException();
 		
 		if (this.overlap(other))
-			return 0;
+			throw new IllegalArgumentException();
 		
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
@@ -1141,35 +1142,11 @@ public abstract class WorldObject {
 	 * 			| {this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
 	 */
 	public void resolveCollision(World world)throws IllegalArgumentException, IllegalStateException{
-//		if(world==null)
-//		throw new IllegalArgumentException();
-//	
-//		if(this.getWorld()!= world)
-//			throw new IllegalArgumentException();
-//		
-//		Vector2D collisionPos = Vector2D.array2Vector(this.getCollisionPosition(world));
-//		
-//		Vector2D[] possibleCollisions = {	new Vector2D(world.getWidth(), this.getPosition().getYComponent()), 
-//											new Vector2D(0, this.getPosition().getYComponent()),
-//											new Vector2D(this.getPosition().getXComponent(),world.getHeight()), 
-//											new Vector2D(this.getPosition().getXComponent(), world.getHeight())		};
-//		
-//		double index = 0;
-//		for(Vector2D collision: possibleCollisions){
-//			if(collision.equals(collisionPos)){
-//				if(index <=1){
-//					this.setVelocity(-this.getXVelocity(), this.getYVelocity());
-//				}
-//				else
-//					this.setVelocity(this.getXVelocity(), -this.getYVelocity());
-//					
-//			}
-//		}
 		
 		if(world==null)
 			throw new IllegalArgumentException();
 		
-		if(this.getWorld()!= world)
+		if(this.getWorld() != world)
 			throw new IllegalArgumentException();
 		
 		double[] collisionPosition = this.getCollisionPosition(world);

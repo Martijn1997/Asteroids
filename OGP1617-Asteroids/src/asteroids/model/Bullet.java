@@ -12,8 +12,8 @@ import be.kuleuven.cs.som.annotate.*;
  */
 public class Bullet extends WorldObject {
 	
-	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double mass){
-		super(xPos, yPos, radius, xVel, yVel, mass);	
+	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density){
+		super(xPos, yPos, radius, xVel, yVel, density);	
 	}
 	
 	public Bullet(){
@@ -334,8 +334,8 @@ public class Bullet extends WorldObject {
 	public void resolveCollision(Bullet other){
 		if(other == null)
 			throw new IllegalArgumentException();
-		if(!this.overlap(other))
-			throw new IllegalStateException();
+		//if(!this.overlap(other))
+		//	throw new IllegalStateException();
 		this.terminate();
 		other.terminate();
 	}

@@ -279,7 +279,7 @@ public class ShipTestsPart2 {
 		world1.addWorldObject(ship1);
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
-		bullet1.setPosition(99, 100);
+		bullet1.setPosition(89, 100);
 		bullet1.setVelocity(500, 0);
 		assert(World.significantOverlap(bullet1, ship1));
 		assertEquals(ship1, bullet1.getShip());
@@ -293,7 +293,7 @@ public class ShipTestsPart2 {
 		bullet1.setPosition(10, 10);
 		world1.addWorldObject(ship1);
 		world1.addWorldObject(bullet1);
-		bullet1.setPosition(99, 100);
+		bullet1.setPosition(89, 100);
 		bullet1.setVelocity(100, 0);
 		assert(World.significantOverlap(bullet1,  ship1));
 		assertFalse(bullet1.getShip()==ship1);

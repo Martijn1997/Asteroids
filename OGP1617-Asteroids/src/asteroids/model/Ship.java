@@ -76,10 +76,10 @@ public class Ship extends WorldObject{
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
 		
 		// set the single valued attributes
-		super(xPos, yPos, radius, xVel, yVel, mass);
+		super(xPos, yPos, radius, xVel, yVel, density);
 		this.setOrientation(orientation);
 
 //		// load the 15 bullets on the ship
@@ -104,7 +104,8 @@ public class Ship extends WorldObject{
 	@Override
 	public void terminate(){
 		if(this.getLoadedBullets()!= null){
-			for(Bullet bullet: this.getLoadedBullets()){
+			HashSet<Bullet> copyLoaded = new HashSet<Bullet>(this.getLoadedBullets());
+			for(Bullet bullet: copyLoaded){
 				bullet.terminate();
 			}
 		}
@@ -271,6 +272,7 @@ public class Ship extends WorldObject{
 	@Override
 	public void move(double time) throws IllegalArgumentException{
 		super.move(time);
+		
 		for(Bullet bullet: this.getLoadedBullets()){
 			bullet.syncBulletVectors();
 		}	
@@ -350,19 +352,26 @@ public class Ship extends WorldObject{
 			
 			// calculate the acceleration
 			double acceleration = this.getThrustForce()/this.getTotalMass();
-			
+//			System.out.println("delta time: " + Double.toString(deltaTime));
+//			System.out.println("acceleration: " +  Double.toString(acceleration));
 			// calculate the new values for the velocity
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
 			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
 			
+			
 			double totalVelocity = totalVelocity(newXVel, newYVel);
 			
 			// check if the totalVelocity is an overflow
-			if(!causedOverflow(totalVelocity))
-				System.out.println("thrust added");
+			if(!causedOverflow(totalVelocity)){
 				// set the velocity to the new Values
+				
 				this.setVelocity(newXVel, newYVel);		
+//				System.out.print("adjusted velocity: ");
+//				System.out.print(this.getXVelocity());
+//				System.out.print(" ");
+//				System.out.println(this.getYVelocity());
 			}
+		}
 	}
 	
 	
@@ -547,7 +556,7 @@ public class Ship extends WorldObject{
 		bullet.transferToWorld();
 	}
 	
-	public final static double BULLET_OFFSET = 1.0;
+	public final static double BULLET_OFFSET = 1.1;
 	
 	/**
 	 * Checker for adding a ship to a world
@@ -627,7 +636,8 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
-
+		this.move(0.01);
+		other.move(0.01);
 	}
 
 }
