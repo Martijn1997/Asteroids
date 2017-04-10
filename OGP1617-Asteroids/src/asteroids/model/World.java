@@ -81,8 +81,8 @@ public class World {
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
 		for (WorldObject  object : allObjects){
 			object.setWorld(null);
-		worldObjects.clear();
 		}
+		worldObjects.clear();
 	}
 	
 	@Basic @Raw
@@ -129,10 +129,10 @@ public class World {
 		double radius = worldObject.getRadius();
 		
 		// check if the WO lies within the world boundaries
-		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage)
+		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage){
 			if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
 				return true;
-		
+		}
 		return false;
 
 	}
@@ -290,19 +290,22 @@ public class World {
 				ship2 = (Ship) object2;
 				ship2.resolveCollision(ship1);
 			}
-			else
+			else{
 				bullet2 = (Bullet) object2;
 				bullet2.resolveCollision(ship1);
+			}
 		}
-		else
+		else{
 			bullet1 =(Bullet) object1;
 			if (object2 instanceof Ship){
 				ship2 = (Ship) object2;
 				ship2.resolveCollision(bullet1);
 			}
-			else
+			else{
 				bullet2 = (Bullet) object2;
 				bullet2.resolveCollision(bullet1);
+			}
+		}
 	}
 
 	public double getTimeNextCollision() throws IllegalArgumentException, ArithmeticException{
@@ -323,15 +326,17 @@ public class World {
 		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
 		for (WorldObject i : allObjects){
 			copyAllObjects.remove(i);
-			if (i.getTimeToCollision(this) < timeToCollision)
+			if (i.getTimeToCollision(this) < timeToCollision){
 				timeToCollision = i.getTimeToCollision(this);
 				object1 = i;
 				object2 = null;
+			}
 			for (WorldObject j : copyAllObjects){
-				if (i.getTimeToCollision(j) < timeToCollision)
+				if (i.getTimeToCollision(j) < timeToCollision){
 					timeToCollision = i.getTimeToCollision(j);
 					object1 = i;
 					object2 = j;
+				}
 			}
 		}
 		WorldObject[] objectsNextCollision = {object1, object2};
@@ -348,15 +353,16 @@ public class World {
 		for (WorldObject object1 : allObjects){
 			copyAllObjects.remove(object1);
 			double collWorldTime = object1.getTimeToCollision(this);
-			if (collWorldTime < timeToCollision)
+			if (collWorldTime < timeToCollision){
 				timeToCollision = collWorldTime;
 				collisionPosition = object1.getCollisionPosition(this);
+			}
 			for (WorldObject object2 : copyAllObjects){
 				double collWOTime = object1.getTimeToCollision(object2);
-				if (object1.getTimeToCollision(object2) < timeToCollision)
+				if (collWOTime < timeToCollision){
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);
-
+				}
 			}
 		}
 		return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
@@ -370,7 +376,7 @@ public class World {
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
 		worldObjects.remove(position);
-		worldObject.setWorldToNull();
+//		worldObject.setWorldToNull();
 	}
 	
 	public WorldObject getEntityAt(Vector2D position){

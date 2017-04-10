@@ -19,7 +19,7 @@ public class WorldTest {
 	private static final double EPSILON = 0.0001;
 	
 	private static World world1, world2;
-	private static Ship ship1, ship2, ship3, ship4;
+	private static Ship ship1, ship2, ship3, ship4, ship5, ship6, ship7, ship8;
 	private static Bullet bullet1;
 	
 	@Before
@@ -30,14 +30,18 @@ public class WorldTest {
 		ship2 = new Ship(103,100,0,10,0,0,0);
 		ship3 = new Ship(200,50,0,10,0,0,0);
 		ship4 = new Ship(-90,50,0,10,0,0,0);
+		ship5 = new Ship(200,200,0,10,100,100,0);
+		ship6 = new Ship(400,200,0,10,-100,100,0);
+		ship7 = new Ship(700,200,0,10,100,0,0);
+		ship8 = new Ship(1000,200,0,10,-100,0,0);
 		bullet1 = new Bullet(500, 400, 2, 0, 0, 1);
 	}
 	
-	
 	@Test
 	public final void Constructor() {
-		assertEquals(500000, world1.getWidth(), EPSILON);
-		assertEquals(400000, world1.getHeight(), EPSILON);
+		World world = new World(500, 400);
+		assertEquals(500, world.getWidth(), EPSILON);
+		assertEquals(400, world.getHeight(), EPSILON);
 	}
 	
 	@Test
@@ -120,29 +124,51 @@ public class WorldTest {
 		assert(objects.contains(bullet1));
 	}
 	
-	@Test
-	public final void removeFromWorld_LegalCase(){
-		world1.addWorldObject(ship1);
-		world1.addWorldObject(ship3);
-		world1.addWorldObject(bullet1);
-		world1.removeFromWorld(ship3);
-		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
-		assert(objects.contains(ship1));
-		assert(!objects.contains(ship3));
-		assert(objects.contains(bullet1));
-	}
-	
-	@Test (expected = IllegalArgumentException.class)
-	public final void removeFromWorld_IllegalCase(){
-		world1.addWorldObject(ship1);
-		world1.addWorldObject(ship3);
-		world1.addWorldObject(bullet1);
-		world1.removeFromWorld(ship2);
-	}
+//	@Test
+//	public final void removeFromWorld_LegalCase(){
+//		world1.addWorldObject(ship1);
+//		world1.addWorldObject(ship3);
+//		world1.addWorldObject(bullet1);
+//		world1.removeFromWorld(ship3);
+//		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
+//		assert(objects.contains(ship1));
+//		assert(!objects.contains(ship3));
+//		assert(objects.contains(bullet1));
+//	}
+//	
+//	@Test (expected = IllegalArgumentException.class)
+//	public final void removeFromWorld_IllegalCase(){
+//		world1.addWorldObject(ship1);
+//		world1.addWorldObject(ship3);
+//		world1.addWorldObject(bullet1);
+//		world1.removeFromWorld(ship2);
+//	}
 	
 	@Test
 	public final void evolve_IllegalCase(){
 		
+	}
+	
+	@Test
+	public final void getNextCollision_1Collision(){
+		world1.addWorldObject(ship5);
+		world1.addWorldObject(ship6);
+		double[] nextCollision = world1.getNextCollision();
+		assert(ship5.getTimeToCollision(ship6) == nextCollision[0]);
+		assert(ship5.getCollisionPosition(ship6)[0] == nextCollision[1]);
+		assert(ship5.getCollisionPosition(ship6)[1] == nextCollision[2]);
+	}
+	
+	@Test
+	public final void getNextCollision_2Collision(){
+		world1.addWorldObject(ship5);
+		world1.addWorldObject(ship6);
+		world1.addWorldObject(ship7);
+		world1.addWorldObject(ship8);
+		double[] nextCollision = world1.getNextCollision();
+		assert(0.9 == nextCollision[0]);
+		assert(300 == nextCollision[1]);
+		assert(290 == nextCollision[2]);
 	}
 	
 	@Test
