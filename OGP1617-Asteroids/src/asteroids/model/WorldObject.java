@@ -109,7 +109,7 @@ public abstract class WorldObject {
 			this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
 //		this.position = null;
-		this.velocity = null;
+//		this.velocity = null;
 		
 	}
 	
