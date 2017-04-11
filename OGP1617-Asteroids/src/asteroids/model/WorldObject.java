@@ -75,7 +75,7 @@ public abstract class WorldObject {
 		this.setMass();
 	}
 		
-	protected static final double EPSILON = 0.0001;
+	protected static final double EPSILON = 1E-8;
 	
 	/**
 	 * default constructor for a WorldObject object
@@ -105,10 +105,11 @@ public abstract class WorldObject {
 	 */
 	public void terminate(){
 		this.terminated = true;
-		this.getWorld().removeFromWorld(this);
+		if(this.getWorld() != null)			
+			this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
-		this.position = null;
-		this.velocity = null;
+		this.position = Vector2D.TEMINATED_POS;
+		this.velocity = Vector2D.TERMINATED_VEL;
 		
 	}
 	
@@ -198,10 +199,10 @@ public abstract class WorldObject {
 		if(this.getWorld() == null)
 			return true;
 		World thisWorld = this.getWorld();
-//		if(thisWorld.getWidth()< xPos || thisWorld.getHeight()< yPos 
-//				|| 0 > xPos || 0 > yPos)
-//			return false;
-//		else
+		if(thisWorld.getWidth()< xPos || thisWorld.getHeight()< yPos 
+				|| 0 > xPos || 0 > yPos)
+			return false;
+		else
 			return true;
 	}
 	
@@ -1141,35 +1142,11 @@ public abstract class WorldObject {
 	 * 			| {this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
 	 */
 	public void resolveCollision(World world)throws IllegalArgumentException, IllegalStateException{
-//		if(world==null)
-//		throw new IllegalArgumentException();
-//	
-//		if(this.getWorld()!= world)
-//			throw new IllegalArgumentException();
-//		
-//		Vector2D collisionPos = Vector2D.array2Vector(this.getCollisionPosition(world));
-//		
-//		Vector2D[] possibleCollisions = {	new Vector2D(world.getWidth(), this.getPosition().getYComponent()), 
-//											new Vector2D(0, this.getPosition().getYComponent()),
-//											new Vector2D(this.getPosition().getXComponent(),world.getHeight()), 
-//											new Vector2D(this.getPosition().getXComponent(), world.getHeight())		};
-//		
-//		double index = 0;
-//		for(Vector2D collision: possibleCollisions){
-//			if(collision.equals(collisionPos)){
-//				if(index <=1){
-//					this.setVelocity(-this.getXVelocity(), this.getYVelocity());
-//				}
-//				else
-//					this.setVelocity(this.getXVelocity(), -this.getYVelocity());
-//					
-//			}
-//		}
 		
 		if(world==null)
 			throw new IllegalArgumentException();
 		
-		if(this.getWorld()!= world)
+		if(this.getWorld() != world)
 			throw new IllegalArgumentException();
 		
 		double[] collisionPosition = this.getCollisionPosition(world);

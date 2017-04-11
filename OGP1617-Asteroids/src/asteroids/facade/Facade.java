@@ -233,7 +233,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * of the parameter <code>active</code>.
 	 */
 	public void setThrusterActive(Ship ship, boolean active) throws ModelException{
-		ship.thrustOn();
+		if(active){
+			ship.thrustOn();
+		}else{
+			ship.thrustOff();
+		}
 	}
 	
 	/**
@@ -267,8 +271,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Check whether <code>bullet</code> is terminated.
 	 */
 	public boolean isTerminatedBullet(Bullet bullet) throws ModelException{
-		//bullet.isTerminated();
-		return true;
+		return bullet.isTerminated();
 	}
 	
 	/**
@@ -343,7 +346,9 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Return the number of bullets loaded on <code>ship</code>.
 	 */
 	public int getNbBulletsOnShip(Ship ship) throws ModelException{
-		return ship.getBulletSet().size();
+
+		return ship.getTotalAmountOfBullets();
+
 	}
 	
 	/**
@@ -488,7 +493,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * boundaries of its world.
 	 */
 	public double getTimeCollisionBoundary(Object object) throws ModelException{
+		try{
 		return ((WorldObject) object).getTimeToCollision(((WorldObject) object).getWorld());
+		} catch (IllegalArgumentException exc){
+			throw new ModelException(exc);
+		}
 	}
 
 	/**
@@ -537,8 +546,9 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * returned if no collision will occur.
 	 */
 	public double getTimeNextCollision(World world) throws ModelException{
+
 		try { 
-			return world.getTimeNextCollision();
+			return world.getNextCollision()[0];
 		}
 		catch (ArithmeticException exc1) {
 			throw new ModelException(exc1);
@@ -554,8 +564,10 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * will occur.
 	 */
 	public double[] getPositionNextCollision(World world) throws ModelException{
+
 		try { 
-			return world.getPosNextCollision();
+			double[] nextColl= world.getNextCollision();
+		  return new double[] {nextColl[1], nextColl[2]};
 		}
 		catch (ArithmeticException exc1) {
 			throw new ModelException(exc1);
@@ -575,14 +587,14 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * notify methods.
 	 */
 	public void evolve(World world, double dt, CollisionListener collisionListener) throws ModelException{
-		try { 
-			world.evolve(dt);
-		}
-		catch (ArithmeticException exc1) {
-			throw new ModelException(exc1);
-		}
-		catch (IllegalArgumentException exc2) {
-			throw new ModelException(exc2);
+
+		try{
+		world.evolve(dt, collisionListener);
+		} catch (IllegalArgumentException exc){
+			throw new ModelException(exc);
+		} catch (IllegalStateException exc){
+			throw new ModelException(exc);
+
 		}
 	}
 

@@ -76,10 +76,10 @@ public class Ship extends WorldObject{
 	 * @effect 	the velocity is set to the given velocity components xVel and yVel
 	 * 			| setVelocity(xVel,yVel)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
 		
 		// set the single valued attributes
-		super(xPos, yPos, radius, xVel, yVel, mass);
+		super(xPos, yPos, radius, xVel, yVel, density);
 		this.setOrientation(orientation);
 
 //		// load the 15 bullets on the ship
@@ -104,11 +104,11 @@ public class Ship extends WorldObject{
 	@Override
 	public void terminate(){
 		if(this.getLoadedBullets()!= null){
-			for(Bullet bullet: this.getLoadedBullets()){
+			HashSet<Bullet> copyLoaded = new HashSet<Bullet>(this.getLoadedBullets());
+			for(Bullet bullet: copyLoaded){
 				bullet.terminate();
 			}
 		}
-
 		super.terminate();
 		
 		// decide what to to with the bullets that are free flying is space that
@@ -271,6 +271,7 @@ public class Ship extends WorldObject{
 	@Override
 	public void move(double time) throws IllegalArgumentException{
 		super.move(time);
+		
 		for(Bullet bullet: this.getLoadedBullets()){
 			bullet.syncBulletVectors();
 		}	
@@ -350,21 +351,30 @@ public class Ship extends WorldObject{
 			
 			// calculate the acceleration
 			double acceleration = this.getThrustForce()/this.getTotalMass();
-			
+//			System.out.println("delta time: " + Double.toString(deltaTime));
+//			System.out.println("acceleration: " +  Double.toString(acceleration));
 			// calculate the new values for the velocity
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
 			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
 			
+			
 			double totalVelocity = totalVelocity(newXVel, newYVel);
 			
 			// check if the totalVelocity is an overflow
-			if(!causedOverflow(totalVelocity))
+			if(!causedOverflow(totalVelocity)){
 				// set the velocity to the new Values
+				
 				this.setVelocity(newXVel, newYVel);		
+//				System.out.print("adjusted velocity: ");
+//				System.out.print(this.getXVelocity());
+//				System.out.print(" ");
+//				System.out.println(this.getYVelocity());
 			}
+		}
 	}
 	
-	private final double thrustForce = 1.1E21;
+	
+	private final double thrustForce = 1.1E25;
 	
 	/**
 	 * Loads the provided bullet onto the ship
@@ -542,10 +552,43 @@ public class Ship extends WorldObject{
 
 		//unload the bullet, needs to be at the end because the bullet coordinates need to be different from the
 		//coordinates of the ship
-		bullet.transferToWorld();
+		try{
+			bullet.transferToWorld();
+			
+		} catch(IllegalArgumentException exc){
+			this.resolveBulletCrash(bullet);				
+		}
 	}
+
+
+	/**
+	 * resolves a bullet crash upon firing a bullet from the ship
+	 * @param 	bullet
+	 * @effect	if the bullet collides with a world boundary terminate the bullet
+	 * 			|bullet.terminate()
+	 * 
+	 * @effect 	if the bullet crashes with another bullet resolve as bullet bullet collision
+	 * 			|bullet.resolveCollision((Bullet)getEntityAt(getWorld.().getCollisionPartner()))
+	 * 
+	 * @effect 	if the bullet collides with a ship resolve as bullet ship collision
+	 * 			|bullet.resolveCollision((Ship)getEntityAt(getWorld.().getCollisionPartner())
+	 */
+	protected void resolveBulletCrash(Bullet bullet) {
+		Vector2D otherPos = this.getWorld().getPositionCollisionPartner(bullet);
+		if(otherPos == null){
+			bullet.terminate();
+		}
+		else{
+			WorldObject other = this.getWorld().getEntityAt(otherPos);
+			if(other instanceof Bullet){
+				bullet.resolveCollision((Bullet)other);
+			}else
+				bullet.resolveCollision((Ship)other);
+		}
+	}
+
 	
-	public final static double BULLET_OFFSET = 1.0;
+	public final static double BULLET_OFFSET = 1.1;
 	
 	/**
 	 * Checker for adding a ship to a world
@@ -590,10 +633,12 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-		if(!World.significantOverlap(this,bullet))
-			throw new IllegalStateException();
+//		if(!World.significantOverlap(this,bullet))
+//			throw new IllegalStateException();
+		
 		if(bullet == null)
 			throw new IllegalArgumentException();
+		
 		if(bullet.getShip() == this){
 			bullet.getWorld().removeFromWorld(bullet);
 			this.loadBullet(bullet);
@@ -625,6 +670,8 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
+		this.move(0.00001);
+		other.move(0.00001);
 	}
 
 }
