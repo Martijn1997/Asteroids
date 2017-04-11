@@ -103,14 +103,31 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void terminate(){
+		
+		// terminate all the loaded bullets
 		if(this.getLoadedBullets()!= null){
 			HashSet<Bullet> copyLoaded = new HashSet<Bullet>(this.getLoadedBullets());
 			for(Bullet bullet: copyLoaded){
 				bullet.terminate();
 			}
 		}
+		
+		this.thrustOff();
+		
+		World shipWorld = this.getWorld();
+		//set the free bullet's associated ship to null
+		
+		
 		super.terminate();
 		
+		for(Bullet bullet: shipWorld.getAllBullets()){
+			if(bullet.getShip() == this){
+				// functie gaat enkel werken als de flag geraised is
+				bullet.setShipToNull();
+			}
+		}
+		
+	}
 		// decide what to to with the bullets that are free flying is space that
 		// reference the ship
 //		HashSet<Bullet> freeBullets = this.getWorld().getAllBullets();
@@ -120,8 +137,7 @@ public class Ship extends WorldObject{
 //			}
 //		}
 		
-		
-	}
+
 	
 	/**
 	 * the size ratio between the bullets and the ship
@@ -430,7 +446,6 @@ public class Ship extends WorldObject{
 		// load the bullet on the ship
 		for(Bullet bullet : bulletSet){
 			bullet.loadBulletOnShip(this);
-			bullet.setLoadedOnShip(true);
 		}
 		
 	}
@@ -670,8 +685,14 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
+		
+		// safety margins on the bounce
+		Vector2D object1Pos = this.getPosition();
+		Vector2D object2Pos = other.getPosition();
 		this.move(0.00001);
 		other.move(0.00001);
+		this.getWorld().updatePosition(object1Pos, this);
+		this.getWorld().updatePosition(object2Pos, other);
 	}
 
 }

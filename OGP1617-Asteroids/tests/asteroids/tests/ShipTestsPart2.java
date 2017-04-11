@@ -91,13 +91,16 @@ public class ShipTestsPart2 {
 		ship1.loadBullets(bullet1, bullet2, nullBullet);
 	}
 	// termination test
+	@Test
 	public final void Temination(){
+		world1.addWorldObject(ship1);
 		ship1.terminate();
 		assert(ship1.isTerminated());
 		assert(ship1.getWorld() == null);
 		for(Bullet bullet: ship1.getBulletSet()){
 			assert(bullet.isTerminated());
 		}
+		assertFalse(world1.getAllShips().contains(ship1));
 	}
 	
 	// total mass tests
@@ -128,17 +131,18 @@ public class ShipTestsPart2 {
 	// tests getter thrust status
 	@Test
 	public final void getTrustForceConstant(){
-		assertEquals(1.1E21, ship1.getThrustForce(), EPSILON);
+		assertEquals(1.1E25, ship1.getThrustForce(), EPSILON);
 	}
 	
 	
 	// test thrust functionality
 	@Test
 	public final void Thrust_Time1(){
-		double xVel = ship1.getThrustForce()/ship1.getTotalMass();
+		double time = 1E-5;
+		double xVel = ship1.getThrustForce()/ship1.getTotalMass()*time;
 		ship1.thrustOn();
-		ship1.thrust(1);
-		assertEquals(xVel, ship1.getXVelocity(), EPSILON);
+		ship1.thrust(time);
+		assertEquals(xVel, ship1.getXVelocity(), EPSILON2);
 	}
 	
 	@Test
@@ -163,10 +167,11 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void thrust45degrees1second(){
+		double time = 1E-5;
 		ship2.thrustOn();
-		ship2.thrust(1);
-		double xVel = Math.sin(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass();
-		double yVel = Math.cos(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass();
+		ship2.thrust(time);
+		double xVel = Math.sin(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass()*time;
+		double yVel = Math.cos(Math.PI/4)*ship2.getThrustForce()/ship2.getTotalMass()*time;
 		
 		assertEquals(xVel, ship2.getXVelocity(), EPSILON);
 		assertEquals(yVel, ship2.getYVelocity(), EPSILON);

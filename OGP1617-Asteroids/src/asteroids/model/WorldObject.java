@@ -9,7 +9,6 @@ import be.kuleuven.cs.som.annotate.Raw;
 // Make double reference binding from WorldObject to World
 // Create Boundry collision method
 // adjust the collision function to check wether two colliding objects reside within the same world.
-
 // de overlap functie aanpassen om met de 99% overlap overweg te kunnen
 
 /*
@@ -105,11 +104,17 @@ public abstract class WorldObject {
 	 */
 	public void terminate(){
 		this.terminated = true;
-		if(this.getWorld() != null)			
-			this.getWorld().removeFromWorld(this);
-		this.associatedWorld = null;
+		Vector2D oldPos = this.getPosition();
 		this.position = Vector2D.TEMINATED_POS;
 		this.velocity = Vector2D.TERMINATED_VEL;
+		
+		if(this.getWorld() != null){
+			World world = this.getWorld();
+			world.updatePosition(oldPos, this);
+			world.removeFromWorld(this);
+			System.out.println(world.getAllWorldObjects().contains(this));
+		}
+		this.associatedWorld = null;
 		
 	}
 	
@@ -693,6 +698,7 @@ public abstract class WorldObject {
 		if (other == null)
 			throw new IllegalArgumentException();
 		
+		// if(World.significantOverlap(this, other))
 		if (this.overlap(other))
 			throw new IllegalArgumentException();
 		
@@ -749,48 +755,6 @@ public abstract class WorldObject {
 		
 		return Math.min(xTime, yTime);
 	}
-		
-//		if(other == null)
-//			return Double.POSITIVE_INFINITY;
-//		
-//		// calculate the collision time for the x velocity and the y velocity seperatly
-//		double xPosWO = this.getXPosition();
-//		double yPosWO = this.getYPosition();
-//		double xVelWO = this.getXVelocity();
-//		double yVelWO = this.getYVelocity();
-//		double RadiusWO = this.getRadius();
-//		
-//		// initialize the time components
-//		double xTime;
-//		double yTime;
-//		
-//		// calculate the time needed to get to the boundary using the xComponent
-//		// first case: right boundary
-//		if(Math.signum(xVelWO)>0){
-//			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, other.getWidth(), xVelWO);
-//		}
-//		// case left boundary
-//		else
-//		{
-//			xTime = this.calculateLinearCollisionTime(xPosWO + RadiusWO, 0, xVelWO);
-//		}
-//		
-//		// calculate the time needed to get to the boundary using the yComponent
-//		// first case: collision with the top boundary
-//		if(Math.signum(yVelWO)>0){
-//			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, other.getHeight(), yVelWO);
-//		}
-//		// case bottom boundary
-//		else
-//		{
-//			yTime = this.calculateLinearCollisionTime(yPosWO + RadiusWO, 0, yVelWO);
-//		}
-//		
-//		//Select the shortest time
-//		if(xTime>=yTime)
-//			return xTime;
-//		else
-//			return yTime;	
 
 	
 	/**

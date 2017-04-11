@@ -304,6 +304,10 @@ public class World {
 			throw new IllegalArgumentException();
 		
 		double[] collision = this.getNextCollision();
+		if (collision == null){
+			advanceTime(deltaT);
+			return;
+		}
 		double collisionTime = collision[0];
 		Vector2D collisionPos = new Vector2D(collision[1], collision[2]);
 		
@@ -436,7 +440,10 @@ public class World {
 						
 					// check if object1 is a ship and object2 a ship
 					} else if( object1 instanceof Ship && object2 instanceof Ship ){
+						
 						((Ship)object1).resolveCollision(((Ship)object2));
+						
+						
 		
 					// we now know that object1 is a bullet so check if object 2 is a ship
 					} else if( object2 instanceof Ship){
@@ -448,7 +455,6 @@ public class World {
 					
 					return;
 				}
-				
 			}
 			
 		}
@@ -497,6 +503,7 @@ public class World {
 		double collisionXPosition = Double.POSITIVE_INFINITY;
 		double collisionYPosition = Double.POSITIVE_INFINITY;
 		double[] collisionPosition = {collisionXPosition,collisionYPosition};
+		double collWOTime;
 		HashSet<WorldObject> unCheckedElem = this.getAllWorldObjects();
 		// start the outer for loop, iterating over all the objects in the set
 		for (WorldObject object1 : this.getAllWorldObjects()){
@@ -511,8 +518,12 @@ public class World {
 
 			// second for loop check if the object collides with another object in space
 			for (WorldObject object2 : unCheckedElem){
-
-				double collWOTime = object1.getTimeToCollision(object2);
+				try{
+					collWOTime = object1.getTimeToCollision(object2);
+				}	
+				catch (IllegalArgumentException exc){
+					collWOTime = Double.POSITIVE_INFINITY;
+				}
 				if (object1.getTimeToCollision(object2) < timeToCollision){
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);

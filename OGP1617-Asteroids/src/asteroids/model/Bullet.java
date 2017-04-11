@@ -103,7 +103,9 @@ public class Bullet extends WorldObject {
 	
 	
 	/**
-	 * Associates the bullet with the specified ship if the bullet can be loaded
+	 * Associates the bullet with the specified ship if the bullet can be loaded 
+	 * (basic relationship setter)
+	 * 
 	 * @param ship
 	 * @effect	first the unidirectional between the bullet and the ship is established
 	 * 			|setShip(ship)
@@ -112,10 +114,10 @@ public class Bullet extends WorldObject {
 	 * @effect	the bullets position and velocity are synced with the ship
 	 * 			|syncBulletVectors();
 	 */
+	@Basic
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
 				this.setShip(ship);
 				ship.loadBullet(this);
-				this.setLoadedOnShip(true);
 				this.syncBulletVectors();
 	}
 	
@@ -135,6 +137,17 @@ public class Bullet extends WorldObject {
 		if(this.isAssociated()||! this.canBeLoadedOnShip(ship))
 			throw new IllegalArgumentException();
 		this.associatedShip = ship;
+	}
+	
+	/**
+	 * Sets the associated ship to null if and only if the ship is terminated
+	 * @Post	if the ship is terminated set the associated ship to null
+	 * 			|if(getShip().isTerminated())
+	 * 			|then (new)getShip() == null;
+	 */
+	public void setShipToNull(){
+		if(this.getShip().isTerminated())
+			this.associatedShip = null;
 	}
 	
 	
@@ -339,4 +352,5 @@ public class Bullet extends WorldObject {
 		this.terminate();
 		other.terminate();
 	}
+
 }
