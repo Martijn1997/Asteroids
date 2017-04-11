@@ -20,7 +20,7 @@ public class WorldTest {
 	
 	private static World world1, world2;
 	private static Ship ship1, ship2, ship3, ship4, ship5, ship6, ship7, ship8;
-	private static Bullet bullet1;
+	private static Bullet bullet1, bullet2;
 	
 	@Before
 	public void setUpMutableFixture(){
@@ -35,6 +35,7 @@ public class WorldTest {
 		ship7 = new Ship(700,200,0,10,100,0,0);
 		ship8 = new Ship(1000,200,0,10,-100,0,0);
 		bullet1 = new Bullet(500, 400, 2, 0, 0, 1);
+		bullet2 = new Bullet(52, 700, 2, -100, 0, 1);
 	}
 	
 	@Test
@@ -169,6 +170,17 @@ public class WorldTest {
 		assert(0.9 == nextCollision[0]);
 		assert(300 == nextCollision[1]);
 		assert(290 == nextCollision[2]);
+	}
+	
+	@Test
+	public final void getNextCollision_CollisionBoundary(){
+		world1.addWorldObject(ship5);
+		world1.addWorldObject(ship6);
+		world1.addWorldObject(bullet2);
+		double[] nextCollision = world1.getNextCollision();
+		assert(0.5 == nextCollision[0]);
+		assert(0 == nextCollision[1]);
+		assert(700 == nextCollision[2]);
 	}
 	
 	@Test
