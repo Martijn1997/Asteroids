@@ -20,7 +20,7 @@ public class WorldTest {
 	
 	private static World world1, world2;
 	private static Ship ship1, ship2, ship3, ship4, ship5, ship6, ship7, ship8;
-	private static Bullet bullet1, bullet2;
+	private static Bullet bullet1, bullet2, bullet3;
 	
 	@Before
 	public void setUpMutableFixture(){
@@ -32,10 +32,11 @@ public class WorldTest {
 		ship4 = new Ship(-90,50,0,10,0,0,0);
 		ship5 = new Ship(200,200,0,10,100,100,0);
 		ship6 = new Ship(400,200,0,10,-100,100,0);
-		ship7 = new Ship(700,200,0,10,100,0,0);
+		ship7 = new Ship(4000,200,0,10,100,0,0);
 		ship8 = new Ship(1000,200,0,10,-100,0,0);
 		bullet1 = new Bullet(500, 400, 2, 0, 0, 1);
 		bullet2 = new Bullet(52, 700, 2, -100, 0, 1);
+		bullet3 = new Bullet(1000, 1000, 2, 50,70, 1);
 	}
 	
 	@Test
@@ -125,25 +126,25 @@ public class WorldTest {
 		assert(objects.contains(bullet1));
 	}
 	
-//	@Test
-//	public final void removeFromWorld_LegalCase(){
-//		world1.addWorldObject(ship1);
-//		world1.addWorldObject(ship3);
-//		world1.addWorldObject(bullet1);
-//		world1.removeFromWorld(ship3);
-//		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
-//		assert(objects.contains(ship1));
-//		assert(!objects.contains(ship3));
-//		assert(objects.contains(bullet1));
-//	}
-//	
-//	@Test (expected = IllegalArgumentException.class)
-//	public final void removeFromWorld_IllegalCase(){
-//		world1.addWorldObject(ship1);
-//		world1.addWorldObject(ship3);
-//		world1.addWorldObject(bullet1);
-//		world1.removeFromWorld(ship2);
-//	}
+	@Test
+	public final void removeFromWorld_LegalCase(){
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(ship3);
+		world1.addWorldObject(bullet1);
+		world1.removeFromWorld(ship3);
+		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
+		assert(objects.contains(ship1));
+		assert(!objects.contains(ship3));
+		assert(objects.contains(bullet1));
+	}
+	
+	@Test (expected = IllegalArgumentException.class)
+	public final void removeFromWorld_IllegalCase(){
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(ship3);
+		world1.addWorldObject(bullet1);
+		world1.removeFromWorld(ship2);
+	}
 	
 	@Test
 	public final void evolve_IllegalCase(){
@@ -182,6 +183,25 @@ public class WorldTest {
 		assert(0 == nextCollision[1]);
 		assert(700 == nextCollision[2]);
 	}
+	
+	@Test
+	public final void evolve_NoCollision(){
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(ship5);
+		world1.addWorldObject(ship7);
+		world1.addWorldObject(bullet3);
+		Vector2D oldPos1 = ship1.getPosition();
+		Vector2D newPos2 = new Vector2D(700, 700);
+		Vector2D newPos3 = new Vector2D(1250, 1350);
+		double xVel = 5*(ship7.getThrustForce()/ship7.getTotalMass());
+		ship7.thrustOn();
+		world1.evolve(5);
+		assert(oldPos1 == ship1.getPosition());
+		assert(newPos2 == ship5.getPosition());
+		assert(newPos3 == bullet3.getPosition());
+		assert(xVel == ship7.getXVelocity());
+	}
+	
 	
 	@Test
 	public final void getEntityAt_TrueCase(){
