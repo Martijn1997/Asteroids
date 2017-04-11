@@ -202,7 +202,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Check whether <code>ship</code> is terminated.
 	 */
 	public boolean isTerminatedShip(Ship ship) throws ModelException{
-		//ship.isTerminated();
+		ship.isTerminated();
 		return true;
 	}
 	
@@ -346,14 +346,21 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Return the number of bullets loaded on <code>ship</code>.
 	 */
 	public int getNbBulletsOnShip(Ship ship) throws ModelException{
+
 		return ship.getTotalAmountOfBullets();
+
 	}
 	
 	/**
 	 * Load <code>bullet</code> on <code>ship</code>.
 	 */
 	public void loadBulletOnShip(Ship ship, Bullet bullet) throws ModelException{
-		ship.loadBullets(bullet);
+		try {
+			ship.loadBullets(bullet);
+		}
+		catch (IllegalArgumentException exc) {
+			throw new ModelException(exc);
+		}
 	}
 	
 	/**
@@ -363,9 +370,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 */
 	public void loadBulletsOnShip(Ship ship, Collection<Bullet> bullets) throws ModelException{
 		Bullet[] bulletArray = bullets.toArray(new Bullet[bullets.size()]);
-		ship.loadBullets(bulletArray);
+		try {
+			ship.loadBullets(bulletArray);
+		}
+		catch (IllegalArgumentException exc) {
+			throw new ModelException(exc);
+		}
 	}
 	
+	//Nog te doen
 	/**
 	 * Remove <code>bullet</code> from <code>ship</code>.
 	 */
@@ -500,7 +513,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * second entity.
 	 */
 	public double getTimeCollisionEntity(Object object1, Object object2) throws ModelException{
-		return ((WorldObject) object1).getTimeToCollision((WorldObject) object2);
+		try { 
+			return ((WorldObject) object1).getTimeToCollision((WorldObject) object2);
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -508,7 +529,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * second entity.
 	 */
 	public double[] getPositionCollisionEntity(Object object1, Object object2) throws ModelException{
-		return ((WorldObject) object1).getCollisionPosition((WorldObject) object2);
+		try { 
+			return ((WorldObject) object1).getCollisionPosition((WorldObject) object2);
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -517,7 +546,16 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * returned if no collision will occur.
 	 */
 	public double getTimeNextCollision(World world) throws ModelException{
-		return world.getNextCollision()[0];
+
+		try { 
+			return world.getNextCollision()[0];
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -526,8 +564,17 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * will occur.
 	 */
 	public double[] getPositionNextCollision(World world) throws ModelException{
-		double[] nextColl= world.getNextCollision();
-		return new double[] {nextColl[1], nextColl[2]};
+
+		try { 
+			double[] nextColl= world.getNextCollision();
+		  return new double[] {nextColl[1], nextColl[2]};
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -540,12 +587,14 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * notify methods.
 	 */
 	public void evolve(World world, double dt, CollisionListener collisionListener) throws ModelException{
+
 		try{
 		world.evolve(dt, collisionListener);
 		} catch (IllegalArgumentException exc){
 			throw new ModelException(exc);
 		} catch (IllegalStateException exc){
 			throw new ModelException(exc);
+
 		}
 	}
 
@@ -565,17 +614,4 @@ public class Facade implements asteroids.part2.facade.IFacade{
 		return world.getAllWorldObjects();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }

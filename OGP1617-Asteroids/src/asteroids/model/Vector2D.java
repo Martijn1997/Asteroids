@@ -232,7 +232,7 @@ public class Vector2D{
 		
 	}
 	
-	public final static Vector2D TEMINATED_POS = new Vector2D(-Double.MAX_VALUE, -Double.MAX_VALUE);
+	public final static Vector2D TEMINATED_POS = new Vector2D(-1E10, -1E10);
 	public final static Vector2D TERMINATED_VEL = new Vector2D(0,0);
 	
 	

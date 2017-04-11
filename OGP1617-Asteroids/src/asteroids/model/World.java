@@ -83,8 +83,8 @@ public class World {
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
 		for (WorldObject  object : allObjects){
 			object.setWorld(null);
-			removeFromWorld(object);
 		}
+		worldObjects.clear();
 	}
 	
 	@Basic @Raw
@@ -132,11 +132,10 @@ public class World {
 		double radius = worldObject.getRadius();
 		
 		// check if the WO lies within the world boundaries
-		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage)
-			return true;
-		if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
-			return true;
-		
+		if(xBoundary[0] < worldObject.getXPosition() - radius*percentage && xBoundary[1] > worldObject.getXPosition() + radius*percentage){
+			if(yBoundary[0] < worldObject.getYPosition() - radius*percentage && yBoundary[1] > worldObject.getYPosition() + radius*percentage)
+				return true;
+		}
 		return false;
 
 	}
@@ -410,6 +409,7 @@ public class World {
 		else{
 			this.resolveObjectCollision(collisionPos, collisionListener);
 		}
+
 	}
 	
 	
@@ -479,15 +479,17 @@ public class World {
 		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
 		for (WorldObject i : allObjects){
 			copyAllObjects.remove(i);
-			if (i.getTimeToCollision(this) < timeToCollision)
+			if (i.getTimeToCollision(this) < timeToCollision){
 				timeToCollision = i.getTimeToCollision(this);
 				object1 = i;
 				object2 = null;
+			}
 			for (WorldObject j : copyAllObjects){
-				if (i.getTimeToCollision(j) < timeToCollision)
+				if (i.getTimeToCollision(j) < timeToCollision){
 					timeToCollision = i.getTimeToCollision(j);
 					object1 = i;
 					object2 = j;
+				}
 			}
 		}
 		WorldObject[] objectsNextCollision = {object1, object2};
@@ -510,6 +512,7 @@ public class World {
 				timeToCollision = collWorldTime;
 				collisionPosition = object1.getCollisionPosition(this);
 			}
+
 			// second for loop check if the object collides with another object in space
 			for (WorldObject object2 : worldObjects.values()){
 				if(!checkedElem.contains(object2)){
@@ -518,6 +521,7 @@ public class World {
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);
 					}
+
 				}
 			}
 		}
@@ -535,7 +539,7 @@ public class World {
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
 		worldObjects.remove(position);
-		worldObject.setWorld(null);
+//		worldObject.setWorldToNull();
 	}
 	
 	public WorldObject getEntityAt(Vector2D position){
@@ -547,7 +551,3 @@ public class World {
 
 	private Map<Vector2D,WorldObject> worldObjects = new HashMap<Vector2D,WorldObject>();
 }
-
-
-//Bij WorldObject constructors protected en @Model, ook @Raw?
-//moet bij within boundry ook geen rekening gehouden worden met de x en y as zelf?
