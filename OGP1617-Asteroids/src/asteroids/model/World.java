@@ -397,9 +397,7 @@ public class World {
 	}
 	
 	
-	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){
-		
-		
+	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){		
 		// check if the collision was with a boundary of the world
 		if(collisionPos.getXComponent() == 0||collisionPos.getXComponent()==this.getWidth()||collisionPos.getYComponent() == 0 || collisionPos.getYComponent()== this.getHeight()){
 			this.resolveBoundaryCollision(collisionPos, collisionListener);
@@ -411,8 +409,6 @@ public class World {
 		}
 
 	}
-	
-	
 	
 	private void resolveObjectCollision(Vector2D collisionPos, CollisionListener collisionListener){
 
@@ -501,10 +497,10 @@ public class World {
 		double collisionXPosition = Double.POSITIVE_INFINITY;
 		double collisionYPosition = Double.POSITIVE_INFINITY;
 		double[] collisionPosition = {collisionXPosition,collisionYPosition};
-		HashSet<WorldObject> checkedElem = new HashSet<WorldObject>();
+		HashSet<WorldObject> unCheckedElem = this.getAllWorldObjects();
 		// start the outer for loop, iterating over all the objects in the set
 		for (WorldObject object1 : this.getAllWorldObjects()){
-			checkedElem.add(object1);
+			unCheckedElem.remove(object1);
 			
 			// check if the object collides with the sides of the world
 			double collWorldTime = object1.getTimeToCollision(this);
@@ -514,15 +510,14 @@ public class World {
 			}
 
 			// second for loop check if the object collides with another object in space
-			for (WorldObject object2 : worldObjects.values()){
-				if(!checkedElem.contains(object2)){
+			for (WorldObject object2 : unCheckedElem){
+
 				double collWOTime = object1.getTimeToCollision(object2);
 				if (object1.getTimeToCollision(object2) < timeToCollision){
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);
 					}
 
-				}
 			}
 		}
 		if(timeToCollision == Double.POSITIVE_INFINITY){
