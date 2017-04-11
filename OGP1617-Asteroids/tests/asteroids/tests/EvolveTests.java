@@ -56,4 +56,12 @@ public class EvolveTests {
 		assert(ship2.getXVelocity() >0);
 		
 	}
+	
+	@Test
+	public void evolve_nocollisions(){
+		world.addWorldObject(ship1);
+		world.addWorldObject(ship2);
+		
+
+	}
 }

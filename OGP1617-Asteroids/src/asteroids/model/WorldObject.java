@@ -9,7 +9,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 // Make double reference binding from WorldObject to World
 // Create Boundry collision method
 // adjust the collision function to check wether two colliding objects reside within the same world.
-// documentatie voor de massa
+
 // de overlap functie aanpassen om met de 99% overlap overweg te kunnen
 
 /*
