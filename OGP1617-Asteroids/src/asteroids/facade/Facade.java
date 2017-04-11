@@ -202,7 +202,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Check whether <code>ship</code> is terminated.
 	 */
 	public boolean isTerminatedShip(Ship ship) throws ModelException{
-		//ship.isTerminated();
+		ship.isTerminated();
 		return true;
 	}
 	
@@ -336,22 +336,26 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * For students working alone, this method may return null.
 	 */
 	public Set<? extends Bullet> getBulletsOnShip(Ship ship) throws ModelException{
-		//return ship.getBulletSet();
-		return null;
+		return ship.getBulletSet();
 	}
 	
 	/**
 	 * Return the number of bullets loaded on <code>ship</code>.
 	 */
 	public int getNbBulletsOnShip(Ship ship) throws ModelException{
-		return 1;
+		return ship.getBulletSet().size();
 	}
 	
 	/**
 	 * Load <code>bullet</code> on <code>ship</code>.
 	 */
 	public void loadBulletOnShip(Ship ship, Bullet bullet) throws ModelException{
-		ship.loadBullets(bullet);
+		try {
+			ship.loadBullets(bullet);
+		}
+		catch (IllegalArgumentException exc) {
+			throw new ModelException(exc);
+		}
 	}
 	
 	/**
@@ -361,9 +365,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 */
 	public void loadBulletsOnShip(Ship ship, Collection<Bullet> bullets) throws ModelException{
 		Bullet[] bulletArray = bullets.toArray(new Bullet[bullets.size()]);
-		ship.loadBullets(bulletArray);
+		try {
+			ship.loadBullets(bulletArray);
+		}
+		catch (IllegalArgumentException exc) {
+			throw new ModelException(exc);
+		}
 	}
 	
+	//Nog te doen
 	/**
 	 * Remove <code>bullet</code> from <code>ship</code>.
 	 */
@@ -494,7 +504,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * second entity.
 	 */
 	public double getTimeCollisionEntity(Object object1, Object object2) throws ModelException{
-		return ((WorldObject) object1).getTimeToCollision((WorldObject) object2);
+		try { 
+			return ((WorldObject) object1).getTimeToCollision((WorldObject) object2);
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -502,7 +520,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * second entity.
 	 */
 	public double[] getPositionCollisionEntity(Object object1, Object object2) throws ModelException{
-		return ((WorldObject) object1).getCollisionPosition((WorldObject) object2);
+		try { 
+			return ((WorldObject) object1).getCollisionPosition((WorldObject) object2);
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -511,7 +537,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * returned if no collision will occur.
 	 */
 	public double getTimeNextCollision(World world) throws ModelException{
-		return world.getTimeNextCollision();
+		try { 
+			return world.getTimeNextCollision();
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -520,7 +554,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * will occur.
 	 */
 	public double[] getPositionNextCollision(World world) throws ModelException{
-		return world.getPosNextCollision();
+		try { 
+			return world.getPosNextCollision();
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -533,7 +575,15 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * notify methods.
 	 */
 	public void evolve(World world, double dt, CollisionListener collisionListener) throws ModelException{
-		world.evolve(dt);
+		try { 
+			world.evolve(dt);
+		}
+		catch (ArithmeticException exc1) {
+			throw new ModelException(exc1);
+		}
+		catch (IllegalArgumentException exc2) {
+			throw new ModelException(exc2);
+		}
 	}
 
 	/**
@@ -552,17 +602,4 @@ public class Facade implements asteroids.part2.facade.IFacade{
 		return world.getAllWorldObjects();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 }
