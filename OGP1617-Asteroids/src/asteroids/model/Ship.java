@@ -109,7 +109,6 @@ public class Ship extends WorldObject{
 				bullet.terminate();
 			}
 		}
-
 		super.terminate();
 		
 		// decide what to to with the bullets that are free flying is space that
@@ -375,7 +374,7 @@ public class Ship extends WorldObject{
 	}
 	
 	
-	private final double thrustForce = 1.1E21;
+	private final double thrustForce = 1.1E25;
 	
 	/**
 	 * Loads the provided bullet onto the ship
@@ -553,8 +552,41 @@ public class Ship extends WorldObject{
 
 		//unload the bullet, needs to be at the end because the bullet coordinates need to be different from the
 		//coordinates of the ship
-		bullet.transferToWorld();
+		try{
+			bullet.transferToWorld();
+			
+		} catch(IllegalArgumentException exc){
+			this.resolveBulletCrash(bullet);				
+		}
 	}
+
+
+	/**
+	 * resolves a bullet crash upon firing a bullet from the ship
+	 * @param 	bullet
+	 * @effect	if the bullet collides with a world boundary terminate the bullet
+	 * 			|bullet.terminate()
+	 * 
+	 * @effect 	if the bullet crashes with another bullet resolve as bullet bullet collision
+	 * 			|bullet.resolveCollision((Bullet)getEntityAt(getWorld.().getCollisionPartner()))
+	 * 
+	 * @effect 	if the bullet collides with a ship resolve as bullet ship collision
+	 * 			|bullet.resolveCollision((Ship)getEntityAt(getWorld.().getCollisionPartner())
+	 */
+	protected void resolveBulletCrash(Bullet bullet) {
+		Vector2D otherPos = this.getWorld().getPositionCollisionPartner(bullet);
+		if(otherPos == null){
+			bullet.terminate();
+		}
+		else{
+			WorldObject other = this.getWorld().getEntityAt(otherPos);
+			if(other instanceof Bullet){
+				bullet.resolveCollision((Bullet)other);
+			}else
+				bullet.resolveCollision((Ship)other);
+		}
+	}
+
 	
 	public final static double BULLET_OFFSET = 1.1;
 	
@@ -601,10 +633,12 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-		if(!World.significantOverlap(this,bullet))
-			throw new IllegalStateException();
+//		if(!World.significantOverlap(this,bullet))
+//			throw new IllegalStateException();
+		
 		if(bullet == null)
 			throw new IllegalArgumentException();
+		
 		if(bullet.getShip() == this){
 			bullet.getWorld().removeFromWorld(bullet);
 			this.loadBullet(bullet);
@@ -636,8 +670,8 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
-		this.move(0.01);
-		other.move(0.01);
+		this.move(0.00001);
+		other.move(0.00001);
 	}
 
 }

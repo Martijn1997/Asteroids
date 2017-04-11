@@ -346,7 +346,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Return the number of bullets loaded on <code>ship</code>.
 	 */
 	public int getNbBulletsOnShip(Ship ship) throws ModelException{
-		return 1;
+		return ship.getTotalAmountOfBullets();
 	}
 	
 	/**
@@ -517,7 +517,7 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * returned if no collision will occur.
 	 */
 	public double getTimeNextCollision(World world) throws ModelException{
-		return world.getTimeNextCollision();
+		return world.getNextCollision()[0];
 	}
 
 	/**
@@ -526,7 +526,8 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * will occur.
 	 */
 	public double[] getPositionNextCollision(World world) throws ModelException{
-		return world.getPosNextCollision();
+		double[] nextColl= world.getNextCollision();
+		return new double[] {nextColl[1], nextColl[2]};
 	}
 
 	/**

@@ -75,7 +75,7 @@ public abstract class WorldObject {
 		this.setMass();
 	}
 		
-	protected static final double EPSILON = 0.0001;
+	protected static final double EPSILON = 1E-8;
 	
 	/**
 	 * default constructor for a WorldObject object
@@ -105,11 +105,11 @@ public abstract class WorldObject {
 	 */
 	public void terminate(){
 		this.terminated = true;
-		if(this.getWorld() != null)
+		if(this.getWorld() != null)			
 			this.getWorld().removeFromWorld(this);
 		this.associatedWorld = null;
-//		this.position = null;
-//		this.velocity = null;
+		this.position = Vector2D.TEMINATED_POS;
+		this.velocity = Vector2D.TERMINATED_VEL;
 		
 	}
 	
@@ -199,10 +199,10 @@ public abstract class WorldObject {
 		if(this.getWorld() == null)
 			return true;
 		World thisWorld = this.getWorld();
-//		if(thisWorld.getWidth()< xPos || thisWorld.getHeight()< yPos 
-//				|| 0 > xPos || 0 > yPos)
-//			return false;
-//		else
+		if(thisWorld.getWidth()< xPos || thisWorld.getHeight()< yPos 
+				|| 0 > xPos || 0 > yPos)
+			return false;
+		else
 			return true;
 	}
 	

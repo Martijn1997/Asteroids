@@ -1,6 +1,5 @@
 package asteroids.model;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -196,7 +195,7 @@ public class World {
 			HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
 			// check if another world object is within overlapping radius
 			for(WorldObject other: WorldObjectsInWorld){
-				if(worldObject.getPosition().distanceTo(other.getPosition()) < other.getRadius() + worldObject.getRadius()){
+				if(withinRadius(worldObject, other)){
 					return false;
 				}	
 			}
@@ -208,6 +207,38 @@ public class World {
 			return false;
 		
 	}
+	
+	/**
+	 * Returns the position of the world object where object collides with
+	 * @param 	object
+	 * @return	if the object collides with another world object return the position of the other world object
+	 * 
+	 * 			|for worldObject in getAllWorldObjects() if withinradius(worldObject, object) result == true
+	 * 
+	 * @return 	if the world object doesn't collide with another entity return null
+	 */
+	public Vector2D getPositionCollisionPartner(WorldObject object){
+		HashSet<WorldObject> allWorldObjects = this.getAllWorldObjects();
+		for(WorldObject worldObject: allWorldObjects){
+			if(withinRadius(worldObject, object))
+				return worldObject.getPosition();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Checks if the two objects are within radius of each other
+	 * @param object1
+	 * @param object2
+	 * @return	true if and only if the two objects are within each others radius
+	 * 			|result == object1.getPosition().distanceTo(object2.getPosition()) <= object1.getRadius() + object2.getRadius()
+	 * 			
+	 */
+	private static boolean withinRadius(WorldObject object1, WorldObject object2){
+		return object1.getPosition().distanceTo(object2.getPosition()) <= object1.getRadius() + object2.getRadius();
+	}
+	
 	/**
 	 * @return all the positions of the WorldObjects placed in the world
 	 */
@@ -263,44 +294,12 @@ public class World {
 		return this.worldObjects;
 	}
 	
-	
-//	public void evolve(double dt) throws IllegalArgumentException, ArithmeticException{
-//		if (dt < 0)
-//			throw new IllegalArgumentException();
-//		double tc = 0;
-//		Vector2D oldPos = null;
-//		Vector2D newPos = null;
-//		for (double timeLeft = dt; timeLeft > 0; timeLeft -= tc){
-//			Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
-//			tc = getTimeNextCollision();
-//			if (tc <= dt) {
-//				for (WorldObject i : allObjects){
-//					oldPos = i.getPosition();
-//					i.move(tc);
-//					newPos = i.getPosition();
-//					worldObjects.put(newPos, worldObjects.remove(oldPos));
-//					if (i instanceof Ship)
-//						((Ship) i).thrust(tc);
-//				}
-//				WorldObject object1 = getObjectsNextCollision()[0];
-//				WorldObject object2 = getObjectsNextCollision()[1];
-//				if (object2 == null)
-//					object1.resolveCollision(this);
-//				else
-//					resolveCollisionObjects(object1, object2);
-//			}else {
-//				for (WorldObject i : allObjects){
-//					oldPos = i.getPosition();
-//					i.move(dt);
-//					newPos = i.getPosition();
-//					worldObjects.put(newPos, worldObjects.remove(oldPos));
-//					if (i instanceof Ship)
-//						((Ship) i).thrust(tc);
-//				}
-//			}
-//		}
-//	}
-//	
+	/**
+	 * Evolve the world for a specified amount of time
+	 * @param deltaT
+	 * @param collisionListener
+	 * @throws IllegalArgumentException
+	 */
 	public void evolve(double deltaT, CollisionListener collisionListener)throws IllegalArgumentException{
 		if(deltaT <= 0)
 			throw new IllegalArgumentException();
@@ -356,16 +355,13 @@ public class World {
 			ship.move(time);
 			
 			if (ship.getThrusterStatus()) {
-				System.out.println("Ship mass difference: " + Double.toString(ship.getMass() /*+ ship.getTotalMass()*/));
+			//	System.out.println("Ship mass difference: " + Double.toString(ship.getMass() /*+ ship.getTotalMass()*/));
 			//	System.out.println("Ship totalmass: " + Double.toString(ship.getMass()));
 			}
 			ship.thrust(time);
 
-			
 			//this.updatePosition(oldPosition, ship.getPosition(), ship);
-			this.getWorldObjectMap().remove(oldPosition);
-
-			this.getWorldObjectMap().put(ship.getPosition(), ship);
+			this.updatePosition(oldPosition, ship);
 
 		}
 		
@@ -374,31 +370,33 @@ public class World {
 			Vector2D oldPosition = bullet.getPosition();
 			bullet.move(time);
 			//update the position in the world
-			this.getWorldObjectMap().remove(oldPosition);
-			this.getWorldObjectMap().put(bullet.getPosition(), bullet);
+			this.updatePosition(oldPosition, bullet);
 		}
 	}
 	
-//	/**
-//	 * Updates the position of the world object associated with the old position
-//	 * @param 	oldPosition
-//	 * 			the old position of the ship
-//	 * @param 	newPosition
-//	 * 			the new position of the ship
-//	 * @post	the world object associated with oldPosition is now moved to newPosition
-//	 * 			|@see implementation
-//	 * @throws	IllegalArgumentException
-//	 * 			thrown if and only if there is no worldObject at the oldPosition
-//	 * 			|getWorldObjectMap().get(oldPosition) == null
-//	 */
-//	public void updatePosition(Vector2D oldPosition, Vector2D newPosition, WorldObject object)throws IllegalArgumentException{
-//		if(object == null)
-//			throw new IllegalArgumentException();
-//		this.getWorldObjectMap().remove(oldPosition);
-//		this.getWorldObjectMap().put(newPosition, object);
-//		
-//	}
-//	
+	/**
+	 * Updates the position of the world object associated with the old position
+	 * @param 	oldPosition
+	 * 			the old position of the ship
+	 * 
+	 * @param 	object
+	 * 			the object that needs to be updated
+	 * 
+	 * @post	the world object associated with oldPosition is now moved to newPosition
+	 * 			|@see implementation
+	 * 
+	 * @throws	IllegalArgumentException
+	 * 			thrown if and only if there is no worldObject at the oldPosition
+	 * 			|getWorldObjectMap().get(oldPosition) == null
+	 */
+	public void updatePosition(Vector2D oldPosition, WorldObject object)throws IllegalArgumentException{
+		if(object == null)
+			throw new IllegalArgumentException();
+		this.getWorldObjectMap().remove(oldPosition);
+		this.getWorldObjectMap().put(object.getPosition(), object);
+		
+	}
+	
 	
 	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){
 		
@@ -473,43 +471,6 @@ public class World {
 	}
 	
 	
-	
-	private void resolveCollisionObjects(WorldObject object1, WorldObject object2){
-		Ship ship1 = null;
-		Ship ship2 = null;
-		Bullet bullet1 = null;
-		Bullet bullet2 = null;
-		if (object1 instanceof Ship) {
-			ship1 = (Ship) object1;
-			if (object2 instanceof Ship){
-				ship2 = (Ship) object2;
-				ship2.resolveCollision(ship1);
-			}
-			else
-				bullet2 = (Bullet) object2;
-				bullet2.resolveCollision(ship1);
-		}
-		else
-			bullet1 =(Bullet) object1;
-			if (object2 instanceof Ship){
-				ship2 = (Ship) object2;
-				ship2.resolveCollision(bullet1);
-			}
-			else
-				bullet2 = (Bullet) object2;
-				bullet2.resolveCollision(bullet1);
-	}
-
-	public double getTimeNextCollision() throws IllegalArgumentException, ArithmeticException{
-		return getNextCollision()[0];
-	}
-	
-	public double[] getPosNextCollision() throws IllegalArgumentException, ArithmeticException{
-		double[] posNextCollision = {getNextCollision()[1], getNextCollision()[2]};
-		return posNextCollision;
-	}
-	
-	
 	public WorldObject[] getObjectsNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
 		WorldObject object1 = null;
@@ -541,8 +502,8 @@ public class World {
 		HashSet<WorldObject> checkedElem = new HashSet<WorldObject>();
 		// start the outer for loop, iterating over all the objects in the set
 		for (WorldObject object1 : this.getAllWorldObjects()){
-		
 			checkedElem.add(object1);
+			
 			// check if the object collides with the sides of the world
 			double collWorldTime = object1.getTimeToCollision(this);
 			if (collWorldTime < timeToCollision){
@@ -560,7 +521,10 @@ public class World {
 				}
 			}
 		}
-		return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
+		if(timeToCollision == Double.POSITIVE_INFINITY){
+			return null;
+		}else
+			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
 	
 	
