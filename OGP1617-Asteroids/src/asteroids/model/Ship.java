@@ -698,8 +698,8 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-		if(!World.significantOverlap(this,bullet))
-			throw new IllegalStateException();
+//		if(!World.significantOverlap(this,bullet))
+//			throw new IllegalStateException();
 		
 		if(bullet == null)
 			throw new IllegalArgumentException();
