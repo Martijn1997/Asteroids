@@ -60,33 +60,16 @@ public class Ship extends WorldObject{
 	 * 
 	 * @param 	radius
 	 * 			the Radius of the Ship
-	 * 
-	 * @effect 	xPosition is set to the provided xPos
-	 * 			| setXPosition(xPos)
-	 * 
-	 * @effect 	yPosition is set to the provided yPos
-	 * 			| setYPosition(yPos)
+	 * @effect	creates a ship with the given values for position, velocity, radius and density
+	 * 			|WorldObject(xPos,yPos,Radius,xVel,yVel,density)
 	 * 
 	 * @effect 	the orientation of the ship is set to the given orientation
 	 * 			| setOrientation(orientation)
-	 * 
-	 * @effect 	the radius of the ship is set to the given radius
-	 * 			| setRadius(radius)
-	 * 
-	 * @effect 	the velocity is set to the given velocity components xVel and yVel
-	 * 			| setVelocity(xVel,yVel)
 	 */
 	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
 		
-		// set the single valued attributes
 		super(xPos, yPos, radius, xVel, yVel, density);
 		this.setOrientation(orientation);
-
-//		// load the 15 bullets on the ship
-//		for(int index = 0; index < START_BULLETS; index++){
-//			Bullet newBullet = new Bullet(xPos, yPos, radius*STANDARD_BULLET_SIZE_RATIO, xVel,yVel, 0);
-//			newBullet.loadBulletOnShip(this);
-//		}
 	}
 		
 	
@@ -100,28 +83,45 @@ public class Ship extends WorldObject{
 	
 	/**
 	 * Terminates a Ship Object
+	 * @effect 	unload all the bullets on the ship and terminates them
+	 * 			|new.getLoadedBullets().size() == 0
+	 * 			|for bullet in old.getLoadedBullets() bullet.terminate()
+	 * 
+	 * @effect	the thruster of the ship is turned off
+	 * 			|thrustOff()
+	 * 
+	 * @effect	terminate the ship
+	 * 			| WorldObject.terminate()
+	 * 
+	 * @effect 	the reference between the free flying bullets in the world
+	 * 			and the ship is broken
+	 * 			| for bullet in old.getWorld().getAllBullets() 
+	 * 			|		if(bullet.getShip == this) then bullet.setShipToNull()
 	 */
 	@Override
 	public void terminate(){
+		
+		// terminate all the loaded bullets
 		if(this.getLoadedBullets()!= null){
 			HashSet<Bullet> copyLoaded = new HashSet<Bullet>(this.getLoadedBullets());
 			for(Bullet bullet: copyLoaded){
 				bullet.terminate();
 			}
-		}
+		}	
+		this.thrustOff();
+		World shipWorld = this.getWorld();
+
+		//invoke the top level terminator to raise the termination flag
 		super.terminate();
 		
-		// decide what to to with the bullets that are free flying is space that
-		// reference the ship
-//		HashSet<Bullet> freeBullets = this.getWorld().getAllBullets();
-//		for(Bullet bullet: freeBullets){
-//			if(bullet.getShip()=this){
-//				bullet.
-//			}
-//		}
-		
-		
+		for(Bullet bullet: shipWorld.getAllBullets()){
+			if(bullet.getShip() == this){
+				// function only works if termination flag is raised
+				bullet.setShipToNull();
+			}
+		}
 	}
+
 	
 	/**
 	 * the size ratio between the bullets and the ship
@@ -131,7 +131,14 @@ public class Ship extends WorldObject{
 	
 	 /**
 	  * set the position of the ship to the provided values
-	  * @effect super.setPosition()
+	  * @param 	xPos
+	  * 		the desired x-position of the ship
+	  * 
+	  * @param	yPos
+	  * 		the desired y-position of the ship
+	  * 
+	  * @effect set the velocity of the ship
+	  * 		|super.setPosition(xPos,yPos)
 	  * 
 	  * @effect synchronize the loaded bullets with the ship
 	  * 		| for bullet in getLoadedBullets() do bullet.syncBulletVectors();
@@ -146,9 +153,16 @@ public class Ship extends WorldObject{
 		}
 	}
 	
+	
 	 /**
 	  * set the velocity of the ship to the provided values
-	  * @effect super.setVelocity()
+	  * @param	xVel
+	  * 		the desired x-velocity
+	  * 
+	  * @param  yVel
+	  * 		the desired y-velocity
+	  * 
+	  * @effect super.setVelocity(xVel, yVel)
 	  * 
 	  * @effect synchronize the loaded bullets with the ship
 	  * 		| for bullet in getLoadedBullets() do bullet.syncBulletVectors();
@@ -163,6 +177,7 @@ public class Ship extends WorldObject{
 		}
 	}
 	
+	
 	/**
 	 * Returns the orientation of the Ship
 	 */
@@ -174,7 +189,7 @@ public class Ship extends WorldObject{
 	/**
 	 * Basic setter for the orientation of the ship
 	 * 
-	 * @pre 	the provided angle is between 0 and Math.PI * 2
+	 * @Pre 	the provided angle is between 0 and Math.PI * 2
 	 * 			| isValidOrientation(angle)
 	 * 
 	 * @post 	the orientation is equal to the given angle
@@ -187,11 +202,15 @@ public class Ship extends WorldObject{
 	}
 	
 	/**
-	 * returns if the given angle is between 0 and 2PI
+	 * returns true if and only if the given angle is between 0 and 2PI
 	 */
 	public static boolean isValidOrientation(double angle){
 		return (angle <= 2*Math.PI)&&(angle >= 0);
 	}
+	
+	/**
+	 * Variable that stores the orientation of the ship
+	 */
 	private double orientation;
 	
 	
@@ -200,11 +219,11 @@ public class Ship extends WorldObject{
 	 * @param 	rad
 	 * 			the radius
 	 * 
-	 * @return |result == (rad >= MIN_RADIUS)
+	 * @return |result == (rad >= getMinimumRadius)
 	 */
 	@Override
 	public boolean isValidRadius(double rad){
-		return rad >= MIN_RADIUS;
+		return rad >= this.getMinimumRadius();
 	}
 	
 	// the radius will not change once the radius has been set
@@ -220,14 +239,26 @@ public class Ship extends WorldObject{
 		return MIN_RADIUS;
 	}
 	
+	/**
+	 * Checks if the density if valid
+	 * @return 	true if the density is greater than the minimum density
+	 * 			|result == density >= getMinimumDensity()
+	 * @return  false if the provided density is NaN
+	 * 			|result == !Double.isNan(density)
+	 */
 	@Override
 	public boolean isValidDensity(double density){
-		return density >= MINIMUM_DENSITY&& density <= Double.MAX_VALUE && !Double.isNaN(density);
+		return density >= this.getMinimumDensity() && !Double.isNaN(density);
 	}
 	
+	/**
+	 * Variable that stores the minimum density of the ship
+	 */
 	public final static double MINIMUM_DENSITY = 1.42e12;
 	
-	
+	/**
+	 * returns the minimum density of the ship
+	 */
 	@Override
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
@@ -236,17 +267,24 @@ public class Ship extends WorldObject{
 	/**
 	 * Calculates the total mass of the ship (bullets + ship mass)
 	 * @return	the mass of the ship + the mass of all the loaded bullets
-	 * 			|result == getMass() + sum([bullet.getMass() for bullet in getLoadedBullets()])
+	 * 			|result == sum(for bullet in getLoadedBullets() do bullet.getMass())
 	 */
 	public double getTotalMass(){
 		double totalMass = this.getMass();
+		// if the bullet arsenal is empty or uninitialized the method returns the mass of the ship
+		if(this.getLoadedBullets() == null || this.getLoadedBullets().size() == 0){
+			return this.getMass();
+		}
+
 		for(Bullet bullet: this.getLoadedBullets()){
 			totalMass += bullet.getMass();
 		}
 		return totalMass;
 	}
 
-	
+	/**
+	 * variable that stores the trusterstus of the ship
+	 */
 	private boolean thrustStatus;
 	
 	/**
@@ -254,15 +292,8 @@ public class Ship extends WorldObject{
 	 * @param   time
 	 * 			the passed time used to move the ship
 	 * 
-	 * @post 	if the given time is zero, the position of the ship will not change
-	 * 			| if(time == 0)
-	 * 			| then (new.getXPosition() == getXPosition) &&
-	 * 			|	   (new.getYPosition() == getYPosition) 
-	 * 
-	 * @post	if the given type is nonnegative and not zero the ship is moved
-	 * 			| if(time > 0)
-	 * 			| then (new.getXPosition() == getXPosition() + getXVelocity()*time)&&
-	 * 			|	   (new.getYPosition() == getYPosition() + getYVelocity()*time)
+	 * @effect 	moves the ship for a given amount of time
+	 * 			| WorldObject.move(time)
 	 * 
 	 * @throws	IllegalArgumentException
 	 * 			The given value for the time is illegal
@@ -272,9 +303,9 @@ public class Ship extends WorldObject{
 	public void move(double time) throws IllegalArgumentException{
 		super.move(time);
 		
-		for(Bullet bullet: this.getLoadedBullets()){
-			bullet.syncBulletVectors();
-		}	
+//		for(Bullet bullet: this.getLoadedBullets()){
+//			bullet.syncBulletVectors();
+//		}	
 	}
 	
 	/**
@@ -306,25 +337,51 @@ public class Ship extends WorldObject{
 		this.setOrientation(newAngle);		
 	}
 	
+	/**
+	 * Basic setter for the thruster status
+	 * @post 	the thruster status is set to true
+	 * 			|new.getThrusterStatus() == true
+	 */
+	@Basic @Raw
 	public void thrustOn(){
 		this.thrustStatus = true;
 	}
 	
+	/**
+	 * Basic setter for the thruster status
+	 * @post	the thruster status is set to false
+	 * 			| new.getThrusterStatus() == false
+	 */
+	@Basic @Raw
 	public void thrustOff(){
 		this.thrustStatus = false;
 	}
 	
+	/**
+	 * Basic getter for the thruster status
+	 * @return the ThrusterStatus
+	 */
+	@Basic @Raw
 	public boolean getThrusterStatus(){
 		return this.thrustStatus;
 	}
 	
+	/**
+	 * basic getter for the thrust force of the ship
+	 * @return	the thrust force of the ship
+	 */
+	@Basic @Raw
 	public double getThrustForce(){
 		return this.thrustForce;
 	}
 	
+	/**
+	 * calculates the acceleration of the ship
+	 * @return	the acceleration of the ship
+	 * 			|result == getThrustforce/getMass();
+	 */
 	public double getAcceleration(){
-		double a = this.getThrustForce()/this.getMass();
-		return a;
+		return  this.getThrustForce()/this.getMass();
 	}
 	
 	/**
@@ -334,11 +391,11 @@ public class Ship extends WorldObject{
 	 * 
 	 * @post	if the thruster status is false or the supplied time isn't valid no changes to the velocity are made
 	 * 			|if(!getThrusterStatus()||!isValidTime(deltaTime)
-	 * 			|then 	new.getXVelocity == getXVelocity()
-	 * 			|		new.getYVelocity == getYVelocity()
+	 * 			|then new.getVelocity() == getVelocity()
 	 * 
 	 * @post 	if the calculation of the totalVelocity caused overflow no velocity is adjusted
-	 * 			|@see Implementation
+	 * 			|if(causedOverflow())
+	 * 			|then new.getVelocity() == getVelocity()
 	 * 
 	 * @effect	The new speed is set and rescaled if necessary
 	 * 			|setVelocity(getXVelocity() + acceleration * Math.cos(getOrientation())*deltaTime,
@@ -350,10 +407,7 @@ public class Ship extends WorldObject{
 		if(this.getThrusterStatus()&&isValidTime(deltaTime)){
 			
 			// calculate the acceleration
-			double acceleration = this.getThrustForce()/this.getTotalMass();
-//			System.out.println("delta time: " + Double.toString(deltaTime));
-//			System.out.println("acceleration: " +  Double.toString(acceleration));
-			// calculate the new values for the velocity
+			double acceleration = this.getAcceleration();
 			double newXVel = this.getXVelocity() + acceleration * Math.cos(this.getOrientation())*deltaTime;
 			double newYVel = this.getYVelocity() + acceleration * Math.sin(this.getOrientation())*deltaTime;
 			
@@ -365,16 +419,17 @@ public class Ship extends WorldObject{
 				// set the velocity to the new Values
 				
 				this.setVelocity(newXVel, newYVel);		
-//				System.out.print("adjusted velocity: ");
-//				System.out.print(this.getXVelocity());
-//				System.out.print(" ");
-//				System.out.println(this.getYVelocity());
+
 			}
 		}
 	}
 	
 	
+	/**
+	 * variable that stores the thrust force of the ship
+	 */
 	private final double thrustForce = 1.1E25;
+	
 	
 	/**
 	 * Loads the provided bullet onto the ship
@@ -383,14 +438,14 @@ public class Ship extends WorldObject{
 	 * @post	The bullet is associated with the ship
 	 * 			| new.getLoadedBullets() == getLoadedBullets().add(bullet)
 	 * 
-	 * @post	The mass of the ship equals the mass of the ship (inclusive other loaded bullets)
-	 * 			plus the mass of the newly loaded bullet
-	 * 			|new.getMass() == getMass() + bullet.getMass()
+	 * @effect	raises flag in the bullet object that it is loaded on the ship
+	 * 			| bullet.setLoadedOnShip(true)
 	 * 
-	 * @throws IllegalArgumentException
+	 * @throws 	IllegalArgumentException
 	 * 			If the bullet doens't reference the ship throw the exception
 	 * 			|bullet.getShip()!=this
 	 */
+	@Model
 	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
 		if(bullet.getShip()==this){
 			loadedBullets.add(bullet);
@@ -401,16 +456,13 @@ public class Ship extends WorldObject{
 	}
 	
 	/**
-	 * Loads an arbitrary amount of bullets onto the ship
+	 * Loads an arbitrary amount of bullets onto the ship 
+	 * if a bullet is ineffective the bullet is not loaded
 	 * @param 	bullets
 	 * 			the bullets to be loaded onto the ship
-	 * @post	the bullets are loaded onto the ship
-	 * 			|new.getLoadedBullets == getLoadedBullets.addAll(bullets)
 	 * 
-	 * @effect	all the bullets are loaded on the ship
-	 * 			|for bullet in bullets do 
-	 * 			|	this.loadBullet(bullet)
-	 * 			|end_for
+	 * @effect	all the effective bullets are loaded on the ship
+	 * 			|for bullet in bullets do bullet.LoadBulletonShip(this)
 	 * 
 	 * @throws 	IllegalArgumentException if the argument contains a bullet that is a null reference
 	 * 			or when a bullet in the argument already is associated with as ship
@@ -421,24 +473,31 @@ public class Ship extends WorldObject{
 		if(bulletSet.contains(null))
 			throw new IllegalArgumentException();
 		
+		boolean invalidBullets = false;
 		// check if the bullet isn't already associated with another ship or world
 		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
-			if(bullet.isAssociated())
-				throw new IllegalArgumentException();		
+			if(bullet.isAssociated()){
+				invalidBullets = true;
+			}
+			else{
+				bullet.loadBulletOnShip(this);
+			}
 		}
 		
-		// load the bullet on the ship
-		for(Bullet bullet : bulletSet){
-			bullet.loadBulletOnShip(this);
-			bullet.setLoadedOnShip(true);
-		}
+		if(invalidBullets == true)
+			throw new IllegalArgumentException();
 		
 	}
 	
 	/**
 	 * unloads the specified bullet
 	 * @param 	bullet
-	 * @post	The association between the ship and the bullet is broken 
+	 * @post	The association between the ship and the bullet is broken
+	 * 			|getLoadedBullets.remove(bullet)
+	 * 
+	 * @effect	The loaded flag of the unloaded bullet is set to false
+	 * 			|bullet.setLoadedOnShip(false)
+	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			|bullet == null || !containsBullet(bullet)
 	 */
@@ -448,11 +507,8 @@ public class Ship extends WorldObject{
 		if(!this.containsBullet(bullet))
 			throw new IllegalArgumentException();
 		
-		// remove the bullet and transfer the bullet to the world
 		this.getLoadedBullets().remove(bullet);
 		bullet.setLoadedOnShip(false);
-
-		
 	}
 	
 	/**
@@ -467,7 +523,7 @@ public class Ship extends WorldObject{
 	}
 	
 	/**
-	 * Getter for the loaded bullets creates a copy of the loaded bullets
+	 * Getter for the loaded bullets, creates a copy of the loaded bullets
 	 * @return 	a cloned set of the associated bullets
 	 * 			|result == new HashSet<Bullet>(getLoadedBullets())
 	 */
@@ -507,7 +563,7 @@ public class Ship extends WorldObject{
 		return null;
 	}
 	
-	// voeg nog checkers toe om na te gaan of de kogel al niet overlapt met andere schepen of de rand van de wereld
+
 	/**
 	 * Fires the Bullet into space
 	 * @param 	bullet
@@ -516,12 +572,12 @@ public class Ship extends WorldObject{
 	 * 			|transferToWorld()
 	 * 
 	 * @post  	The fired bullet is positioned next to the ship (on the relative y-axis at a distance equal to the total radii)
-	 * 			|(new bullet).getXPosition()== this.getXPosition() - Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius())
-	 *			|(new bullet).getYPosition()==this.getYPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius())
+	 * 			|(new bullet).getXPosition()== getXPosition() - Math.sin(getOrientation())*(getRadius()+bullet.getRadius())
+	 *			|(new bullet).getYPosition()==getYPosition() + Math.cos(getOrientation())*(getRadius()+bullet.getRadius())
 	 *
 	 * @post	The fired bullet has a standard velocity (depending on bullet.SHOOTING_VELOCITY) in the same direction as the ship is facing
-	 * 			|(new bullet).getXVelocity() == Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
-	 *			|(new bullet).getYVelocity() == Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 * 			|(new bullet).getXVelocity() == Math.cos(getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 *			|(new bullet).getYVelocity() == Math.sin(getOrientation())*Bullet.SHOOTING_VELOCITY;
 	 */
 	public void fireBullet(){
 		
@@ -536,18 +592,13 @@ public class Ship extends WorldObject{
 		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
 		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
 		
-		//if(causedOverflow(nextToShipX)||causedOverflow(nextToShipY))
-		//	throw new ArithmeticException();
+		// set the bullet next to the ship
+		bullet.setPosition(nextToShipX, nextToShipY);
 		
-		bullet.setXPosition(nextToShipX);
-		bullet.setYPosition(nextToShipY);
-		
-		// set the velocity of the bullet. Can only cause overflow
+		// set the velocity of the bullet
 		double bulletXVelocity = Math.cos(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
 		double bulletYVelocity = Math.sin(this.getOrientation())*Bullet.SHOOTING_VELOCITY;
-		
-		//if(causedOverflow(totalVelocity(bulletXVelocity, bulletYVelocity)))
-		//throw new ArithmeticException();
+
 		bullet.setVelocity(bulletXVelocity, bulletYVelocity);	
 
 		//unload the bullet, needs to be at the end because the bullet coordinates need to be different from the
@@ -563,7 +614,9 @@ public class Ship extends WorldObject{
 
 	/**
 	 * resolves a bullet crash upon firing a bullet from the ship
+	 * 
 	 * @param 	bullet
+	 * 
 	 * @effect	if the bullet collides with a world boundary terminate the bullet
 	 * 			|bullet.terminate()
 	 * 
@@ -573,21 +626,27 @@ public class Ship extends WorldObject{
 	 * @effect 	if the bullet collides with a ship resolve as bullet ship collision
 	 * 			|bullet.resolveCollision((Ship)getEntityAt(getWorld.().getCollisionPartner())
 	 */
-	protected void resolveBulletCrash(Bullet bullet) {
+	private void resolveBulletCrash(Bullet bullet) {
 		Vector2D otherPos = this.getWorld().getPositionCollisionPartner(bullet);
+		// if the otherPos is a null reference this means that no such collision partner
+		// could be found, thus the bullet has crashed with the world boundary
 		if(otherPos == null){
 			bullet.terminate();
 		}
 		else{
 			WorldObject other = this.getWorld().getEntityAt(otherPos);
+			// if the collision partner is a bullet resolve as a bullet bullet collision
 			if(other instanceof Bullet){
 				bullet.resolveCollision((Bullet)other);
+			// otherwise the collisionpartner is a Ship
 			}else
 				bullet.resolveCollision((Ship)other);
 		}
 	}
 
-	
+	/**
+	 * variable that stores the offset of a bullet from the ship
+	 */
 	public final static double BULLET_OFFSET = 1.1;
 	
 	/**
@@ -599,18 +658,23 @@ public class Ship extends WorldObject{
 	 * @return  true if the world is a null reference and the current associated world is terminated
 	 */
 	public boolean canHaveAsWorld(World world){
-		if ((world != null &&this.getWorld()==null&&!this.isTerminated()))
+		// if the ship is not terminated and has no associated world and
+		// the provided world is not null
+		if ((world != null &&!this.residesInWorld()&&!this.isTerminated())){
 			return true;
-		else if (this.isTerminated() && world == null)
+		// if the ship is terminated the world is null the world can be set to null
+		}else if (this.isTerminated() && world == null){
 			return true;
-		else if (this.getWorld().isTerminated() && world == null)
+		// if the current associated world of the ship is terminated the world can be set to null
+		}else if (this.getWorld().isTerminated() && world == null){
 			return true;
-		else 
+		// in all other cases return false
+		}else 
 			return false;
 	}
 	
 	/**
-	 * The set of the bullets carried by a ship
+	 * The variable that stores the set of bullets that is contained within the ship
 	 */
 	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
@@ -620,13 +684,14 @@ public class Ship extends WorldObject{
 	 * @param 	bullet
 	 * 			The bullet that collides with the ship
 	 * 
-	 * @post	if the bullet is associated with the ship, transfer the bullet to the ship
-	 * 			else the ship and the bullet are destroyed
-	 * 			|@see Implementation
+	 * @effect	if the bullet is associated with the ship, transfer the bullet to the ship
+	 * 			| if bullet.getShip() == this
+	 * 			| then bullet.transferToShip()
 	 * 
 	 * @throws	IllegalStateException
 	 * 			thrown if the bullet and the ship don't overlap
 	 * 			|!this.overlap(bullet)
+	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the bullet is a null reference
 	 * 			| bullet == null
@@ -640,8 +705,7 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 		
 		if(bullet.getShip() == this){
-			bullet.getWorld().removeFromWorld(bullet);
-			this.loadBullet(bullet);
+			bullet.transferToShip();
 		}else{
 			bullet.terminate();
 			this.terminate();
@@ -670,8 +734,14 @@ public class Ship extends WorldObject{
 		// set the velocities
 		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
 		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
-		this.move(0.00001);
-		other.move(0.00001);
+		
+		// safety margins on the bounce
+		Vector2D object1Pos = this.getPosition();
+		Vector2D object2Pos = other.getPosition();
+		this.move(1E-10);
+		other.move(1E-10);
+		this.getWorld().updatePosition(object1Pos, this);
+		this.getWorld().updatePosition(object2Pos, other);
 	}
 
 }

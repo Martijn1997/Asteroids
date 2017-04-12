@@ -103,7 +103,9 @@ public class Bullet extends WorldObject {
 	
 	
 	/**
-	 * Associates the bullet with the specified ship if the bullet can be loaded
+	 * Associates the bullet with the specified ship if the bullet can be loaded 
+	 * (basic relationship setter)
+	 * 
 	 * @param ship
 	 * @effect	first the unidirectional between the bullet and the ship is established
 	 * 			|setShip(ship)
@@ -112,10 +114,10 @@ public class Bullet extends WorldObject {
 	 * @effect	the bullets position and velocity are synced with the ship
 	 * 			|syncBulletVectors();
 	 */
+	@Basic
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
 				this.setShip(ship);
 				ship.loadBullet(this);
-				this.setLoadedOnShip(true);
 				this.syncBulletVectors();
 	}
 	
@@ -135,6 +137,17 @@ public class Bullet extends WorldObject {
 		if(this.isAssociated()||! this.canBeLoadedOnShip(ship))
 			throw new IllegalArgumentException();
 		this.associatedShip = ship;
+	}
+	
+	/**
+	 * Sets the associated ship to null if and only if the ship is terminated
+	 * @Post	if the ship is terminated set the associated ship to null
+	 * 			|if(getShip().isTerminated())
+	 * 			|then (new)getShip() == null;
+	 */
+	public void setShipToNull(){
+		if(this.getShip().isTerminated())
+			this.associatedShip = null;
 	}
 	
 	
@@ -170,6 +183,11 @@ public class Bullet extends WorldObject {
 		this.getShip().unloadBullet(this);
 	}
 	
+	protected void transferToShip(){
+		this.getWorld().removeFromWorld(this);
+		this.setWorld(null);
+		this.getShip().loadBullet(this);
+	}
 	
 	/**
 	 * checks if the bullet is loaded on a ship
@@ -206,8 +224,9 @@ public class Bullet extends WorldObject {
 		if(!getLoadedOnShip())
 			throw new IllegalStateException();
 		Ship matchedShip = this.getShip();
-		this.setXPosition(matchedShip.getXPosition());
-		this.setYPosition(matchedShip.getYPosition());
+		this.setPosition(matchedShip.getXPosition(), matchedShip.getYPosition());
+//		this.setXPosition(matchedShip.getXPosition());
+//		this.setYPosition(matchedShip.getYPosition());
 		this.setVelocity(matchedShip.getXVelocity(), matchedShip.getYVelocity());
 	}
 	
@@ -228,11 +247,11 @@ public class Bullet extends WorldObject {
 	 */
 	public boolean canHaveAsWorld(World world){
 		// the world is not a null reference and the current bullet is not associated with another world
-		if(world != null&&this.getWorld() == null &&!this.isTerminated())
+		if(world != null&&!residesInWorld()&&!this.isTerminated())
 			return true;
 		// the world is null but the bullet is associated with as ship --> case a bullet is loaded onto the
 		// ship to resolve a collision
-		else if(world==null && this.getShip()!= null&&!this.isTerminated())
+		else if(world==null && !this.getLoadedOnShip()&&!this.isTerminated())
 			return true;
 		// can have as world null if the bullet is terminated
 		else if(this.isTerminated()&&world==null)
@@ -339,4 +358,5 @@ public class Bullet extends WorldObject {
 		this.terminate();
 		other.terminate();
 	}
+
 }
