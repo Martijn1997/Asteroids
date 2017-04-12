@@ -463,11 +463,11 @@ public class Ship extends WorldObject{
 		boolean invalidBullets = false;
 		// check if the bullet isn't already associated with another ship or world
 		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
-			if(bullet.isAssociated()){
-				invalidBullets = true;
-			}
-			else{
+			
+			try{
 				bullet.loadBulletOnShip(this);
+			}catch(IllegalArgumentException exc){
+				invalidBullets = true;
 			}
 		}
 		
@@ -692,7 +692,7 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 		
 		if(bullet.getShip() == this){
-			bullet.transferToShip();
+			bullet.loadBulletOnShip(this);
 		}else{
 			bullet.terminate();
 			this.terminate();

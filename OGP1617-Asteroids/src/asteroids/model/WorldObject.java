@@ -1118,6 +1118,10 @@ public abstract class WorldObject {
 		return this.getWorld()!=null;
 	}
 	
+	/**
+	 * Sets the associated world of WorldObject to null
+	 * #### !!!WARNING FOR USE IN REMOVE FROM WORLD ONLY!!! ####
+	 */
 	protected void setWorldToNull(){
 		this.associatedWorld = null;
 	}
