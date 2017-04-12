@@ -133,7 +133,6 @@ public abstract class WorldObject {
 		return this.terminated;
 	}
 	
-	
 	/**
 	 * flag for a terminated object
 	 */
@@ -1119,6 +1118,9 @@ public abstract class WorldObject {
 		return this.getWorld()!=null;
 	}
 	
+	protected void setWorldToNull(){
+		this.associatedWorld = null;
+	}
 	/**
 	 * variable that stores the associated World
 	 */

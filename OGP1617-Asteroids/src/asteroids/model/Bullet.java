@@ -7,32 +7,65 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Martijn & Flor
  *
  * @Invar	If a bullet belongs to a world, the total velocity of the bullet equals SHOOTING_VELOCITY
- * 			|if(getWorld() != null)
+ * 			|if(residesinWorld())
  * 			|then WorldObject.getTotalVelocity(getXVelocity(), getYVelocity()) == SHOOTING_VELOCITY
+ * 
+ * @Invar	the density equals to the minimum density
+ * 			|canHaveAsDensity()
+ * 
+ * @Invar	a bullet cannot be in a world and being loaded on a ship at the same time.
  */
 public class Bullet extends WorldObject {
 	
-	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density){
+	/**
+	 * Constructor for a Bullet object
+	 * @param	xPos
+	 * 			the desired x-position
+	 * @param 	yPos
+	 * 			the desired y-position
+	 * @param 	radius
+	 * 			the desired radius
+	 * @param 	xVel
+	 * 			the desired x-velocity
+	 * @param 	yVel
+	 * 			the desired y-velocity
+	 * @param	density
+	 * 			the desired density
+	 * 
+	 * @effect	construct a bullet with the given position, velocity, radius and density
+	 * 			|WorldObject(xPos, yPos, radius, xVel, yVel, density)
+	 * 
+	 * @throws  IllegalArgumentException
+	 * 			thrown if the radius is not valid
+	 * 			|!isValidRadius()
+	 */
+	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density) throws IllegalArgumentException{
 		super(xPos, yPos, radius, xVel, yVel, density);	
 	}
 	
+	/**
+	 * Default constructor for a bullet
+	 * 
+	 * @effect	Bullet(0, 0, getMinimumRadius(), 0, 0, 0)
+	 */
 	public Bullet(){
 		this(0,0,MIN_RADIUS,0,0,1);
 	}
 	
 	
 	/**
-	 * Terminator for a bullet class object
+	 * Destructor for a bullet class object
+	 * 
 	 * @effect		if the bullet has still a bidirectional relation with a ship
 	 * 				unload the bullet from the ship
 	 * 				|if(getShip().containsBullet(this)
 	 * 				|then getShip().unloadBullet(this)
+	 * 
 	 * @post 		the unidirectional relation between the bullet and the ship is broken
 	 * 				|new.getShip() = null
 	 */
 	@Override
 	public void terminate(){
-		
 		// if there still exists a bidirectional relation between the bullet and a ship
 		// unload the bullet from the ship
 		if(this.getShip() != null && this.getShip().containsBullet(this))
@@ -50,7 +83,7 @@ public class Bullet extends WorldObject {
 	 */
 	@Override
 	public boolean isValidRadius(double radius){
-		return radius >= MIN_RADIUS;
+		return radius >= this.getMinimumRadius();
 	}
 	
 	/**
@@ -59,7 +92,7 @@ public class Bullet extends WorldObject {
 	public final static double MIN_RADIUS = 1d;
 	
 	/**
-	 * @return 	the minimumn radius of a bullet
+	 * @return 	the minimum radius of a bullet
 	 * 			|result == MIN_RADIUS
 	 */
 	@Override
@@ -68,22 +101,24 @@ public class Bullet extends WorldObject {
 	}
 	
 	/**
-	 * Checker for the denisty
-	 * @return 	true if the density is larger than or equal to the minimum density
-	 * 			| result == density >= getMinimumDensity()
+	 * Checker for the density
+	 * @return 	true if the density is equal to the minimum density
+	 * 			| result == density == getMinimumDensity()
 	 * @return 	false if the denisty is NaN or the maximum value of type double
-	 * 			| result == (!Double.isNaN(density)||!(density > Double.MAX_VALUE))
+	 * 			| result == (!Double.isNaN(density)||!(density != getMinimumDensity()))
 	 */
 	@Override
 	public boolean isValidDensity(double density){
-		return density >= this.getMinimumDensity()&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
+		return density == this.getMinimumDensity()&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
 	}
 	
+	/**
+	 * variable that stores the minimum density of the bullet
+	 */
 	public final static double MINIMUM_DENSITY = 7.8E12;
 	
 	/**
 	 * Getter for the minimum density of the bullet
-	 * @return minimum density
 	 */
 	@Override
 	public double getMinimumDensity(){
@@ -128,6 +163,7 @@ public class Bullet extends WorldObject {
 	 * 
 	 * @post	The bullet is associated with the ship in an unidirectional way
 	 * 			| new.getShip() == ship
+	 * 
 	 * @throws  IllegalArgumentException
 	 * 			thrown if the bullet is already associated or the bullet cannot be loaded on the ship
 	 * 			| isAssociated()||!canBeLoadedOnShip()
@@ -163,6 +199,7 @@ public class Bullet extends WorldObject {
 		return (ship!=null) && (this.getRadius() < ship.getRadius());
 	}
 	
+	
 	/**
 	 * Basic setter for the loadedOnShip variable
 	 * @post 	the bullet is transfered to the World
@@ -185,7 +222,6 @@ public class Bullet extends WorldObject {
 	
 	protected void transferToShip(){
 		this.getWorld().removeFromWorld(this);
-		this.setWorld(null);
 		this.getShip().loadBullet(this);
 	}
 	

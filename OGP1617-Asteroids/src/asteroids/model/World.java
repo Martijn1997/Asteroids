@@ -141,7 +141,6 @@ public class World {
 	}
 	
 	
-	
 	/**
 	 * Adds a world object to the world 
 	 * @Post	the world object in placed within the world
@@ -545,7 +544,7 @@ public class World {
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
 		worldObjects.remove(position);
-//		worldObject.setWorldToNull();
+		worldObject.setWorldToNull();
 	}
 	
 	public WorldObject getEntityAt(Vector2D position){

@@ -14,15 +14,6 @@ import be.kuleuven.cs.som.annotate.*;
 // die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
 // dit is gedaan om de association integrity te behouden
 
-// denk ook nog eens na over als je de density aanpast of de massa ook aangepast moet worden om de invariant
-// niet te schenden (dus als je een nieuwe density zet dat je massa nog geldig blijft)
-
-// moet het schip nog van de bullet weten als deze geschoten is?
-// wat als we het schip de bullet doen schieten is er dan apparte 'klasse' van afgeschoten kogels?
-
-// voorzie nog een documentatie bij de termation
-
-// voorzie documentatie bij de botsing ship-ship
 
 /**
  * 
@@ -39,10 +30,6 @@ import be.kuleuven.cs.som.annotate.*;
  * 
  * @Invar	The Density of the ship is always larger than or equals to the MINIMUM_DENISTY
  * 			|isValidDensity()
- * 
- * @Invar 	The mass of the ship is larger than or equal to the volume of a sphere with the radius of the ship multiplied
- * 			with the density of the ship
- * 			|WorldObject.volumeSphere(this.getRadius()) * this.getDensity()
  */
 public class Ship extends WorldObject{
 	
