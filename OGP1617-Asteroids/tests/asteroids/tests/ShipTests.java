@@ -83,7 +83,7 @@ public class ShipTests {
 	
 	@Test
 	public final void isValidPosition_FalseCase2() {
-		assertFalse(ship1.isValidPosition(Double.NaN, Double.NaN));
+		assertFalse(ship1.canHaveAsPosition(Double.NaN, Double.NaN));
 	}
 	
 	@Test

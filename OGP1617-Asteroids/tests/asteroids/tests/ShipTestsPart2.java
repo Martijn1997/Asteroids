@@ -115,6 +115,15 @@ public class ShipTestsPart2 {
 		ship1.loadBullets(bullet1, bullet2);
 		assertEquals(ship1.getMass() + bullet1.getMass()+ bullet2.getMass(), ship1.getTotalMass(), EPSILON );
 	}
+	// test on moving the ship
+	@Test
+	public final void moveShipWithBullets(){
+		bullet1.loadBulletOnShip(ship1);
+		ship1.setVelocity(100, 100);
+		ship1.move(1);
+		assertEquals(new Vector2D(200, 200), ship1.getPosition());
+		assertEquals(new Vector2D(200, 200), bullet1.getPosition());
+	}
 	// thrust status tests
 	
 	@Test
@@ -378,6 +387,17 @@ public class ShipTestsPart2 {
 					
 				}
 				
+	}
+	
+	@Test
+	public final void resolveCollsionAtBoundary(){
+		world1.addWorldObject(ship1);
+		world1.addWorldObject(ship2);
+		ship1.setPosition(10, 10);
+		ship2.setPosition(30, 10);
+		ship2.setVelocity(-100, 0);
+		ship2.resolveCollision(ship1);
+		assert(ship1.getXVelocity()!=0);
 	}
 	
 	

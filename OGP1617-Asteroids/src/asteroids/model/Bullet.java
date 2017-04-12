@@ -183,6 +183,11 @@ public class Bullet extends WorldObject {
 		this.getShip().unloadBullet(this);
 	}
 	
+	protected void transferToShip(){
+		this.getWorld().removeFromWorld(this);
+		this.setWorld(null);
+		this.getShip().loadBullet(this);
+	}
 	
 	/**
 	 * checks if the bullet is loaded on a ship
@@ -219,8 +224,9 @@ public class Bullet extends WorldObject {
 		if(!getLoadedOnShip())
 			throw new IllegalStateException();
 		Ship matchedShip = this.getShip();
-		this.setXPosition(matchedShip.getXPosition());
-		this.setYPosition(matchedShip.getYPosition());
+		this.setPosition(matchedShip.getXPosition(), matchedShip.getYPosition());
+//		this.setXPosition(matchedShip.getXPosition());
+//		this.setYPosition(matchedShip.getYPosition());
 		this.setVelocity(matchedShip.getXVelocity(), matchedShip.getYVelocity());
 	}
 	
@@ -241,11 +247,11 @@ public class Bullet extends WorldObject {
 	 */
 	public boolean canHaveAsWorld(World world){
 		// the world is not a null reference and the current bullet is not associated with another world
-		if(world != null&&this.getWorld() == null &&!this.isTerminated())
+		if(world != null&&!residesInWorld()&&!this.isTerminated())
 			return true;
 		// the world is null but the bullet is associated with as ship --> case a bullet is loaded onto the
 		// ship to resolve a collision
-		else if(world==null && this.getShip()!= null&&!this.isTerminated())
+		else if(world==null && !this.getLoadedOnShip()&&!this.isTerminated())
 			return true;
 		// can have as world null if the bullet is terminated
 		else if(this.isTerminated()&&world==null)

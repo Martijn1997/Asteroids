@@ -5,11 +5,6 @@ import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
 
-// to do:
-// Make double reference binding from WorldObject to World
-// Create Boundry collision method
-// adjust the collision function to check wether two colliding objects reside within the same world.
-// de overlap functie aanpassen om met de 99% overlap overweg te kunnen
 
 /*
  * Design choices:
@@ -21,6 +16,7 @@ import be.kuleuven.cs.som.annotate.Raw;
 /**
  * A class that represents the World Object
  * @author Martijn & Flor
+ * 
  * @Invar  	The velocity of a WorldObject is always lower than the LIGHT_SPEED
  * 			|isValidVelocity()
  * 
@@ -32,26 +28,39 @@ import be.kuleuven.cs.som.annotate.Raw;
  * 
  * @Invar   The mass will always be larger than or equal to the specified minimum
  * 			|canHaveAsMass()
+ * 
+ * @Invar	If a World object is associated with a world, it shall never go outside it's boundary
+ * 			|isValidPosition();
+ * 
+ * @Invar	worldObject will always have a valid world associated
+ * 			|canHaveAsWorld()
+ * 
  */
 public abstract class WorldObject {
 	
 	
 	/**
-	 * Initializes an object of the WorldObject class
+	 * Constructor of a WorldObject
 	 * @param 	xPos
-	 * 			the x position of the WorldObject
-	 * @param	yPos
-	 * 			the y position of the WorldObject
+	 * 			the desired x-position of the WorldObject
+	 * 
+	 * @param 	yPos
+	 * 			the desired y-position of the WorldObject
+	 * 
 	 * @param 	radius
-	 * 			the Radius of the WorldObject
-	 * @param 	orientation
-	 * 			the orientation of the WorldObject
+	 * 			the desired radius of the WorldObject
 	 * 
-	 * @effect 	xPosition is set to the provided xPos
-	 * 			| setXPosition(xPos)
+	 * @param	xVel
+	 * 			the desired x-velocity of the WorldObject
 	 * 
-	 * @effect 	yPosition is set to the provided yPos
-	 * 			| setYPosition(yPos)
+	 * @param 	yVel
+	 * 			the desired y-velocity of the WorldObject
+	 * 
+	 * @param 	density
+	 * 			the desired density of the WorldObject
+	 * 
+	 * @effect  the position of the World object is set to the provided param xPos and yPos
+	 * 			| setPosition(xPos,yPos)
 	 * 
 	 * @effect 	the radius of the WorldObject is set to the given radius
 	 * 			| setRadius(radius)
@@ -62,31 +71,31 @@ public abstract class WorldObject {
 	 * @effect 	the density is set to the given density
 	 * 			| setDensity(density)
 	 * 
-	 * @effect 	the mass is set to the given mass
-	 * 			| setMass(mass)
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the provided radius isn't effective
+	 * 			| set
 	 */
 	@Model @Raw
 	protected WorldObject(double xPos, double yPos, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
+		// radius needs to be set first for the density to work
 		this.setRadius(radius);
 		this.setPosition(xPos, yPos);
 		this.setVelocity(xVel, yVel);
 		this.setDensity(density);
-		this.setMass();
 	}
-		
-	protected static final double EPSILON = 1E-8;
+	
 	
 	/**
 	 * default constructor for a WorldObject object
-	 * @effect WorldObject(0,0,10,0,0)
+	 * @effect WorldObject(0,0,10,0,0,0)
 	 */
 	protected WorldObject(){
-		this(0d,0d,10d,0,0,1);
+		this(0d,0d,10d,0,0,0);
 	}
 	
 	/**
 	 * Terminator for a world object
-	 * @effect  removes the world object from the associated world
+	 * @effect  if the object is associated with a world remove it from the associated world
 	 * 			|getWorld().removeFromWorld(this)
 	 * 
 	 * @post	the association between the World object and the world is broken
@@ -100,41 +109,45 @@ public abstract class WorldObject {
 	 * 
 	 * @post	the flag that the object is terminated is raised
 	 * 			|new.isTerminated() == true
-	 * 
 	 */
+	@Basic
 	public void terminate(){
 		this.terminated = true;
-		Vector2D oldPos = this.getPosition();
-		this.position = Vector2D.TEMINATED_POS;
-		this.velocity = Vector2D.TERMINATED_VEL;
-		
+
 		if(this.getWorld() != null){
-			World world = this.getWorld();
-			world.updatePosition(oldPos, this);
-			world.removeFromWorld(this);
-			System.out.println(world.getAllWorldObjects().contains(this));
+			this.getWorld().removeFromWorld(this);
 		}
-		this.associatedWorld = null;
+		this.position = null;
+		this.velocity = null;
 		
+		this.associatedWorld = null;
 	}
 	
+	
 	/**
-	 * checker if a world object is terminated
+	 * checks if a world object is terminated
 	 * @return if the world object is terminated or not
 	 */
+	@Basic
 	public boolean isTerminated(){
 		return this.terminated;
 	}
 	
+	
+	/**
+	 * flag for a terminated object
+	 */
 	private boolean terminated = false;
+	
 	
 	/**
 	 * Basic setter for the position
 	 * 
 	 * @param 	xPos
-	 * 			The x position of the WorldObject
+	 * 			The desired x-position of the WorldObject
+	 * 
 	 * @param 	yPos
-	 * 			The y position of the WorldObject
+	 * 			The desired y-position of the WorldObject
 	 * 
 	 * @post	The position of the WorldObject is set to xPos and yPos for 
 	 * 			the x and y position respectively
@@ -142,14 +155,16 @@ public abstract class WorldObject {
 	 * 
 	 * @throws	IllegalArgumentException
 	 * 			Thrown if the xPos or yPos are not valid positions
-	 * 			|!(isValidPosition(xPos)||!isValidPosition(yPos)
+	 * 			|!isValidPos(xPos, yPos)
 	 */
 	@Basic @Raw
 	public void setPosition(double xPos, double yPos)throws IllegalArgumentException{
-		if(!isValidPosition(xPos,yPos))
+		if(!canHaveAsPosition(xPos,yPos))
 			throw new IllegalArgumentException();
+		
 		this.position = new Vector2D(xPos, yPos);	
 	}
+	
 	
 	/**
 	 * Basic getter for the position
@@ -159,6 +174,7 @@ public abstract class WorldObject {
 	public Vector2D getPosition(){
 		return this.position;
 	}
+	
 	
 	/**
 	 * Returns the current x position of the WorldObject
@@ -175,41 +191,40 @@ public abstract class WorldObject {
 	 * 			the new x-position of the WorldObject
 	 * 
 	 * @post	the new x position is xPos
-	 * 			|new.getXPosition() = xPos
+	 * 			|new.getXPosition() == xPos
 	 * 
 	 * @throws 	IllegalArgumentexception
-	 * 			| !isValidposition(xPos)
+	 * 			| !isValidposition(xPos, getYposition())
 	 */
-	@Basic @Raw
+	@Basic @Raw @Deprecated
 	public void setXPosition(double xPos) throws IllegalArgumentException{
-		if(!isValidPosition(xPos, this.getYPosition()))
+		if(!canHaveAsPosition(xPos, this.getYPosition()))
 			throw new IllegalArgumentException();
 		this.position = new Vector2D(xPos,this.getYPosition());
 	}
 	
 	/**
-	 * Checks if the Position is a Valid position
+	 * Checks if the provided Position is a Valid position
+	 * 
 	 * @return 	returns true if the the world object is not associated with a world
 	 * 			and the position is not NaN
 	 * 			|if(this.getWorld() == null && !isNan(xPos) && !isNaN(yPos))
 	 * 			|then result == true
-	 * @return 	returns true if the world object lies within the associated world bounds
+	 * 
+	 * @effect 	returns true if the world object lies within the associated world bounds
 	 * 			|if(this.getWorld() != null)
-	 * 			|then @see implementation
+	 * 			|then result == this.getWorld().withinBoundary(this)
 	 */
 	@Basic @Raw
-	public boolean isValidPosition(double xPos,double yPos){
+	public boolean canHaveAsPosition(double xPos,double yPos){
 		if(Double.isNaN(xPos) || Double.isNaN(yPos))
 			return false;
 		if(this.getWorld() == null)
 			return true;
-		World thisWorld = this.getWorld();
-		if(thisWorld.getWidth()< xPos || thisWorld.getHeight()< yPos 
-				|| 0 > xPos || 0 > yPos)
-			return false;
-		else
-			return true;
+
+		return this.getWorld().withinBoundary(this);
 	}
+	
 	
 	/**
 	 * returns the y position of the WorldObject
@@ -231,22 +246,28 @@ public abstract class WorldObject {
 	 * @throws 	IllegalArgumentException
 	 * 			| !isValidPosition(getXPosition(), yPos)
 	 */
-	@Basic @Raw
+	@Basic @Raw @Deprecated
 	public void setYPosition(double yPos) throws IllegalArgumentException{
-		if(!isValidPosition(this.getXPosition(), yPos))
+		if(!canHaveAsPosition(this.getXPosition(), yPos))
 			throw new IllegalArgumentException();
 		this.position = new Vector2D(this.getXPosition(),yPos);
 	}
 	
+	
+	/**
+	 * The Vector2D object that stores the position
+	 */
 	private Vector2D position;
 	
 	
 	/**
 	 * Basic getter for the velocity vector
 	 */
+	@Basic @Raw
 	public Vector2D getVelocity(){
 		return this.velocity;
 	}
+
 	
 	/**
 	 * Returns the x velocity of the WorldObject
@@ -262,16 +283,12 @@ public abstract class WorldObject {
 	 * @param 	xVel
 	 * 			the new x velocity
 	 * 
-	 * @post 	if the supplied value for yVel is valid, the velocity it set to yVel
-	 * 			| if isValidVelocity(totalVelocity(yVel, this.getXVelocity))
-	 * 			| then new.getXVelocity() = xVel
-	 * 			| else new.getXVelocity() = this.getXVelocity()
+	 * @effect	set the velocity to xVel for the x velocity
+	 * 			|setVelocity(xVel, getYVelocity())
 	 */
 	@Basic @Raw @Deprecated
-	public void setXVelocity(double xVel){
-		
-		if(isValidTotalVelocity(totalVelocity(xVel, this.getYVelocity())))
-			this.velocity = new Vector2D(xVel, this.getYVelocity());
+	public void setXVelocity(double xVel){	
+		this.setVelocity(xVel, this.getYVelocity());
 		
 	}
 	
@@ -284,21 +301,18 @@ public abstract class WorldObject {
 		return this.velocity.getYComponent();
 	}
 	
+	
 	/** 
 	 * Sets the y-velocity to yVel if the supplied value is valid
 	 * @param 	yVel
 	 * 			the new y-velocity
 	 * 
-	 * @post 	if the supplied value for yVel is valid, the velocity it set to yVel
-	 * 			| if isValidVelocity(totalVelocity(this.xVelocity, yVel))
-	 * 			| then new.getYVelocity() = yVel
-	 * 			| else new.getYVelocity() = this.getYVelocity()
+	 * @effect	set the velocity to yVel for the y velocity
+	 * 			|setVelocity(getXVelocity(), yVel )
 	 */
 	@Basic @Raw @Deprecated
 	public void setYVelocity(double yVel){
-		if(isValidTotalVelocity(totalVelocity(this.getXVelocity(),yVel)))
-			this.velocity = new Vector2D(this.getXVelocity(), yVel);
-		
+		this.setVelocity(this.getXVelocity(), yVel);	
 	}
 	
 	
@@ -315,10 +329,10 @@ public abstract class WorldObject {
 	 * 			| then new.getXVelocity() = xVel&&
 	 * 			| 	   new.getYVelocity() = yVel
 	 * 
-	 * @post 	if the supplied total velocity is larger than the speed of light rescale the velocity
+	 * @post 	if the supplied total velocity is larger than the getSpeedLimit() rescale the velocity
 	 * 			| if !isValidVelocity(totalVelocity(xVel,yVel))
-	 * 			| then 	new.getXVelocity() == xVel* LIGHT_SPEED/totalVelocity(xVel,yVel)
-	 * 			|		new.getYVelocity() == yVel* LIGHT_SPEED/totalVelocity(xVel,yVel)
+	 * 			| then 	new.getXVelocity() == xVel* getSpeedLimit()/Math.abs(totalVelocity(xVel,yVel))&&
+	 * 			|		new.getYVelocity() == yVel* getSpeedLimit/Math.abs(totalVelocity(xVel,yVel))
 	 */
 	@Basic @Raw
 	public void setVelocity(double xVel, double yVel){
@@ -327,7 +341,8 @@ public abstract class WorldObject {
 			this.velocity = new Vector2D(xVel, yVel);
 		} 
 		else {
-			double rescaleConstant = totalVelocity/(LIGHT_SPEED);
+			// if the velocity is not valid re-scale the velocity
+			double rescaleConstant = Math.abs(totalVelocity)/(getSpeedLimit());
 			xVel /= rescaleConstant;
 			yVel /= rescaleConstant;
 			
@@ -335,6 +350,9 @@ public abstract class WorldObject {
 		}
 	}
 	
+	/**
+	 * Vector2D objects that stores the velocity of the WorldObject
+	 */
 	private Vector2D velocity;
 
 	/**
@@ -355,8 +373,16 @@ public abstract class WorldObject {
 	 * Returns if the given velocity is below the light speed
 	 * @return totalVel <= LIGHT_SPEED && totalVel >= 0
 	 */
+	@Basic
 	public static boolean isValidTotalVelocity(double totalVel){
-		return (totalVel <= LIGHT_SPEED&&totalVel >= 0);
+		return (totalVel <= getSpeedLimit()&&totalVel >= 0);
+	}
+	
+	/**
+	 * 
+	 */
+	public static double getSpeedLimit(){
+		return LIGHT_SPEED;
 	}
 	
 	/**
@@ -375,51 +401,57 @@ public abstract class WorldObject {
 	
 	/**
 	 * Sets the radius of a WorldObject
-	 * @post 	the radius is set to rad
+	 * @post 	the radius is set to rad only if the radius is uninitialized
 	 * 			| new.getRadius() == rad
 	 * 
 	 * @throws  IllegalArgumentException
 	 * 			| !isValidRadius(rad)
 	 * 
 	 * @throws  IllegalStateException
-	 * 			| !hasUninitializedRadius()
+	 * 			| hasInitializedRadius()
 	 */
 	@Basic @Immutable @Raw
-	public void setRadius(double rad) throws IllegalArgumentException{
-			if(! this.isValidRadius(rad))
+	public void setRadius(double radius) throws IllegalArgumentException{
+			if(! this.isValidRadius(radius))
 				throw new IllegalArgumentException();
-			if(! this.hasUnInitalizedRadius())
+			if(this.hasInitializedRadius())
 				throw new IllegalStateException();
 			
-			this.radius = rad;
-			
+			this.radius = radius;
+			this.initializedRadius= true;
 	}
 	
 	/**
 	 * checks if the radius is initialized
 	 * @return 	true if and only if the radius is uninitialized
-	 * 			| result == this.getRadius() == 0;
+	 * 			| result == this.initializedRadius;
 	 */
 	@Model @Raw
-	private boolean hasUnInitalizedRadius(){
-		return  this.getRadius() == 0;
+	private boolean hasInitializedRadius(){
+		return this.initializedRadius;
 	}
 	
+	/**
+	 * flag for the initialized radius
+	 */
+	private boolean initializedRadius = false;
+	
+	/**
+	 * @return the minimum radius of the world object
+	 */
+	@Immutable
 	public abstract double getMinimumRadius();
 	
 	/**
-	 * checks whether the provided radius is valid
-	 * @param 	rad
-	 * 			the radius
-	 * 
-	 * @return |result == (rad >= MIN_RADIUS)
+	 * checks if the provided radius is Valid
 	 */
 	public abstract boolean isValidRadius(double rad);
 	
-	// the radius will not change once the radius has been set
+	/**
+	 * The variable that stores the radius of the WorldObject
+	 */
 	private double radius;
 	
-
 	
 	/**
 	 * @return The density of the WorldObject
@@ -431,12 +463,18 @@ public abstract class WorldObject {
 	/**
 	 * Set the mass of the WorldObject to the provided mass
 	 * @param 	density
+	 * 			the desired density of the ship
+	 * 
 	 * @post	the object density equals to the provided density
-	 * 			| if(canHaveAsDensity(density))
+	 * 			| if(isValidDensity(density))
 	 * 			| then new.getDensity() == density
+	 * 
 	 * @post	if the density is not valid set the density to the minimum density
-	 * 			| if(!canHaveAsDensity(density)
+	 * 			| if(!isValidDensity(density)
 	 * 			| then new.getDensity() == getMinimumDensity()
+	 * 
+	 * @effect 	set the mass with the provided density
+	 * 			| setMass()
 	 */
 	@Raw @Basic
 	public void setDensity(double density){
@@ -450,13 +488,25 @@ public abstract class WorldObject {
 	/**
 	 * checker to check if the density is valid
 	 */
+	@Basic
 	public abstract boolean isValidDensity(double density);
 	
+	/**
+	 * @return the minimum value for the density
+	 */
+	@Basic
 	public abstract double getMinimumDensity();
 	
-	// mass is variable so no final value
+	/**
+	 * variable that stores the density of the World Object
+	 */
 	private double Density;
 	
+	/**
+	 * Basic getter for the mass
+	 * @return the mass of the world Object
+	 */
+	@Basic @Raw
 	public double getMass(){
 		return this.mass;
 	}
@@ -467,40 +517,31 @@ public abstract class WorldObject {
 	 * 		 	|new.getMass == calcMass();
 	 * 
 	 * @effect 	if the radius of the world object is not initialized the radius is set to the minimal radius
-	 * 			|if(hasUninitializedRadius())
-	 * 			|then 	setRadius(getMinRadius);
-	 * 			|		new.getMass == calcMass;
+	 * 			|if(!hasInitializedRadius())
+	 * 			|then 	setRadius(getMinRadius)&&
+	 * 			|		new.getMass == calcMass
 	 */
 	@Raw @Basic
 	public void setMass(){
 		
-		if(!this.hasUnInitalizedRadius()){
+		if(this.hasInitializedRadius()){
 			this.mass = this.calcMass();
 		}else{
 			this.setRadius(this.getMinimumRadius());
 			this.mass = this.calcMass();
 		}
-			
-//		if(this.canHaveAsMass(mass))
-//			this.mass = mass;
-//		else{
-//			if(this.isValidDensity(this.getDensity())&&this.isValidRadius(this.getRadius())){
-//				this.mass = calcMinMass();
-//			}
-//			else
-//				this.mass = volumeSphere(this.getMinimumRadius())*this.getMinimumDensity();
-//		}
 	}
 	
 	/**
-	 * The mass of a World Object
+	 * variable that stores the mass of a WorldObject
 	 */
 	private double mass;
 	
 	
 	/**
 	 * calculates the volume of a sphere with the given radius
-	 * @param radius
+	 * @param 	radius
+	 * 			the radius of the sphere
 	 * @return 	the volume of a sphere with the given radius
 	 * 			| result == 4/3*Math.PI*Math.pow(radius,3)
 	 */
@@ -508,9 +549,10 @@ public abstract class WorldObject {
 		return 4.0/3.0 * Math.PI*Math.pow(radius,3);
 	}
 	
+	
 	/**
-	 * calculate the minimum mass of the given object
-	 * @return	the minimum mass of an object
+	 * calculates the minimum mass of the given object
+	 * @return	the minimum mass of a WorldObject
 	 * 			| result == volumeSphere(getRadius()) * getDensity()
 	 */
 	@Model
@@ -518,20 +560,14 @@ public abstract class WorldObject {
 		return volumeSphere(this.getRadius())*this.getDensity();
 	}
 	
+	
 	/**
 	 * Sets the new position of the WorldObject according to the current speed and given time interval
 	 * @param   time
-	 * 			the passed time used to move the WorldObject
+	 * 			the passed time used to move the WorldObject 
 	 * 
-	 * @post 	if the given time is zero, the position of the WorldObject will not change
-	 * 			| if(time == 0)
-	 * 			| then (new.getXPosition() == getXPosition) &&
-	 * 			|	   (new.getYPosition() == getYPosition) 
-	 * 
-	 * @post	if the given type is nonnegative and not zero the WorldObject is moved
-	 * 			| if(time > 0)
-	 * 			| then (new.getXPosition() == getXPosition() + getXVelocity()*time)&&
-	 * 			|	   (new.getYPosition() == getYPosition() + getYVelocity()*time)
+	 * @effect	calculates and sets the new position of the WorldObject
+	 * 			|result == getPosition().vectorSum(getVelocity().rescale(time))
 	 * 
 	 * @throws	IllegalArgumentException
 	 * 			The given value for the time is illegal
@@ -543,12 +579,9 @@ public abstract class WorldObject {
 		
 		Vector2D newPosVector = this.getPosition().vectorSum(this.getVelocity().rescale(time));
 		
-//		double xPos = this.getXPosition() + time*this.getXVelocity();
-//		double yPos = this.getYPosition() + time*this.getYVelocity();
-		
 		this.setPosition(newPosVector.getXComponent(), newPosVector.getYComponent());
-		
 	}
+	
 	
 	/**
 	 * Check whether the given time is a valid time
@@ -558,13 +591,14 @@ public abstract class WorldObject {
 	 * @return 	True if and only if the time is nonnegative
 	 * 			| result == time >= 0
 	 */
+	@Basic @Raw
 	public static boolean isValidTime(double time){
 		return time>=0;
 	}
 	
 	
 	/**
-	 * Calculates the distance between the sides of two WorldObjects, if two WorldObjects overlap the distance is negative
+	 * Calculates the distance between the radii of two WorldObjects, if two WorldObjects overlap the distance is negative
 	 * if other is the same WorldObject as the prime object, the distance is zero
 	 * @param 	other
 	 * 			the other WorldObject
@@ -634,20 +668,23 @@ public abstract class WorldObject {
 	 * @return 	true if the other WorldObject is the same as the primary object
 	 * 			| result == (other == this)
 	 * 
-	 * @return 	true if  the WorldObjects overlap
+	 * @return 	true if the WorldObjects overlap
 	 * 			|result == getDistanceBetween(other) <= 0
 	 * 
-	 * @throws IllegalArgumentException
+	 * @throws 	IllegalArgumentException
 	 * 			| other == 0
-	 * @throws ArithmeticException
+	 * 
+	 * @throws 	ArithmeticException
 	 * 		    throws the exception if a calculation caused overflow
 	 * 			| causedOverflow()
 	 */
 	public boolean overlap(WorldObject other) throws IllegalArgumentException, ArithmeticException{
 		if(other == null)
 			throw new IllegalArgumentException();
+		
 		if(other == this)
 			return true;
+		
 		return this.getDistanceBetween(other) <= 0;
 	}
 	
@@ -659,7 +696,7 @@ public abstract class WorldObject {
 	 * @return 	the sum of the radii
 	 * 			| result == this.getRadius() + other.getRadius()
 	 * 
-	 * @throws ArithmeticException
+	 * @throws 	ArithmeticException
 	 * 			throws exception when calculation resulted in an overflow
 	 * 			|causedOverflow()
 	 */
@@ -686,6 +723,8 @@ public abstract class WorldObject {
 	 * 			|returns time such that:
 	 * 			|	distance(XPos1, YPos1, XPos2, YPos2) == this.getSigma(other)
 	 * 
+	 * @return	if the WorldObjects never collide return positive infinity
+	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			| other == null || this.overlap(other)
 	 * 
@@ -705,10 +744,6 @@ public abstract class WorldObject {
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
 		
-//		double[] deltaR = this.getDeltaR(other);
-//		double[] deltaV = this.getDeltaV(other);
-//		dotProduct2D(deltaV, deltaR) >= 0
-		
 		if(deltaV.dotProduct(deltaR)>=0)
 			return Double.POSITIVE_INFINITY;
 		
@@ -727,8 +762,34 @@ public abstract class WorldObject {
 		}
 	}	
 	
+	
+	/**
+	 * returns the time to a collision between a world object and the boundary of the world.
+	 * @param 	world
+	 * 			the world where the World object collides with
+	 * 
+	 * @return 	the time between a collision of a world object with the boundary of the world
+	 * 			the position of the collision with the world is:
+	 * 				position(time) = getPosition().vectorSum(getVelocity().rescale(time))
+	 * 			determine xTime and yTime such that
+	 * 				position(xTime).getXComponent() == (world.getWidth() - getRadius() || getRadius)
+	 * 				position(yTime).getYComponent() == (world.getHeight() - getRadius()|| getRadius)
+	 * 			return the minimum time
+	 * 				result == Math.min(xTime,yTime)
+	 * 
+	 * @return	if the world is null return positive infinity
+	 * 			| if(world == null)
+	 * 			| then result == Double.POSITIVE_INFINITY
+	 * 
+	 * @return  if the world is not the same world as the current world 
+	 * 			the World Object is positioned in return  infinity
+	 * 			| if(getWorld() != world)
+	 * 			| then result == Double.POSITIVE_INFINITY
+	 */
 	public double getTimeToCollision(World world){
 		if(world == null)
+			return Double.POSITIVE_INFINITY;
+		if(world != this.getWorld())
 			return Double.POSITIVE_INFINITY;
 		
 		double xTime = Double.POSITIVE_INFINITY;
@@ -764,18 +825,13 @@ public abstract class WorldObject {
 	 * 
 	 * @return  the position of the collision
 	 * @return	return the time of the collision
-	 * 			|positions on collision are:
-	 * 			|	xPos1 = this.getXPosition() + this.getXVelocity()*time
-	 * 			|	yPos1 = this.getYPosition() + this.getYVelocity()*time
-	 * 			|	xPos2 = other.getXPosition() + other.getXVelocity()*time
-	 * 			|	yPos2 = other.getYPosition() + other.getYVelocity()*time
-	 * 			|calculates time such that:
-	 * 			|	distance(XPos1, YPos1, XPos2, YPos2) == this.getSigma(other)
-	 *          |
-	 * 			|using the calculated time determine xCol, yCol the coordinates
-	 * 			|of the collision such that:
+	 * 			| collisionTime == getTimeToCollsion(other)
+	 * 			| using the calculated time determine xCol, yCol the coordinates
+	 * 			| of the collision such that:
 	 * 			|   distance(xPos1, yPos1, xCol, yCol) == this.getRadius() && 
 	 * 			|   distance(xPos2,yPos2, xCol, yCol) == other.getRadius()
+	 * 			| with xPos1 and yPos1 the position coordinates of the prime object at collisionTime
+	 * 			| and xPos2 and yPos2 the position coordinates of the other object at collisionTime
 	 * 
 	 * @throws 	ArithmeticException
 	 * 			throws the exception if a calculation caused overflow
@@ -808,9 +864,6 @@ public abstract class WorldObject {
 			throw new ArithmeticException();
 		
 		Vector2D collisionPos = (otherWorldObjectPos.difference(thisWorldObjectPos).rescale(radiusRatio)).vectorSum(thisWorldObjectPos);
-		
-//		double[] collisionPos = {(otherWorldObjectPos[0] - thisWorldObjectPos[0])*radiusRatio + thisWorldObjectPos[0], 
-//				(otherWorldObjectPos[1] - thisWorldObjectPos[1])*radiusRatio + thisWorldObjectPos[1]};
 
 		if(causedOverflow(collisionPos.getXComponent())||causedOverflow(collisionPos.getYComponent()))
 			throw new ArithmeticException();
@@ -819,11 +872,27 @@ public abstract class WorldObject {
 	}
 	
 	
-	
+	/**
+	 * determine the collision position between a WorldObject and the boundary with the world
+	 * @param 	world
+	 * 			the world to calculate the collisionPosition in
+	 * @return	the position of the collision between a WorldObject and the world boundary
+	 * 			| calculate the time to the collision
+	 * 			|	time == getTimeToCollisionWorld(world)
+	 * 			| determine the position of the WorldObject:
+	 * 			|	center == getPosition().vectorSum(getVelocity().rescale(time))
+	 * 			|
+	 * 			| And with possibleCollisions the set of all possible collisions
+	 * 			|  	possibleCollisions = {(world.getWidth(), center.getYComponent()), (0, center.getYComponent()),
+				|						(center.getXComponent(),world.getHeight()), (center.getXComponent(), 0)}
+	 * 			| now determine the coordinates where the world and the WorldObject touch
+	 * 			| for collision in possibleCollsions if center.distanceTo(collision) == getRadius() ==> result == collision
+	 */		
 	public double[] getCollisionPosition(World world){
 		
 		double time = this.getTimeToCollision(world);
-		
+		if(time == Double.POSITIVE_INFINITY)
+			return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
 		Vector2D center = this.getPosition().vectorSum(this.getVelocity().rescale(time));
 		
 		// initialize all the possible collisions
@@ -837,49 +906,11 @@ public abstract class WorldObject {
 			}
 		}
 		
+		// added to prevent that the compiler starts complaining
 		return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
 			
 		}
-//		double collisionTime = this.getTimeToCollision(world);
-//		if(collisionTime == Double.POSITIVE_INFINITY)
-//			return null;
-//		
-//		double WOXPosAtCollision = this.getXPosition() + this.getXVelocity()*collisionTime;
-//		double WOYPosAtCollision = this.getYPosition() + this.getYVelocity()*collisionTime;
-//		double WORadius = this.getRadius();
-//		
-//		double xCollision;
-//		double yCollision;
-//		
-//		// check if the ship collides with the right boundary of the world
-//		if(0<=(WOXPosAtCollision+WORadius)-world.getWidth()&&(WOXPosAtCollision+WORadius)-world.getWidth()<EPSILON){
-//			xCollision = WOXPosAtCollision + WORadius;
-//			yCollision = WOYPosAtCollision;
-//			
-//		// check if the ship collides with the left boundary of the world
-//		}else if(0<= WOXPosAtCollision-WORadius && WOXPosAtCollision-WORadius < EPSILON){
-//			xCollision = WOXPosAtCollision - WORadius;
-//			yCollision = WOYPosAtCollision;
-//		// check if the ship collides with the bottom boundary of the world
-//		}else if(0<= WOYPosAtCollision-WORadius && WOYPosAtCollision-WORadius < EPSILON){
-//			xCollision = WOXPosAtCollision;
-//			yCollision = WOYPosAtCollision - WORadius;
-//		}
-//		// in all other cases the ship collides with the top of the world
-//		else{
-//			xCollision = WOXPosAtCollision;
-//			yCollision = WOYPosAtCollision + WORadius;
-//		}
-//		
-//		// create the return array
-//		double[] collisionPosition = {xCollision, yCollision};
-//		
-//		return collisionPosition;
-//	
-//	public double calculateLinearCollisionTime(double pos1,double pos2,double objVel){
-//		return (pos1-pos2)/(objVel);
-//	}
-//	
+
 
 	/**
 	 * Calculates the d value for the collision time calculation
@@ -893,8 +924,8 @@ public abstract class WorldObject {
 	 * 			the vector of the difference in speed of both WorldObjects
 	 * 
 	 * @return 	the value d used in the collision time method
-	 * 			| result == Math.pow(dotProduct2D(deltaV, deltaR),2) - 
-	 *			| (dotProduct2D(deltaR, deltaR) - Math.pow(this.getSigma(other), 2))*dotProduct2D(deltaV, deltaV)
+	 * 			| result == Math.pow(deltaV.dotProduct(deltaR),2) - 
+				|(deltaR.dotProduct(deltaR) - Math.pow(this.getSigma(other), 2))*deltaV.dotProduct(deltaV);
 	 *
 	 * @throws 	ArithmeticException
 	 * 			throws the exception if a calculation caused overflow
@@ -1049,7 +1080,7 @@ public abstract class WorldObject {
 	 * @param a
 	 * 
 	 * @return 	true if and only if the result of a calculation was overflow
-	 * 			| result == (a==Double.POSITIVE_INFINITY)||(a==Double.NEGATIVE_INFINITY)||(a == Double.NaN)
+	 * 			| result == (Double.isInfinite(a)||Double.isNaN(a))
 	 */
 	public static boolean causedOverflow(double a){
 		return ((Double.isInfinite(a))||(Double.isNaN(a)));
@@ -1061,6 +1092,7 @@ public abstract class WorldObject {
 	 * @return the associated world
 	 * 			|this.associatedWorld
 	 */
+	@Basic
 	public World getWorld(){
 		return this.associatedWorld;
 	}
@@ -1076,18 +1108,47 @@ public abstract class WorldObject {
 	 * 			thrown is the worldObject cannot have world as World
 	 * 			|!canHaveAsWorld(world)
 	 */
+	@Basic
 	public void setWorld(World world) throws IllegalArgumentException{
 		if(!canHaveAsWorld(world))
 			throw new IllegalArgumentException();
 		this.associatedWorld = world;
-		
 	}
 	
+	public boolean residesInWorld(){
+		return this.getWorld()!=null;
+	}
+	
+	/**
+	 * variable that stores the associated World
+	 */
+	private World associatedWorld;
+	
+	
+	/**
+	 * checks if the provided world is a valid world
+	 * @param 	world
+	 * 			the desired world for the association between
+	 * 			the world and the WorldObject
+	 */
 	public abstract boolean canHaveAsWorld(World world);
 	
+	
+	/**
+	 * Resolves a Collision between a WorldObject and Ship
+	 * @param 	ship
+	 * 			the ship where the world object collides with
+	 */
 	public abstract void resolveCollision(Ship ship);
 	
+	
+	/**
+	 * Resolves the collision between a WorldObject and a bullet
+	 * @param 	bullet
+	 * 			the bullet where the WorldObjectcollideswith
+	 */
 	public abstract void resolveCollision(Bullet bullet);
+	
 	
 	/**
 	 * Resolve the collision between a ship and a world boundary
@@ -1103,7 +1164,7 @@ public abstract class WorldObject {
 	 * 			
 	 * @throws 	IllegalStateException
 	 * 			thrown if the WorldObject isn't colliding with a boundary
-	 * 			| {this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
+	 * 			| this.getXPosition(), this.getYPosition} != this.getCollisionPosition(world)
 	 */
 	public void resolveCollision(World world)throws IllegalArgumentException, IllegalStateException{
 		
@@ -1113,27 +1174,30 @@ public abstract class WorldObject {
 		if(this.getWorld() != world)
 			throw new IllegalArgumentException();
 		
-		double[] collisionPosition = this.getCollisionPosition(world);
-		
-//		if(!(doubleEquals(collisionPosition[0], this.getXPosition())&&doubleEquals(collisionPosition[0], this.getYPosition())))
-//			throw new IllegalStateException();
-		
+		double[] collisionPosition = this.getCollisionPosition(world);	
 		double worldWidth = world.getWidth();
+		double[] currentVelocity = this.getVelocity().getVector2DArray();
 		
-		double[] currentVelocity = {this.getXVelocity(), this.getYVelocity()};
-		
-	
-		if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0))
-			if(doubleEquals(collisionPosition[0],collisionPosition[1]))
-				this.setVelocity(-currentVelocity[0],-currentVelocity[1]);
-			else
+		//check if the collision is with one of the x-boundaries
+		if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0)){
 				this.setVelocity(-currentVelocity[0], currentVelocity[1]);
-		else
+		}
+		//else it collides with the y-boundary
+		else{
 			this.setVelocity(currentVelocity[0], -currentVelocity[1]);	
+		}
 	}
 	
-	private World associatedWorld;
 	
+	/**
+	 * error margin used in calculations with vectors
+	 */
+	protected static final double EPSILON = 1E-10;
+	
+	/**
+	 * equals used for double precision floating point numbers
+	 * @return if a and b are equal to eachother within acceptable margins return true
+	 */
 	public static boolean doubleEquals(double a, double b){
 		return a-EPSILON <= b && a+EPSILON >= b;
 	}

@@ -108,12 +108,12 @@ public class BijectionMapTest {
 		HashSet<Vector2D> myVectList = new HashSet<Vector2D>();
 		myVectList.add(myVect1);
 		myVectList.add(myVect2);
-		assertEquals(myVectList, myMap.getAllKeys());
+		assertEquals(myVectList, myMap.keySet());
 	}
 	
 	@Test
 	public final void getAllkeys_empty(){
-		assertEquals(new HashSet<Vector2D>(),myMap.getAllKeys());
+		assertEquals(new HashSet<Vector2D>(),myMap.keySet());
 	}
 	@Test
 	public final void getAllValues_full(){
@@ -122,12 +122,12 @@ public class BijectionMapTest {
 		HashSet<Ship> shipList = new HashSet<Ship>();
 		shipList.add(ship1);
 		shipList.add(ship2);
-		assertEquals(shipList, myMap.getAllValues());
+		assertEquals(shipList, myMap.values());
 	}
 	
 	@Test
 	public final void getAllValues_empty(){
-		assertEquals(new HashSet<Ship>(), myMap.getAllValues());
+		assertEquals(new HashSet<Ship>(), myMap.values());
 	}
 	
 }

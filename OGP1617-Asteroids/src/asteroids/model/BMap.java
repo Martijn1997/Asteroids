@@ -101,12 +101,12 @@ public class BMap<K, V> implements BijectionMap<K, V>{
 		keyValueMap.remove(key);
 	}
 	
-	public Set<K> getAllKeys(){
+	public Set<K> keySet(){
 		return new HashSet<K>(keyValueMap.keySet());
 	}
 	
-	public Set<V> getAllValues(){
-		return new HashSet<V>(keyValueMap.values());
+	public Set<V> values(){
+		return new HashSet<V>(valueKeyMap.keySet());
 	}
 	
 
