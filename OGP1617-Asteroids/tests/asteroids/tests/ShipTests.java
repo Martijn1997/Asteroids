@@ -70,16 +70,15 @@ public class ShipTests {
 		assertEquals(0, newShip.getYVelocity(), EPSILON);
 	}
 	
-//	@Test
-//	public final void isValidPosition_TrueCase() {
-//		assertTrue(Ship.isValidPosition(100));
-//	}
-//	
-//	@Test
-//	public final void isValidPosition_FalseCase1() {
-//		assertFalse(Ship.isValidPosition(Double.POSITIVE_INFINITY));
-//	}
-//	
+	@Test
+	public final void isValidPosition_TrueCase() {
+		assertTrue(ship1.canHaveAsPosition(100,100));
+	}
+	
+	@Test
+	public final void isValidPosition_FalseCase1() {
+		assertFalse(ship1.canHaveAsPosition(Double.POSITIVE_INFINITY, Double.NaN));
+	}
 	
 	@Test
 	public final void isValidPosition_FalseCase2() {

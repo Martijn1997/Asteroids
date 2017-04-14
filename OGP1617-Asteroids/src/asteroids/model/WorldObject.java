@@ -158,9 +158,9 @@ public abstract class WorldObject {
 	 */
 	@Basic @Raw
 	public void setPosition(double xPos, double yPos)throws IllegalArgumentException{
-		if(!canHaveAsPosition(xPos,yPos))
+		if(!canHaveAsPosition(xPos,yPos)){
 			throw new IllegalArgumentException();
-		
+		}
 		this.position = new Vector2D(xPos, yPos);	
 	}
 	
@@ -207,21 +207,21 @@ public abstract class WorldObject {
 	 * 
 	 * @return 	returns true if the the world object is not associated with a world
 	 * 			and the position is not NaN
-	 * 			|if(this.getWorld() == null && !isNan(xPos) && !isNaN(yPos))
+	 * 			|if(!this.residesInWorld() && !isNan(xPos) && !isNaN(yPos)&&
+	 * 			|		!Double.isInfinite(xPos)&&!Double.isInfinite(yPos))
 	 * 			|then result == true
 	 * 
 	 * @effect 	returns true if the world object lies within the associated world bounds
-	 * 			|if(this.getWorld() != null)
+	 * 			|if(this.residesInWorld)
 	 * 			|then result == this.getWorld().withinBoundary(this)
 	 */
 	@Basic @Raw
 	public boolean canHaveAsPosition(double xPos,double yPos){
-		if(Double.isNaN(xPos) || Double.isNaN(yPos))
+		if(Double.isNaN(xPos) || Double.isNaN(yPos)|| Double.isInfinite(xPos)|| Double.isInfinite(yPos))
 			return false;
-		if(this.getWorld() == null)
+		if(!this.residesInWorld())
 			return true;
-
-		return this.getWorld().withinBoundary(this);
+		return this.getWorld().withinBoundary(xPos, yPos, this);
 	}
 	
 	

@@ -290,9 +290,6 @@ public class Ship extends WorldObject{
 	public void move(double time) throws IllegalArgumentException{
 		super.move(time);
 		
-//		for(Bullet bullet: this.getLoadedBullets()){
-//			bullet.syncBulletVectors();
-//		}	
 	}
 	
 	/**
@@ -489,7 +486,7 @@ public class Ship extends WorldObject{
 	 * @throws 	IllegalArgumentException
 	 * 			|bullet == null || !containsBullet(bullet)
 	 */
-	protected void unloadBullet(Bullet bullet) throws IllegalArgumentException{
+	protected void removeBulletFromShip(Bullet bullet) throws IllegalArgumentException{
 		if(bullet == null)
 			throw new IllegalArgumentException();
 		if(!this.containsBullet(bullet))
@@ -691,8 +688,8 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-//		if(!World.significantOverlap(this,bullet))
-//			throw new IllegalStateException();
+		if(!World.significantOverlap(this,bullet))
+			throw new IllegalStateException();
 		
 		if(bullet == null)
 			throw new IllegalArgumentException();
@@ -717,7 +714,7 @@ public class Ship extends WorldObject{
 			throw new IllegalStateException();
 		}
 		
-		//prepare all the varriables
+		//prepare all the variables
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
 		double massShip1 = this.getMass();
@@ -725,7 +722,7 @@ public class Ship extends WorldObject{
 		double sigma = this.getSigma(other);
 		
 		// run the calculations provided
-		double energy = /*Math.abs*/((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
+		double energy = ((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
 		Vector2D energyVector = this.getPosition().difference(other.getPosition()).rescale(energy/sigma);
 		
 		// set the velocities

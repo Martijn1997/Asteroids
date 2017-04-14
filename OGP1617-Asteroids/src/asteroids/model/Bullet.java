@@ -72,7 +72,7 @@ public class Bullet extends WorldObject {
 		// if there still exists a bidirectional relation between the bullet and a ship
 		// unload the bullet from the ship
 		if(this.getShip() != null && this.getShip().containsBullet(this))
-			this.getShip().unloadBullet(this);
+			this.getShip().removeBulletFromShip(this);
 		this.associatedShip = null;
 		super.terminate();
 	}
@@ -260,7 +260,7 @@ public class Bullet extends WorldObject {
 		World shipWorld = this.getShip().getWorld();
 		shipWorld.addWorldObject(this);
 		// unload the bullet
-		this.getShip().unloadBullet(this);
+		this.getShip().removeBulletFromShip(this);
 	}
 	
 //	protected void transferToShip(){
