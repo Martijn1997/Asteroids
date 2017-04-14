@@ -140,6 +140,38 @@ public class World {
 
 	}
 	
+	/**
+	 * Checks if the given world object would be within the world boundaries if
+	 * the x and y position coordinates would be assigned to it.
+	 * @param 	xPos
+	 * @param 	yPos
+	 * @param 	worldObject
+	 * 
+	 * @return	true if and only if the world object would be located within the world boundaries
+	 * 			| result == (0 + worldObject.getRadius() * 0.99< xPos < getWidth() - worldObject.getRadius() * 0.99 &&
+	 * 			| 0 + worldObject.getRadius()*0.99 < yPos < getHeight() - worldObject.getRadius()*0.99)
+	 *
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the worldObject is a null reference
+	 * 			| this == null
+	 */
+	public boolean withinBoundary(double xPos, double yPos, WorldObject worldObject) throws IllegalArgumentException{
+		// get the boundaries of the world
+		double[] xBoundary = {0, this.getWidth()};
+		double[] yBoundary = {0, this.getHeight()};
+		
+		// set variables for the radius
+		double percentage = 0.99;
+		double radius = worldObject.getRadius();
+		
+		// check if the WO lies within the world boundaries
+		if(xBoundary[0] < xPos - radius*percentage && xBoundary[1] > xPos + radius*percentage){
+			if(yBoundary[0] < yPos - radius*percentage && yBoundary[1] > yPos + radius*percentage)
+				return true;
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * Adds a world object to the world 
@@ -313,8 +345,9 @@ public class World {
 	 * @param deltaT
 	 * @param collisionListener
 	 * @throws IllegalArgumentException
+	 * @throws IllegalStateException
 	 */
-	public void evolve(double deltaT, CollisionListener collisionListener)throws IllegalArgumentException{
+	public void evolve(double deltaT, CollisionListener collisionListener)throws IllegalArgumentException, IllegalStateException{
 		if(deltaT <= 0)
 			throw new IllegalArgumentException();
 		
@@ -371,11 +404,7 @@ public class World {
 			Vector2D oldPosition = ship.getPosition();
 
 			ship.move(time);
-			
-			if (ship.getThrusterStatus()) {
-			//	System.out.println("Ship mass difference: " + Double.toString(ship.getMass() /*+ ship.getTotalMass()*/));
-			//	System.out.println("Ship totalmass: " + Double.toString(ship.getMass()));
-			}
+
 			ship.thrust(time);
 
 			//this.updatePosition(oldPosition, ship.getPosition(), ship);
@@ -463,31 +492,25 @@ public class World {
 				
 				if(WorldObject.doubleEquals(object1.getPosition().distanceTo(object2.getPosition()), object1.getRadius()+object2.getRadius())){
 					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
-					
-					try {
-						// check if object1 is a ship and object2 a bullet
-						if(object1 instanceof Ship && object2 instanceof Bullet){		
-							((Ship)object1).resolveCollision(((Bullet)object2));
-							
-						// check if object1 is a ship and object2 a ship
-						} else if( object1 instanceof Ship && object2 instanceof Ship ){
-							
-							((Ship)object1).resolveCollision(((Ship)object2));
-							
-						// we now know that object1 is a bullet so check if object 2 is a ship
-						} else if( object2 instanceof Ship){
-							
-							((Ship)object2).resolveCollision(((Bullet)object1));
-						// only option left is that object 1 is a bullet and object 2 is a bullet
-						} else{
-							((Bullet)object1).resolveCollision(((Bullet)object2));
-						}
+					// check if object1 is a ship and object2 a bullet
+					if(object1 instanceof Ship && object2 instanceof Bullet){		
+						((Ship)object1).resolveCollision(((Bullet)object2));
 						
-						return;
-					} catch (IllegalStateException exc) {
-						object1.terminate();
-						object2.terminate();
+					// check if object1 is a ship and object2 a ship
+					} else if( object1 instanceof Ship && object2 instanceof Ship ){
+						
+						((Ship)object1).resolveCollision(((Ship)object2));
+						
+					// we now know that object1 is a bullet so check if object 2 is a ship
+					} else if( object2 instanceof Ship){
+						
+						((Ship)object2).resolveCollision(((Bullet)object1));
+					// only option left is that object 1 is a bullet and object 2 is a bullet
+					} else{
+						((Bullet)object1).resolveCollision(((Bullet)object2));
 					}
+					
+					return;
 				}
 			}
 			

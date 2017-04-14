@@ -62,7 +62,21 @@ public class ShipTestsPart2 {
 		
 	}
 
+	// position tests: case: in World
+	@Test
+	public final void setPosition_valid(){
+		world1.addWorldObject(ship1);
+		ship1.setPosition(500, 500);
+		assertEquals(new Vector2D(500,500), ship1.getPosition());
+	}
 	
+	@Test (expected = IllegalArgumentException.class)
+	public final void setPosition_Invalid(){
+		world1.addWorldObject(ship1);
+		ship1.canHaveAsPosition(0, 0);
+		ship1.setPosition(0, 0);
+		System.out.println(world1.withinBoundary(ship1));
+	}
 	// loadBullet tests
 	
 	@Test
@@ -245,7 +259,7 @@ public class ShipTestsPart2 {
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
 		assertEquals(bullet1.getWorld(), ship1.getWorld());
-		Vector2D supposedBulletPos = new Vector2D(100,100 + (ship1.getRadius()+bullet1.getRadius())*Ship.BULLET_OFFSET);
+		Vector2D supposedBulletPos = new Vector2D(100 + (ship1.getRadius()+bullet1.getRadius())*Ship.BULLET_OFFSET,100);
 		assertEquals(bullet1.getPosition(), supposedBulletPos);
 		Vector2D supposedBulletVel = new Vector2D(250,0);
 		assertEquals(bullet1.getVelocity(), supposedBulletVel);
