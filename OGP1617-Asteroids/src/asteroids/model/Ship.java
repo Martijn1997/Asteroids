@@ -434,7 +434,7 @@ public class Ship extends WorldObject{
 	 */
 	@Model
 	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
-		if(bullet.getShip()==this){
+		if(bullet.getShip()==this&&bullet!=null){
 			loadedBullets.add(bullet);
 			bullet.setLoadedOnShip(true);
 		}
@@ -442,6 +442,7 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 	}
 	
+
 	/**
 	 * Loads an arbitrary amount of bullets onto the ship 
 	 * if a bullet is ineffective the bullet is not loaded
@@ -462,15 +463,15 @@ public class Ship extends WorldObject{
 		
 		boolean invalidBullets = false;
 		// check if the bullet isn't already associated with another ship or world
-		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
+		for(Bullet bullet : bulletSet){
 			
 			try{
 				bullet.loadBulletOnShip(this);
 			}catch(IllegalArgumentException exc){
 				invalidBullets = true;
 			}
+			
 		}
-		
 		if(invalidBullets == true)
 			throw new IllegalArgumentException();
 		
@@ -576,8 +577,8 @@ public class Ship extends WorldObject{
 			return;
 		
 		// set the position of the bullet.
-		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
-		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipX = this.getXPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipY = this.getYPosition() + Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
 		
 		// set the bullet next to the ship
 		bullet.setPosition(nextToShipX, nextToShipY);
@@ -621,13 +622,18 @@ public class Ship extends WorldObject{
 			bullet.terminate();
 		}
 		else{
-			WorldObject other = this.getWorld().getEntityAt(otherPos);
-			// if the collision partner is a bullet resolve as a bullet bullet collision
-			if(other instanceof Bullet){
-				bullet.resolveCollision((Bullet)other);
-			// otherwise the collisionpartner is a Ship
-			}else
-				bullet.resolveCollision((Ship)other);
+			try {
+				WorldObject other = this.getWorld().getEntityAt(otherPos);
+				// if the collision partner is a bullet resolve as a bullet bullet collision
+				if(other instanceof Bullet){
+					bullet.resolveCollision((Bullet)other);
+				// otherwise the collision partner is a Ship
+				}else
+					bullet.resolveCollision((Ship)other);
+			//
+			} catch (IllegalStateException exc) {
+				bullet.terminate();
+			}
 		}
 	}
 
@@ -707,6 +713,10 @@ public class Ship extends WorldObject{
 	@Override
 	public void resolveCollision(Ship other){
 		
+		if(!World.significantOverlap(this, other)){
+			throw new IllegalStateException();
+		}
+		
 		//prepare all the varriables
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
@@ -715,20 +725,20 @@ public class Ship extends WorldObject{
 		double sigma = this.getSigma(other);
 		
 		// run the calculations provided
-		double energy = Math.abs((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
+		double energy = /*Math.abs*/((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
 		Vector2D energyVector = this.getPosition().difference(other.getPosition()).rescale(energy/sigma);
 		
 		// set the velocities
-		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
-		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
+		this.setVelocity(this.getXVelocity()-energyVector.getXComponent()/massShip1, this.getYVelocity()-energyVector.getYComponent()/massShip1);
+		other.setVelocity(other.getXVelocity() + energyVector.getXComponent()/massShip2, other.getYVelocity() + energyVector.getYComponent()/massShip2);
 		
 		// safety margins on the bounce
-		Vector2D object1Pos = this.getPosition();
-		Vector2D object2Pos = other.getPosition();
-		this.move(1E-10);
-		other.move(1E-10);
-		this.getWorld().updatePosition(object1Pos, this);
-		this.getWorld().updatePosition(object2Pos, other);
+//		Vector2D object1Pos = this.getPosition();
+//		Vector2D object2Pos = other.getPosition();
+//		this.move(1E-10);
+//		other.move(1E-10);
+//		this.getWorld().updatePosition(object1Pos, this);
+//		this.getWorld().updatePosition(object2Pos, other);
 	}
 
 }

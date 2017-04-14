@@ -456,10 +456,15 @@ public class Bullet extends WorldObject {
 	 */
 	@Override
 	public void resolveCollision(Bullet other){
-		if(other == null)
+		
+		if(other == null){
 			throw new IllegalArgumentException();
-//		if(!this.overlap(other))
-//			throw new IllegalStateException();
+		}		
+		// overlap is for the case of bulletCrash
+		if(!World.significantOverlap(this,other)){
+			throw new IllegalStateException();
+		}
+		
 		this.terminate();
 		other.terminate();
 	}

@@ -454,7 +454,7 @@ public class World {
 	 */
 	protected void collisionIdentifier(Vector2D collisionPos, CollisionListener collisionListener,
 			ArrayList<WorldObject> collisionCandidates) throws IllegalStateException, IllegalArgumentException {
-		System.out.println(collisionCandidates.size());
+		//System.out.println(collisionCandidates.size());
 		for(int index1 = 0; index1 < collisionCandidates.size(); index1++){
 			WorldObject object1 = collisionCandidates.get(index1);
 			
@@ -463,25 +463,31 @@ public class World {
 				
 				if(WorldObject.doubleEquals(object1.getPosition().distanceTo(object2.getPosition()), object1.getRadius()+object2.getRadius())){
 					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
-					// check if object1 is a ship and object2 a bullet
-					if(object1 instanceof Ship && object2 instanceof Bullet){		
-						((Ship)object1).resolveCollision(((Bullet)object2));
-						
-					// check if object1 is a ship and object2 a ship
-					} else if( object1 instanceof Ship && object2 instanceof Ship ){
-						
-						((Ship)object1).resolveCollision(((Ship)object2));
-						
-					// we now know that object1 is a bullet so check if object 2 is a ship
-					} else if( object2 instanceof Ship){
-						
-						((Ship)object2).resolveCollision(((Bullet)object1));
-					// only option left is that object 1 is a bullet and object 2 is a bullet
-					} else{
-						((Bullet)object1).resolveCollision(((Bullet)object2));
-					}
 					
-					return;
+					try {
+						// check if object1 is a ship and object2 a bullet
+						if(object1 instanceof Ship && object2 instanceof Bullet){		
+							((Ship)object1).resolveCollision(((Bullet)object2));
+							
+						// check if object1 is a ship and object2 a ship
+						} else if( object1 instanceof Ship && object2 instanceof Ship ){
+							
+							((Ship)object1).resolveCollision(((Ship)object2));
+							
+						// we now know that object1 is a bullet so check if object 2 is a ship
+						} else if( object2 instanceof Ship){
+							
+							((Ship)object2).resolveCollision(((Bullet)object1));
+						// only option left is that object 1 is a bullet and object 2 is a bullet
+						} else{
+							((Bullet)object1).resolveCollision(((Bullet)object2));
+						}
+						
+						return;
+					} catch (IllegalStateException exc) {
+						object1.terminate();
+						object2.terminate();
+					}
 				}
 			}
 			
@@ -552,7 +558,7 @@ public class World {
 				catch (IllegalArgumentException exc){
 					collWOTime = Double.POSITIVE_INFINITY;
 				}
-				if (object1.getTimeToCollision(object2) < timeToCollision){
+				if (collWOTime < timeToCollision){
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);
 					}
