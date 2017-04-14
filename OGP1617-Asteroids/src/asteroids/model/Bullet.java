@@ -452,7 +452,7 @@ public class Bullet extends WorldObject {
 	 * 
 	 * @throws 	IllegalStateException
 	 * 			thrown if the bullets don't collide
-	 * 			|!overlap(other)
+	 * 			|!World.apparentlyOverlap(this, other)
 	 */
 	@Override
 	public void resolveCollision(Bullet other){
@@ -461,7 +461,7 @@ public class Bullet extends WorldObject {
 			throw new IllegalArgumentException();
 		}		
 		// overlap is for the case of bulletCrash
-		if(!World.significantOverlap(this,other)){
+		if(!World.apparentlyCollide(this,other)){
 			throw new IllegalStateException();
 		}
 		

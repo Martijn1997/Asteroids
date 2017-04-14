@@ -104,6 +104,14 @@ public class World {
 			throw new IllegalArgumentException();
 		if(worldObject1 == worldObject2)
 			return true;
+		return worldObject1.getPosition().distanceTo(worldObject2.getPosition()) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());	
+	}
+	
+	public static boolean apparentlyCollide(WorldObject worldObject1, WorldObject worldObject2){
+		if(worldObject1 == null || worldObject2 == null)
+			throw new IllegalArgumentException();
+		if(worldObject1 == worldObject2)
+			return true;
 		return worldObject1.getPosition().distanceTo(worldObject2.getPosition()) >= 0.99*(worldObject1.getRadius() + worldObject2.getRadius())&&
 				worldObject1.getPosition().distanceTo(worldObject2.getPosition()) < 1.01*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
@@ -171,7 +179,7 @@ public class World {
 		}
 		return false;
 	}
-	
+
 	
 	/**
 	 * Adds a world object to the world 
@@ -225,7 +233,7 @@ public class World {
 			HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
 			// check if another world object is within overlapping radius
 			for(WorldObject other: WorldObjectsInWorld){
-				if(withinRadius(worldObject, other)){
+				if(significantOverlap(worldObject, other)){
 					return false;
 				}	
 			}
@@ -259,7 +267,7 @@ public class World {
 	 * @param 	object
 	 * @return	if the object collides with another world object return the position of the other world object
 	 * 
-	 * 			|for worldObject in getAllWorldObjects() if withinradius(worldObject, object) result == true
+	 * 			|for worldObject in getAllWorldObjects() if within radius(worldObject, object) result == true
 	 * 
 	 * @return 	if the world object doesn't collide with another entity return null
 	 */
@@ -282,7 +290,8 @@ public class World {
 	 * 			
 	 */
 	private static boolean withinRadius(WorldObject object1, WorldObject object2){
-		return object1.getPosition().distanceTo(object2.getPosition()) <= object1.getRadius() + object2.getRadius();
+		double radiusRatio = 1.01;
+		return object1.getPosition().distanceTo(object2.getPosition()) <= (object1.getRadius() + object2.getRadius())*radiusRatio;
 	}
 	
 	/**
@@ -447,10 +456,10 @@ public class World {
 	
 	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){		
 		// check if the collision was with a boundary of the world
-		if(collisionPos.getXComponent() == 0||collisionPos.getXComponent()==this.getWidth()||collisionPos.getYComponent() == 0 || collisionPos.getYComponent()== this.getHeight()){
+		if(WorldObject.doubleEquals(collisionPos.getXComponent(),0)||WorldObject.doubleEquals(collisionPos.getXComponent(),this.getWidth())
+				||WorldObject.doubleEquals(collisionPos.getYComponent(),0) || WorldObject.doubleEquals(collisionPos.getYComponent(),this.getHeight())){
 			this.resolveBoundaryCollision(collisionPos, collisionListener);
 		}
-
 		
 		else{
 			this.resolveObjectCollision(collisionPos, collisionListener);
@@ -490,7 +499,7 @@ public class World {
 			for(int index2 = index1 + 1; index2 < collisionCandidates.size(); index2++ ){
 				WorldObject object2 = collisionCandidates.get(index2);
 				
-				if(WorldObject.doubleEquals(object1.getPosition().distanceTo(object2.getPosition()), object1.getRadius()+object2.getRadius())){
+				if(apparentlyCollide(object1, object2)){
 					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
 					// check if object1 is a ship and object2 a bullet
 					if(object1 instanceof Ship && object2 instanceof Bullet){		
