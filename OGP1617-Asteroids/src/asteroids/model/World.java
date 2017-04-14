@@ -141,7 +141,6 @@ public class World {
 	}
 	
 	
-	
 	/**
 	 * Adds a world object to the world 
 	 * @Post	the world object in placed within the world
@@ -206,6 +205,22 @@ public class World {
 			return false;
 		
 	}
+	
+
+	//worldObjects.remove(worldObject) werkt niet want worldObject is de Value en niet de key
+	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
+		if (worldObject.getWorld() == null)
+			throw new IllegalArgumentException();
+		Vector2D position = worldObject.getPosition();
+		worldObjects.remove(position);
+		worldObject.setWorldToNull();
+	}
+	
+	public WorldObject getEntityAt(Vector2D position){
+		WorldObject entity = worldObjects.get(position);
+		return entity;
+	}
+
 	
 	/**
 	 * Returns the position of the world object where object collides with
@@ -426,34 +441,53 @@ public class World {
 					collisionCandidates.add(object);
 			
 		}
-		
 		// check if the objects indeed overlap
+		collisionIdentifier(collisionPos, collisionListener, collisionCandidates);
+	}
+
+	/**
+	 * @param collisionPos
+	 * @param collisionListener
+	 * @param collisionCandidates
+	 * @throws IllegalStateException
+	 * @throws IllegalArgumentException
+	 */
+	protected void collisionIdentifier(Vector2D collisionPos, CollisionListener collisionListener,
+			ArrayList<WorldObject> collisionCandidates) throws IllegalStateException, IllegalArgumentException {
+		//System.out.println(collisionCandidates.size());
 		for(int index1 = 0; index1 < collisionCandidates.size(); index1++){
 			WorldObject object1 = collisionCandidates.get(index1);
+			
 			for(int index2 = index1 + 1; index2 < collisionCandidates.size(); index2++ ){
 				WorldObject object2 = collisionCandidates.get(index2);
+				
 				if(WorldObject.doubleEquals(object1.getPosition().distanceTo(object2.getPosition()), object1.getRadius()+object2.getRadius())){
 					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
-					// check if object1 is a ship and object2 a bullet
-					if(object1 instanceof Ship && object2 instanceof Bullet){		
-						((Ship)object1).resolveCollision(((Bullet)object2));
-						
-					// check if object1 is a ship and object2 a ship
-					} else if( object1 instanceof Ship && object2 instanceof Ship ){
-						
-						((Ship)object1).resolveCollision(((Ship)object2));
-						
-						
-		
-					// we now know that object1 is a bullet so check if object 2 is a ship
-					} else if( object2 instanceof Ship){
-						((Ship)object2).resolveCollision(((Bullet)object1));
-					// only option left is that object 1 is a bullet and object 2 is a bullet
-					} else{
-						((Bullet)object1).resolveCollision(((Bullet)object2));
-					}
 					
-					return;
+					try {
+						// check if object1 is a ship and object2 a bullet
+						if(object1 instanceof Ship && object2 instanceof Bullet){		
+							((Ship)object1).resolveCollision(((Bullet)object2));
+							
+						// check if object1 is a ship and object2 a ship
+						} else if( object1 instanceof Ship && object2 instanceof Ship ){
+							
+							((Ship)object1).resolveCollision(((Ship)object2));
+							
+						// we now know that object1 is a bullet so check if object 2 is a ship
+						} else if( object2 instanceof Ship){
+							
+							((Ship)object2).resolveCollision(((Bullet)object1));
+						// only option left is that object 1 is a bullet and object 2 is a bullet
+						} else{
+							((Bullet)object1).resolveCollision(((Bullet)object2));
+						}
+						
+						return;
+					} catch (IllegalStateException exc) {
+						object1.terminate();
+						object2.terminate();
+					}
 				}
 			}
 			
@@ -524,7 +558,7 @@ public class World {
 				catch (IllegalArgumentException exc){
 					collWOTime = Double.POSITIVE_INFINITY;
 				}
-				if (object1.getTimeToCollision(object2) < timeToCollision){
+				if (collWOTime < timeToCollision){
 					timeToCollision = collWOTime;
 					collisionPosition = object1.getCollisionPosition(object2);
 					}
@@ -537,21 +571,6 @@ public class World {
 			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
 	
-	
-
-	//worldObjects.remove(worldObject) werkt niet want worldObject is de Value en niet de key
-	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
-		if (worldObject.getWorld() == null)
-			throw new IllegalArgumentException();
-		Vector2D position = worldObject.getPosition();
-		worldObjects.remove(position);
-//		worldObject.setWorldToNull();
-	}
-	
-	public WorldObject getEntityAt(Vector2D position){
-		WorldObject entity = worldObjects.get(position);
-		return entity;
-	}
 
 
 

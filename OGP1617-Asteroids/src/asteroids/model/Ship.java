@@ -14,15 +14,6 @@ import be.kuleuven.cs.som.annotate.*;
 // die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
 // dit is gedaan om de association integrity te behouden
 
-// denk ook nog eens na over als je de density aanpast of de massa ook aangepast moet worden om de invariant
-// niet te schenden (dus als je een nieuwe density zet dat je massa nog geldig blijft)
-
-// moet het schip nog van de bullet weten als deze geschoten is?
-// wat als we het schip de bullet doen schieten is er dan apparte 'klasse' van afgeschoten kogels?
-
-// voorzie nog een documentatie bij de termation
-
-// voorzie documentatie bij de botsing ship-ship
 
 /**
  * 
@@ -39,10 +30,6 @@ import be.kuleuven.cs.som.annotate.*;
  * 
  * @Invar	The Density of the ship is always larger than or equals to the MINIMUM_DENISTY
  * 			|isValidDensity()
- * 
- * @Invar 	The mass of the ship is larger than or equal to the volume of a sphere with the radius of the ship multiplied
- * 			with the density of the ship
- * 			|WorldObject.volumeSphere(this.getRadius()) * this.getDensity()
  */
 public class Ship extends WorldObject{
 	
@@ -447,7 +434,7 @@ public class Ship extends WorldObject{
 	 */
 	@Model
 	protected void loadBullet(Bullet bullet) throws IllegalArgumentException{
-		if(bullet.getShip()==this){
+		if(bullet.getShip()==this&&bullet!=null){
 			loadedBullets.add(bullet);
 			bullet.setLoadedOnShip(true);
 		}
@@ -455,6 +442,7 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 	}
 	
+
 	/**
 	 * Loads an arbitrary amount of bullets onto the ship 
 	 * if a bullet is ineffective the bullet is not loaded
@@ -475,15 +463,15 @@ public class Ship extends WorldObject{
 		
 		boolean invalidBullets = false;
 		// check if the bullet isn't already associated with another ship or world
-		for(Bullet bullet : bulletSet){ // look for solution to get rid of the double for lus
-			if(bullet.isAssociated()){
+		for(Bullet bullet : bulletSet){
+			
+			try{
+				bullet.loadBulletOnShip(this);
+			}catch(IllegalArgumentException exc){
 				invalidBullets = true;
 			}
-			else{
-				bullet.loadBulletOnShip(this);
-			}
+			
 		}
-		
 		if(invalidBullets == true)
 			throw new IllegalArgumentException();
 		
@@ -589,8 +577,8 @@ public class Ship extends WorldObject{
 			return;
 		
 		// set the position of the bullet.
-		double nextToShipX = this.getXPosition() - Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
-		double nextToShipY = this.getYPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipX = this.getXPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipY = this.getYPosition() + Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
 		
 		// set the bullet next to the ship
 		bullet.setPosition(nextToShipX, nextToShipY);
@@ -634,13 +622,18 @@ public class Ship extends WorldObject{
 			bullet.terminate();
 		}
 		else{
-			WorldObject other = this.getWorld().getEntityAt(otherPos);
-			// if the collision partner is a bullet resolve as a bullet bullet collision
-			if(other instanceof Bullet){
-				bullet.resolveCollision((Bullet)other);
-			// otherwise the collisionpartner is a Ship
-			}else
-				bullet.resolveCollision((Ship)other);
+			try {
+				WorldObject other = this.getWorld().getEntityAt(otherPos);
+				// if the collision partner is a bullet resolve as a bullet bullet collision
+				if(other instanceof Bullet){
+					bullet.resolveCollision((Bullet)other);
+				// otherwise the collision partner is a Ship
+				}else
+					bullet.resolveCollision((Ship)other);
+			//
+			} catch (IllegalStateException exc) {
+				bullet.terminate();
+			}
 		}
 	}
 
@@ -705,7 +698,7 @@ public class Ship extends WorldObject{
 			throw new IllegalArgumentException();
 		
 		if(bullet.getShip() == this){
-			bullet.transferToShip();
+			bullet.loadBulletOnShip(this);
 		}else{
 			bullet.terminate();
 			this.terminate();
@@ -720,6 +713,10 @@ public class Ship extends WorldObject{
 	@Override
 	public void resolveCollision(Ship other){
 		
+		if(!World.significantOverlap(this, other)){
+			throw new IllegalStateException();
+		}
+		
 		//prepare all the varriables
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
@@ -728,20 +725,20 @@ public class Ship extends WorldObject{
 		double sigma = this.getSigma(other);
 		
 		// run the calculations provided
-		double energy = Math.abs((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
+		double energy = /*Math.abs*/((2*massShip1*massShip2*deltaR.dotProduct(deltaV))/(sigma*(massShip1+massShip2)));
 		Vector2D energyVector = this.getPosition().difference(other.getPosition()).rescale(energy/sigma);
 		
 		// set the velocities
-		this.setVelocity(this.getXVelocity()+energyVector.getXComponent()/massShip1, this.getYVelocity()+energyVector.getYComponent()/massShip1);
-		other.setVelocity(other.getXVelocity() - energyVector.getXComponent()/massShip2, other.getYVelocity() - energyVector.getYComponent()/massShip2);
+		this.setVelocity(this.getXVelocity()-energyVector.getXComponent()/massShip1, this.getYVelocity()-energyVector.getYComponent()/massShip1);
+		other.setVelocity(other.getXVelocity() + energyVector.getXComponent()/massShip2, other.getYVelocity() + energyVector.getYComponent()/massShip2);
 		
 		// safety margins on the bounce
-		Vector2D object1Pos = this.getPosition();
-		Vector2D object2Pos = other.getPosition();
-		this.move(1E-10);
-		other.move(1E-10);
-		this.getWorld().updatePosition(object1Pos, this);
-		this.getWorld().updatePosition(object2Pos, other);
+//		Vector2D object1Pos = this.getPosition();
+//		Vector2D object2Pos = other.getPosition();
+//		this.move(1E-10);
+//		other.move(1E-10);
+//		this.getWorld().updatePosition(object1Pos, this);
+//		this.getWorld().updatePosition(object2Pos, other);
 	}
 
 }

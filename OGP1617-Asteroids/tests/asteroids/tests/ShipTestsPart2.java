@@ -86,10 +86,24 @@ public class ShipTestsPart2 {
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
-	public final void LoadBullets_multipleBullets_invalid(){
+	public final void LoadBullets_multipleBullets_invalid_nullbullet(){
 		Bullet nullBullet = null;
 		ship1.loadBullets(bullet1, bullet2, nullBullet);
+		
 	}
+	
+	@Test
+	public final void LoadBullets_multipleBullets_invalid_other_ship(){
+		bullet2.loadBulletOnShip(ship2);
+		try{
+		ship1.loadBullets(bullet1, bullet2);
+		}catch (IllegalArgumentException exc)
+		{
+			//do nothing
+		}
+		assert(ship1.containsBullet(bullet1));
+	}
+	
 	// termination test
 	@Test
 	public final void Temination(){
