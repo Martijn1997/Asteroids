@@ -161,7 +161,11 @@ public abstract class WorldObject {
 		if(!canHaveAsPosition(xPos,yPos)){
 			throw new IllegalArgumentException();
 		}
-		this.position = new Vector2D(xPos, yPos);	
+		Vector2D oldPosition = this.getPosition();
+		this.position = new Vector2D(xPos, yPos);
+		if(this.residesInWorld()){
+			this.getWorld().updatePosition(oldPosition, this);
+		}
 	}
 	
 	

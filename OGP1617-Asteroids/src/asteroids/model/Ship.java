@@ -563,6 +563,10 @@ public class Ship extends WorldObject{
 	 * @post	The fired bullet has a standard velocity (depending on bullet.SHOOTING_VELOCITY) in the same direction as the ship is facing
 	 * 			|(new bullet).getXVelocity() == Math.cos(getOrientation())*Bullet.SHOOTING_VELOCITY;
 	 *			|(new bullet).getYVelocity() == Math.sin(getOrientation())*Bullet.SHOOTING_VELOCITY;
+	 *
+	 *@effect	if the bullet overlaps with another object in the world or the world boundary itself
+	 *			resolve the collision
+	 *			|resolveBulletCrash(bullet)
 	 */
 	public void fireBullet(){
 		
@@ -590,7 +594,6 @@ public class Ship extends WorldObject{
 		//coordinates of the ship
 		try{
 			bullet.transferToWorld();
-			
 		} catch(IllegalArgumentException exc){
 			this.resolveBulletCrash(bullet);				
 		}
@@ -610,6 +613,9 @@ public class Ship extends WorldObject{
 	 * 
 	 * @effect 	if the bullet collides with a ship resolve as bullet ship collision
 	 * 			|bullet.resolveCollision((Ship)getEntityAt(getWorld.().getCollisionPartner())
+	 * 
+	 * @effect 	if the bullet is inside another entity (greater overlap than significant)
+	 * 			|
 	 */
 	private void resolveBulletCrash(Bullet bullet) {
 		Vector2D otherPos = this.getWorld().getPositionCollisionPartner(bullet);
@@ -619,17 +625,19 @@ public class Ship extends WorldObject{
 			bullet.terminate();
 		}
 		else{
+			WorldObject other = this.getWorld().getEntityAt(otherPos);
 			try {
-				WorldObject other = this.getWorld().getEntityAt(otherPos);
 				// if the collision partner is a bullet resolve as a bullet bullet collision
 				if(other instanceof Bullet){
 					bullet.resolveCollision((Bullet)other);
 				// otherwise the collision partner is a Ship
 				}else
 					bullet.resolveCollision((Ship)other);
-			//
+			//if there is no significant overlap between the bullet and the other entity
+			//means that they are positioned within each other, terminate both
 			} catch (IllegalStateException exc) {
 				bullet.terminate();
+				other.terminate();
 			}
 		}
 	}
@@ -680,7 +688,7 @@ public class Ship extends WorldObject{
 	 * 
 	 * @throws	IllegalStateException
 	 * 			thrown if the bullet and the ship don't overlap
-	 * 			|!this.overlap(bullet)
+	 * 			|!World.apparentlyCollide(this, bullet)
 	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the bullet is a null reference
@@ -688,7 +696,7 @@ public class Ship extends WorldObject{
 	 */
 	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
-		if(!World.significantOverlap(this,bullet))
+		if(!World.apparentlyCollide(this,bullet))
 			throw new IllegalStateException();
 		
 		if(bullet == null)
@@ -706,11 +714,14 @@ public class Ship extends WorldObject{
 	 * resolves the collision between a ship and another ship
 	 * @post	the collision is resolved and the velocity of both ships is set accordingly
 	 * 		 	|@see implementation
+	 * @throws  IllegalStateException
+	 * 			thrown if the provided ship and the prime object don't collide
+	 * 			|World.apparentlyCollide(this,other)
 	 */
 	@Override
-	public void resolveCollision(Ship other){
+	public void resolveCollision(Ship other) throws IllegalStateException{
 		
-		if(!World.significantOverlap(this, other)){
+		if(!World.apparentlyCollide(this, other)){
 			throw new IllegalStateException();
 		}
 		
