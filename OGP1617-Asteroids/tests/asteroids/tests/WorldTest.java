@@ -32,7 +32,7 @@ public class WorldTest {
 		ship4 = new Ship(-90,50,0,10,0,0,0);
 		ship5 = new Ship(200,200,0,10,100,100,0);
 		ship6 = new Ship(400,200,0,10,-100,100,0);
-		ship7 = new Ship(4000,200,0,10,100,0,0);
+		ship7 = new Ship(440,2000,0,400,0,0,0);
 		ship8 = new Ship(1000,200,0,10,-100,0,0);
 		bullet1 = new Bullet(500, 400, 2, 0, 0, 1);
 		bullet2 = new Bullet(52, 700, 2, -100, 0, 1);
@@ -50,16 +50,16 @@ public class WorldTest {
 	public final void Termination(){
 		world1.addWorldObject(ship1);
 		world1.terminate();
-		assert(world1.isTerminated());
-		assert(world1.getAllWorldObjects().isEmpty());
-		assert(ship1.getWorld() == null);
+		assertTrue(world1.isTerminated());
+		assertTrue(world1.getAllWorldObjects().isEmpty());
+		assertTrue(ship1.getWorld() == null);
 	}
 	
 	@Test
 	public final void addWO_LegalCase(){
 		world1.addWorldObject(ship1);
-		assert(world1.getAllWorldObjects().contains(ship1));
-		assert(ship1.getWorld() == world1);
+		assertTrue(world1.getAllWorldObjects().contains(ship1));
+		assertTrue(ship1.getWorld() == world1);
 	}
 
 	@Test (expected = IllegalArgumentException.class)
@@ -88,9 +88,9 @@ public class WorldTest {
 		Vector2D pos2 = ship3.getPosition();
 		Vector2D pos3 = bullet1.getPosition();
 		Set<Vector2D> positions = new HashSet<>(world1.getAllWorldObjectPositions());
-		assert(positions.contains(pos1));
-		assert(positions.contains(pos2));
-		assert(positions.contains(pos3));
+		assertTrue(positions.contains(pos1));
+		assertTrue(positions.contains(pos2));
+		assertTrue(positions.contains(pos3));
 	}
 	
 	@Test
@@ -99,9 +99,9 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
-		assert(objects.contains(ship1));
-		assert(objects.contains(ship3));
-		assert(objects.contains(bullet1));
+		assertTrue(objects.contains(ship1));
+		assertTrue(objects.contains(ship3));
+		assertTrue(objects.contains(bullet1));
 	}
 	
 	@Test
@@ -110,9 +110,9 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		Set<WorldObject> objects = new HashSet<>(world1.getAllShips());
-		assert(objects.contains(ship1));
-		assert(objects.contains(ship3));
-		assert(!objects.contains(bullet1));
+		assertTrue(objects.contains(ship1));
+		assertTrue(objects.contains(ship3));
+		assertFalse(objects.contains(bullet1));
 	}
 	
 	@Test
@@ -121,9 +121,9 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		Set<WorldObject> objects = new HashSet<>(world1.getAllBullets());
-		assert(!objects.contains(ship1));
-		assert(!objects.contains(ship3));
-		assert(objects.contains(bullet1));
+		assertFalse(objects.contains(ship1));
+		assertFalse(objects.contains(ship3));
+		assertTrue(objects.contains(bullet1));
 	}
 	
 	@Test
@@ -133,9 +133,9 @@ public class WorldTest {
 		world1.addWorldObject(bullet1);
 		world1.removeFromWorld(ship3);
 		Set<WorldObject> objects = new HashSet<>(world1.getAllWorldObjects());
-		assert(objects.contains(ship1));
-		assert(!objects.contains(ship3));
-		assert(objects.contains(bullet1));
+		assertTrue(objects.contains(ship1));
+		assertFalse(objects.contains(ship3));
+		assertTrue(objects.contains(bullet1));
 	}
 	
 	@Test (expected = IllegalArgumentException.class)
@@ -156,9 +156,9 @@ public class WorldTest {
 		world1.addWorldObject(ship5);
 		world1.addWorldObject(ship6);
 		double[] nextCollision = world1.getNextCollision();
-		assert(ship5.getTimeToCollision(ship6) == nextCollision[0]);
-		assert(ship5.getCollisionPosition(ship6)[0] == nextCollision[1]);
-		assert(ship5.getCollisionPosition(ship6)[1] == nextCollision[2]);
+		assertEquals(ship5.getTimeToCollision(ship6), nextCollision[0], EPSILON);
+		assertEquals(ship5.getCollisionPosition(ship6)[0], nextCollision[1], EPSILON);
+		assertEquals(ship5.getCollisionPosition(ship6)[1], nextCollision[2], EPSILON);
 	}
 	
 	@Test
@@ -168,9 +168,9 @@ public class WorldTest {
 		world1.addWorldObject(ship7);
 		world1.addWorldObject(ship8);
 		double[] nextCollision = world1.getNextCollision();
-		assert(0.9 == nextCollision[0]);
-		assert(300 == nextCollision[1]);
-		assert(290 == nextCollision[2]);
+		assertEquals(0.9, nextCollision[0], EPSILON);
+		assertEquals(300, nextCollision[1], EPSILON);
+		assertEquals(290, nextCollision[2], EPSILON);
 	}
 	
 	@Test
@@ -179,9 +179,9 @@ public class WorldTest {
 		world1.addWorldObject(ship6);
 		world1.addWorldObject(bullet2);
 		double[] nextCollision = world1.getNextCollision();
-		assert(0.5 == nextCollision[0]);
-		assert(0 == nextCollision[1]);
-		assert(700 == nextCollision[2]);
+		assertEquals(0.5, nextCollision[0], EPSILON);
+		assertEquals(0, nextCollision[1], EPSILON);
+		assertEquals(700, nextCollision[2], EPSILON);
 	}
 	
 	@Test
@@ -191,15 +191,18 @@ public class WorldTest {
 		world1.addWorldObject(ship7);
 		world1.addWorldObject(bullet3);
 		Vector2D oldPos1 = ship1.getPosition();
-		Vector2D newPos2 = new Vector2D(700, 700);
-		Vector2D newPos3 = new Vector2D(1250, 1350);
-		double xVel = 5*(ship7.getThrustForce()/ship7.getTotalMass());
+		Vector2D newPos2 = new Vector2D(300, 300);
+		Vector2D newPos3 = new Vector2D(1050, 1070);
+		double xVel = ship7.getThrustForce()/ship7.getTotalMass();
 		ship7.thrustOn();
-		world1.evolve(5);
-		assert(oldPos1 == ship1.getPosition());
-		assert(newPos2 == ship5.getPosition());
-		assert(newPos3 == bullet3.getPosition());
-		assert(xVel == ship7.getXVelocity());
+		world1.evolve(1, null);
+		assertEquals(oldPos1.getXComponent(), ship1.getPosition().getXComponent(), EPSILON);
+		assertEquals(newPos2.getXComponent(), ship5.getPosition().getXComponent(), EPSILON);
+		assertEquals(newPos3.getXComponent(), bullet3.getPosition().getXComponent(), EPSILON);
+		assertEquals(oldPos1.getYComponent(), ship1.getPosition().getYComponent(), EPSILON);
+		assertEquals(newPos2.getYComponent(), ship5.getPosition().getYComponent(), EPSILON);
+		assertEquals(newPos3.getYComponent(), bullet3.getPosition().getYComponent(), EPSILON);
+		assertEquals(xVel, ship7.getXVelocity(), EPSILON);
 	}
 	
 	
@@ -209,7 +212,7 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		Vector2D position = ship1.getPosition();
-		assert(ship1 == world1.getEntityAt(position));
+		assertTrue(ship1 == world1.getEntityAt(position));
 	}
 	
 	@Test
@@ -218,7 +221,7 @@ public class WorldTest {
 		world1.addWorldObject(ship3);
 		world1.addWorldObject(bullet1);
 		Vector2D position = ship2.getPosition();
-		assert(null == world1.getEntityAt(position));
+		assertTrue(null == world1.getEntityAt(position));
 	}
 	
 
