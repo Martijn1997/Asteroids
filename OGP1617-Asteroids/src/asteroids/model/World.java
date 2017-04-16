@@ -28,11 +28,11 @@ public class World {
 	 * Basic setter for the width of the world
 	 * @param 	width
 	 * 			the width desired for the world
-	 * @Post	if the width is valid the width of the world is set to the provided value
+	 * @post	if the width is valid the width of the world is set to the provided value
 	 * 			| if isValidBoundary(width)
 	 * 			| then new.getWidth() == width
 	 * 
-	 * @Post 	if the width is not valid, the boundary is set to Double.POSITIVE_INFINITY
+	 * @post 	if the width is not valid, the boundary is set to Double.POSITIVE_INFINITY
 	 * 			| if !isValidBoundary(width)
 	 * 			| then new.getWidth() = Double.POSITIVE_INFINITY
 	 */
@@ -59,11 +59,11 @@ public class World {
 	 * Basic setter for the height of the world
 	 * @param 	height
 	 * 			the width desired for the world
-	 * @Post	if the height is valid the height of the world is set to the provided value
+	 * @post	if the height is valid the height of the world is set to the provided value
 	 * 			| if isValidBoundary(width)
 	 * 			| then new.getHeight() == height
 	 * 
-	 * @Post 	if the height is not valid, the boundary is set to Double.POSITIVE_INFINITY
+	 * @post 	if the height is not valid, the boundary is set to Double.POSITIVE_INFINITY
 	 * 			| if !isValidBoundary(height)
 	 * 			| then new.getHeight() = Double.POSITIVE_INFINITY
 	 */
@@ -77,16 +77,33 @@ public class World {
 	
 	private double height;
 
-	// add functionality to set the references to this world to null in the associated WO
+	/***
+	 * Terminator for a world
+	 * @effect 	if there are world objects associated with this world remove it from this world
+	 * 			|removeFromWorld(object)
+	 * 
+	 * @post	the association between the world object and the world is broken
+	 * 			|object.getWorld() == null
+	 * 
+	 * @post	the list of all world objects is empty
+	 * 			|new.getAllWorldObjects().isEmpty()
+	 * 
+	 * @post	the flag that the world is terminated is raised
+	 * 			|new.isTerminated() == true
+	 */
+	@Basic
 	public void terminate(){
 		this.isTerminated = true;
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());		
 		for (WorldObject  object : allObjects){
-			object.setWorld(null);
+			removeFromWorld(object);
 		}
-		worldObjects.clear();
 	}
 	
+	/**
+	 * checks if a world is terminated
+	 * @return	if the world is terminated or not
+	 */
 	@Basic @Raw
 	public boolean isTerminated(){
 		return this.isTerminated;
@@ -94,11 +111,35 @@ public class World {
 	
 	private boolean isTerminated;
 	
-	
+	/***
+	 * Return if the given boundary is between zero and the maximum value
+	 * 
+	 * @see implementation
+	 */
 	private static boolean isValidBoundary(double boundary){
 		return (boundary <= Double.MAX_VALUE && boundary >= 0);
 	}
 	
+	/***
+	 * Return if two objects overlap taking account of rounding issues
+	 * 
+	 * @param	worldObject1
+	 * @param	worldObject2
+	 * 
+	 * @return 	true if worldObject1 is the same as worldObject2
+	 * 			| result == (worldObject2 == worldObject1)
+	 * 
+	 * @return 	true if the WorldObjects overlap
+	 * 			|distance == worldObject1.getPosition().distanceTo(worldObject2.getPosition())
+	 * 			|sumOfRadii == (worldObject1.getRadius() + worldObject2.getRadius())
+	 * 			|result == distance <= 0.99*sumOfRadii
+	 * 
+	 * @throws	IllegalArgumentException
+	 * 			| other == 0
+	 * 
+	 * @throws	ArithmeticException
+	 * 			| causedOverflow()
+	 */
 	public static boolean significantOverlap(WorldObject worldObject1, WorldObject worldObject2) throws IllegalArgumentException, ArithmeticException{
 		if(worldObject1 == null || worldObject2 == null)
 			throw new IllegalArgumentException();
@@ -107,19 +148,33 @@ public class World {
 		return worldObject1.getPosition().distanceTo(worldObject2.getPosition()) <= 0.99*(worldObject1.getRadius() + worldObject2.getRadius());	
 	}
 	
+	/***
+	 * Return if two objects collide taking account of rounding issues
+	 * 
+	 * @param	worldObject1
+	 * @param	worldObject2
+	 * 
+	 * @return 	false if worldObject1 is the same as worldObject2
+	 * 			| result == (worldObject2 == worldObject1)
+	 * 
+	 * @return 	true if the WorldObjects collide
+	 * 			|distance == worldObject1.getPosition().distanceTo(worldObject2.getPosition())
+	 * 			|sumOfRadii == (worldObject1.getRadius() + worldObject2.getRadius())
+	 * 			|result == 0.99*sumOfRadii <= distance <= 1.01*sumOfRadii
+	 */
 	public static boolean apparentlyCollide(WorldObject worldObject1, WorldObject worldObject2){
 		if(worldObject1 == null || worldObject2 == null)
 			throw new IllegalArgumentException();
 		if(worldObject1 == worldObject2)
-			return true;
+			return false;
 		return worldObject1.getPosition().distanceTo(worldObject2.getPosition()) >= 0.99*(worldObject1.getRadius() + worldObject2.getRadius())&&
-				worldObject1.getPosition().distanceTo(worldObject2.getPosition()) < 1.01*(worldObject1.getRadius() + worldObject2.getRadius());
+				worldObject1.getPosition().distanceTo(worldObject2.getPosition()) <= 1.01*(worldObject1.getRadius() + worldObject2.getRadius());
 	}
 	
 
 	/**
 	 * checker if the world object is within the world boundaries
-	 * @param worldObject
+	 * @param	worldObject
 	 * @return	true if the worldObject is located within the world boundaries
 	 * 			| result == (0 + worldObject.getRadius() * 0.99< worldObject.getXPosition < getWidth() - worldObject.getRadius() * 0.99 &&
 	 * 			| 0 + worldObject.getRadius()*0.99 < worldObject.getYPosition() < getHeight() - worldObject.getRadius()*0.99)
@@ -183,10 +238,13 @@ public class World {
 	
 	/**
 	 * Adds a world object to the world 
-	 * @Post	the world object in placed within the world
+	 * @post	the world object in placed within the world
 	 * 			| worldObject.getWorld() == World
 	 * 
-	 * @param worldObject
+	 * @post	the world object is added to the list of all world objects
+	 * 			|new.getAllWorldObjects.contains(worldObject)
+	 * 
+	 * @param	worldObject
 	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the worldObject is not legal
@@ -246,16 +304,32 @@ public class World {
 		
 	}
 	
-
-	//worldObjects.remove(worldObject) werkt niet want worldObject is de Value en niet de key
+	/***
+	 * removes an world object out the world
+	 * 
+	 * @post	the world object doesn't have a world
+	 * 			|worldObject.getWorld() == null
+	 * 			
+	 * @post	the world object is removed from the list of all world objects
+	 * 			|!new.getAllWorldObjects.contains(worldObject)
+	 * 
+	 * @param	worldObject
+	 * @throws	IllegalArgumentException
+	 * 			|worldObject.getWorld() != this
+	 */
 	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
-		if (worldObject.getWorld() == null)
+		if (worldObject.getWorld() != this)
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
 		worldObjects.remove(position);
 		worldObject.setWorldToNull();
 	}
 	
+	/***
+	 * Returns the object, if any, at the given position
+	 * @param position
+	 * @see implementation
+	 */
 	public WorldObject getEntityAt(Vector2D position){
 		WorldObject entity = worldObjects.get(position);
 		return entity;
@@ -295,14 +369,18 @@ public class World {
 	}
 	
 	/**
-	 * @return all the positions of the WorldObjects placed in the world
+	 * returns all the positions of the WorldObjects placed in the world
+	 * 
+	 * @see implementation
 	 */
 	public HashSet<Vector2D> getAllWorldObjectPositions(){
 		return new HashSet<Vector2D>(worldObjects.keySet());
 	}
 
 	/**
-	 * @return all the world objects currently in the world
+	 * returns all the world objects currently in the world
+	 * 
+	 * @see implementation
 	 */
 	public HashSet<WorldObject> getAllWorldObjects(){
 		HashSet<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
@@ -310,7 +388,9 @@ public class World {
 	}
 	
 	/**
-	 * @return all the ships currently in the world
+	 * returns all the ships currently in the world
+	 * 
+	 * @see implementation
 	 */
 	public HashSet<Ship> getAllShips(){
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
@@ -326,7 +406,9 @@ public class World {
 	}
 	
 	/**
-	 * All the bullets currently in the world
+	 * returns all the bullets currently in the world
+	 * 
+	 * @see implementation
 	 */
 	public HashSet<Bullet> getAllBullets(){
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
@@ -342,7 +424,9 @@ public class World {
 	}
 	
 	/**
-	 * @return the HashMap containing all the world objects and their position in the world
+	 * returns the HashMap containing all the world objects and their position in the world
+	 * 
+	 * @see implementation
 	 */
 	@Model @Basic
 	private Map<Vector2D, WorldObject> getWorldObjectMap(){
@@ -351,10 +435,15 @@ public class World {
 	
 	/**
 	 * Evolve the world for a specified amount of time
-	 * @param deltaT
-	 * @param collisionListener
-	 * @throws IllegalArgumentException
-	 * @throws IllegalStateException
+	 * @param	deltaT
+	 * @param	collisionListener
+	 * 
+	 * @post	advance all the objects in the world and resolve the collisions
+	 * 			|@see implementation
+	 * 
+	 * @throws	IllegalArgumentException
+	 * 			|deltaT <= 0
+	 * @throws	IllegalStateException
 	 */
 	public void evolve(double deltaT, CollisionListener collisionListener)throws IllegalArgumentException, IllegalStateException{
 		if(deltaT <= 0)
@@ -371,7 +460,6 @@ public class World {
 		if(collisionTime<= deltaT){
 			advanceTime(collisionTime);
 			resolveCollision(collisionPos, collisionListener);
-			// recursive call of the function
 			evolve(deltaT - collisionTime, collisionListener);		
 		}
 		
@@ -380,24 +468,7 @@ public class World {
 			return;
 		}
 	}
-//		
-//		while(collisionTime <= deltaT){
-//			
-//			advanceTime(collisionTime);
-//			resolveCollision(collisionPos);
-//			deltaT -= collisionTime;
-//					
-//			collision = this.getNextCollision();
-//			collisionTime = collision[0];
-//			collisionPos = new Vector2D(collision[1], collision[2]);
-//			
-//		}
-//
-//		advanceTime(deltaT);
-//	}
-//		
 
-	
 	/**
 	 * advances time for a given time interval
 	 * @param 	time
@@ -453,9 +524,14 @@ public class World {
 		
 	}
 	
-	
-	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){		
-		// check if the collision was with a boundary of the world
+	/***
+	 * resolve the collision as collision with boundary or with an other object
+	 * @param collisionPos
+	 * @param collisionListener
+	 * 
+	 * @see implementation
+	 */
+	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){
 		if(WorldObject.doubleEquals(collisionPos.getXComponent(),0)||WorldObject.doubleEquals(collisionPos.getXComponent(),this.getWidth())
 				||WorldObject.doubleEquals(collisionPos.getYComponent(),0) || WorldObject.doubleEquals(collisionPos.getYComponent(),this.getHeight())){
 			this.resolveBoundaryCollision(collisionPos, collisionListener);
@@ -467,29 +543,21 @@ public class World {
 
 	}
 	
+
 	private void resolveObjectCollision(Vector2D collisionPos, CollisionListener collisionListener){
 
 		HashSet<WorldObject> worldObjects = new HashSet<WorldObject>(this.getWorldObjectMap().values());
 		
 		ArrayList<WorldObject> collisionCandidates = new ArrayList<WorldObject>();
-		// look where the object collides
 		for(WorldObject object: worldObjects){
-			// look if the current object overlaps with the given position, if so, add it to the candidate list
 			if(WorldObject.doubleEquals(object.getPosition().distanceTo(collisionPos), object.getRadius()))
 					collisionCandidates.add(object);
 			
 		}
-		// check if the objects indeed overlap
 		collisionIdentifier(collisionPos, collisionListener, collisionCandidates);
 	}
 
-	/**
-	 * @param collisionPos
-	 * @param collisionListener
-	 * @param collisionCandidates
-	 * @throws IllegalStateException
-	 * @throws IllegalArgumentException
-	 */
+	
 	protected void collisionIdentifier(Vector2D collisionPos, CollisionListener collisionListener,
 			ArrayList<WorldObject> collisionCandidates) throws IllegalStateException, IllegalArgumentException {
 		//System.out.println(collisionCandidates.size());
@@ -500,7 +568,10 @@ public class World {
 				WorldObject object2 = collisionCandidates.get(index2);
 				
 				if(apparentlyCollide(object1, object2)){
-					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
+					try{
+						collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
+					}catch(NullPointerException exc){
+					}
 					// check if object1 is a ship and object2 a bullet
 					if(object1 instanceof Ship && object2 instanceof Bullet){		
 						((Ship)object1).resolveCollision(((Bullet)object2));
@@ -532,13 +603,31 @@ public class World {
 		
 		for(WorldObject object: worldObjects){
 			if(WorldObject.doubleEquals(object.getPosition().distanceTo(collisionPos),object.getRadius())){
-				collisionListener.boundaryCollision(object, collisionPos.getXComponent(),collisionPos.getYComponent());
+				try{
+					collisionListener.boundaryCollision(object, collisionPos.getXComponent(),collisionPos.getYComponent());
+				}catch(NullPointerException exc){
+				}
 				object.resolveCollision(this);
 			}
 		}
 	}
 	
-	
+	/***
+	 * return the next two objects that collide with each other or one if it collides with the world.
+	 * 
+	 * @return	if the next collision is between two objects
+	 * 			return [object1, object2] such that
+	 * 			object1.getTimeToCollision(object2) <= objectI.getTimeToCollision(objectJ)
+	 * 			with objectI and objectJ any of the objects in the world.
+	 * 
+	 * @return	if the next collision is between an object and the world
+	 * 			return object1 such that
+	 * 			object1.getTimeToCollision(this) <= objectI.getTimeToCollision(this)
+	 * 			with objectI any of the objects in the world.
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws ArithmeticException
+	 */
 	public WorldObject[] getObjectsNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
 		WorldObject object1 = null;
@@ -564,6 +653,27 @@ public class World {
 		return objectsNextCollision;
 	}
 	
+	/***
+	 * returns the time and position of the next collision
+	 * @return	if the next collision is between two objects
+	 * 			return [time, collisionPositionX, collisionPositionY] such that
+	 * 			object1.getTimeToCollision(object2) <= objectI.getTimeToCollision(objectJ)
+	 * 			with objectI and objectJ any of the objects in the world
+	 * 			time == object1.getTimeToCollision(object2)
+	 * 			collisionPositionX == object1.getCollisionPosition(object2)[0]
+	 * 			collisionPositionY == object1.getCollisionPosition(object2)[1]
+	 * 
+	 * @return	if the next collision is between an object and the world
+	 * 			return [time, collisionPositionX, collisionPositionY] such that
+	 * 			object1.getTimeToCollision(this) <= objectI.getTimeToCollision(this)
+	 * 			with objectI any of the objects in the world.
+	 * 			time == object1.getTimeToCollision(this)
+	 * 			collisionPositionX == object1.getCollisionPosition(this)[0]
+	 * 			collisionPositionY == object1.getCollisionPosition(this)[1]
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws ArithmeticException
+	 */
 	public double[] getNextCollision() throws IllegalArgumentException, ArithmeticException{
 		double timeToCollision = Double.POSITIVE_INFINITY;
 		double collisionXPosition = Double.POSITIVE_INFINITY;
@@ -571,18 +681,15 @@ public class World {
 		double[] collisionPosition = {collisionXPosition,collisionYPosition};
 		double collWOTime;
 		HashSet<WorldObject> unCheckedElem = this.getAllWorldObjects();
-		// start the outer for loop, iterating over all the objects in the set
 		for (WorldObject object1 : this.getAllWorldObjects()){
 			unCheckedElem.remove(object1);
 			
-			// check if the object collides with the sides of the world
 			double collWorldTime = object1.getTimeToCollision(this);
 			if (collWorldTime < timeToCollision){
 				timeToCollision = collWorldTime;
 				collisionPosition = object1.getCollisionPosition(this);
 			}
 
-			// second for loop check if the object collides with another object in space
 			for (WorldObject object2 : unCheckedElem){
 				try{
 					collWOTime = object1.getTimeToCollision(object2);
@@ -598,7 +705,7 @@ public class World {
 			}
 		}
 		if(timeToCollision == Double.POSITIVE_INFINITY){
-			return null;
+			return new double[] {timeToCollision};
 		}else
 			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}

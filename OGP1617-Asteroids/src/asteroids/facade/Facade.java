@@ -346,7 +346,6 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Return the number of bullets loaded on <code>ship</code>.
 	 */
 	public int getNbBulletsOnShip(Ship ship) throws ModelException{
-
 		return ship.getTotalAmountOfBullets();
 
 	}
@@ -378,12 +377,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 		}
 	}
 	
-	//Nog te doen
 	/**
 	 * Remove <code>bullet</code> from <code>ship</code>.
 	 */
 	public void removeBulletFromShip(Ship ship, Bullet bullet) throws ModelException{
-		//ship.unloadBullet(bullet);
+		ship.removeBulletFromShip(bullet);
 	}
 	
 	/**
@@ -549,11 +547,9 @@ public class Facade implements asteroids.part2.facade.IFacade{
 
 		try { 
 			return world.getNextCollision()[0];
-		}
-		catch (ArithmeticException exc1) {
+		}catch (ArithmeticException exc1) {
 			throw new ModelException(exc1);
-		}
-		catch (IllegalArgumentException exc2) {
+		}catch (IllegalArgumentException exc2) {
 			throw new ModelException(exc2);
 		}
 	}
@@ -568,11 +564,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 		try { 
 			double[] nextColl= world.getNextCollision();
 		  return new double[] {nextColl[1], nextColl[2]};
-		}
-		catch (ArithmeticException exc1) {
+		}catch (NullPointerException exc) {
+			return null;
+		}catch (ArithmeticException exc1) {
 			throw new ModelException(exc1);
-		}
-		catch (IllegalArgumentException exc2) {
+		}catch (IllegalArgumentException exc2) {
 			throw new ModelException(exc2);
 		}
 	}
