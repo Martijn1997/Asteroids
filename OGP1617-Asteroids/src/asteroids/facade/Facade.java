@@ -381,7 +381,11 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 * Remove <code>bullet</code> from <code>ship</code>.
 	 */
 	public void removeBulletFromShip(Ship ship, Bullet bullet) throws ModelException{
+		try{
 		ship.removeBulletFromShip(bullet);
+		}catch (IllegalArgumentException exc ){
+			throw new ModelException(exc);
+		}
 	}
 	
 	/**
