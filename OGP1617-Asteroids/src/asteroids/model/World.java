@@ -109,9 +109,9 @@ public class World {
 	/****
 	 * Basic setter for the height of the world
 	 * @param 	height
-	 * 			the width desired for the world
+	 * 			the height desired for the world
 	 * @post	if the height is valid the height of the world is set to the provided value
-	 * 			| if isValidBoundary(width)
+	 * 			| if isValidBoundary(height)
 	 * 			| then new.getHeight() == height
 	 * 
 	 * @post 	if the height is not valid, the boundary is set to Double.POSITIVE_INFINITY
@@ -354,7 +354,7 @@ public class World {
 	 * @return  false if the worldObject does overlap with the world boundaries
 	 * 			|result == (withinBoundary(worldObject))
 	 * 
-	 * @true 	true if the world object has no significant overlap with another object in the world
+	 * @return 	true if the world object has no significant overlap with another object in the world
 	 * 			| WorldObjectSet == getAllWorldObjects()
 	 * 			| for all objects in WorldObjectSet if not significantOverlap(object, worldObject)
 	 * 			| then return true
@@ -414,7 +414,6 @@ public class World {
 	 * Returns the position of the world object where object collides with
 	 * @param 	object
 	 * @return	if the object collides with another world object return the position of the other world object
-	 * 
 	 * 			|for worldObject in getAllWorldObjects() if within radius(worldObject, object) result == true
 	 * 
 	 * @return 	if the world object doesn't collide with another entity return null
@@ -425,7 +424,6 @@ public class World {
 			if(withinRadius(worldObject, object))
 				return worldObject.getPosition();
 		}
-		
 		return null;
 	}
 	
@@ -676,12 +674,6 @@ public class World {
 	 */
 	protected void collisionIdentifier(Vector2D collisionPos, CollisionListener collisionListener,
 			ArrayList<WorldObject> collisionCandidates) throws IllegalStateException, IllegalArgumentException {
-//		//System.out.println(collisionCandidates.size());
-//		for(int index1 = 0; index1 < collisionCandidates.size(); index1++){
-//			WorldObject object1 = collisionCandidates.get(index1);
-//			
-//			for(int index2 = index1 + 1; index2 < collisionCandidates.size(); index2++ ){
-//				WorldObject object2 = collisionCandidates.get(index2);
 			if(collisionCandidates.size() !=2){
 				throw new IllegalStateException();
 			}
@@ -715,9 +707,6 @@ public class World {
 				
 				return;
 			}
-//			}
-//			
-//		}
 	}
 	
 	/**
