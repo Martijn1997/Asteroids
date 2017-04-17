@@ -14,6 +14,7 @@ import be.kuleuven.cs.som.annotate.*;
  * 			|canHaveAsDensity()
  * 
  * @Invar	a bullet cannot be in a world and being loaded on a ship at the same time.
+ * 			canBeLoadedOnShip(Ship)&&canHaveAsWorld(World)
  * 
  * @Invar	the bullet shall always be smaller than the ship where it is associated with
  * 			|canHaveAsShip()
@@ -42,8 +43,8 @@ public class Bullet extends WorldObject {
 	 * 			thrown if the radius is not valid
 	 * 			|!isValidRadius()
 	 */
-	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double density) throws IllegalArgumentException{
-		super(xPos, yPos, radius, xVel, yVel, density);	
+	public Bullet(double xPos, double yPos, double radius, double xVel, double yVel, double mass) throws IllegalArgumentException{
+		super(xPos, yPos, radius, xVel, yVel, mass);	
 	}
 	
 	/**
@@ -103,17 +104,17 @@ public class Bullet extends WorldObject {
 		return MIN_RADIUS;
 	}
 	
-	/**
-	 * Checker for the density
-	 * @return 	true if the density is equal to the minimum density
-	 * 			| result == density == getMinimumDensity()
-	 * @return 	false if the density is NaN or the maximum value of type double
-	 * 			| result == (!Double.isNaN(density)||!(density != getMinimumDensity()))
-	 */
-	@Override
-	public boolean isValidDensity(double density){
-		return density == this.getMinimumDensity()&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
-	}
+//	/**
+//	 * Checker for the density
+//	 * @return 	true if the density is equal to the minimum density
+//	 * 			| result == density == getMinimumDensity()
+//	 * @return 	false if the density is NaN or the maximum value of type double
+//	 * 			| result == (!Double.isNaN(density)||!(density != getMinimumDensity()))
+//	 */
+//	@Override
+//	public boolean isValidDensity(double density){
+//		return density == this.getMinimumDensity()&&!Double.isNaN(density)&&density <= Double.MAX_VALUE;
+//	}
 	
 	/**
 	 * variable that stores the minimum density of the bullet
@@ -127,6 +128,16 @@ public class Bullet extends WorldObject {
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
 	}
+	
+	/**
+	 * checks if the mass is valid
+	 * @return 	return true if and only if the mass is equal to the minimumMass
+	 * 			| result  == (this.calcMinMass() == mass )
+	 */
+	public boolean canHaveAsMass(double mass){
+		return this.calcMinMass()==mass;
+	}
+	
 	
 	// do we want changes to the prime object by the clients?
 	// gaat de bullet weldegelijk null teruggeven?
@@ -157,14 +168,14 @@ public class Bullet extends WorldObject {
 	 */
 	@Basic
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
-					
-					if(residesInWorld()){
-						this.getWorld().removeFromWorld(this);
-					}
-					this.setShip(ship);
-					ship.loadBullet(this);
-					this.syncBulletVectors();
-					this.resetBounceCount();
+		
+		if(residesInWorld()){
+			this.getWorld().removeFromWorld(this);
+		}
+		this.setShip(ship);
+		ship.loadBullet(this);
+		this.syncBulletVectors();
+		this.resetBounceCount();
 				
 	}
 	
@@ -263,10 +274,6 @@ public class Bullet extends WorldObject {
 		this.getShip().removeBulletFromShip(this);
 	}
 	
-//	protected void transferToShip(){
-//		this.getWorld().removeFromWorld(this);
-//		this.getShip().loadBullet(this);
-//	}
 	
 	/**
 	 * checker for the loadedOnShip flag

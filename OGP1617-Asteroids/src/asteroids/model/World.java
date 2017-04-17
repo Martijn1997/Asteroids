@@ -8,11 +8,37 @@ import java.util.Set;
 import asteroids.part2.CollisionListener;
 import be.kuleuven.cs.som.annotate.*;
 
+/**
+ * A class of world's
+ * @author Flor & Martijn
+ *
+ * @Invar 	The World Objects that reside in the world may not overlap with each other
+ * 			| canHaveAsWorldObject(worldObject)
+ * 
+ * @Invar	The World Objects that reside within the world may not overlap with the boundaries
+ * 			| canHaveAsWorldObject(worldObject)
+ * 
+ * @Invar 	every world object can be found using its position in nearly constant time
+ * 			|getEntityAt(position)
+ */
 public class World {
 	
+	/**
+	 * Constructor for a World
+	 * @param 	width
+	 * 			the desired width of a world
+	 * @param 	height
+	 * 			the desired height of a world
+	 * 
+	 * @effect	the width of the world is set to width
+	 * 			|setWidth(width)
+	 * 
+	 * @effect 	the height of the world is set to height
+	 * 			|setHeight(height)
+	 */
 	public World(double width, double height){
-		this.setHeight(height);
 		this.setWidth(width);
+		this.setHeight(height);
 	}
 
 	/**
@@ -38,13 +64,38 @@ public class World {
 	 */
 	@Basic @Raw
 	public void setWidth(double width){
-		if (isValidBoundary(width))
+		if (isValidWidth(width))
 			this.width = width;	
 		else 
 			this.width = Double.POSITIVE_INFINITY;
 	}
 	
+	/***
+	 * Return if the given width is between zero and the maximum value
+	 * 
+	 * @see implementation
+	 */
+	private static boolean isValidWidth(double width){
+		return (width <= getMaxWidth() && width >= 0);
+	}
+	
+	/**
+	 * variable that stores the width of the world
+	 */
 	private double width;
+	
+	/**
+	 * @return the maximum width of a world
+	 */
+	@Immutable @Raw
+	public static double getMaxWidth(){
+		return MAX_WIDTH;
+	}
+	
+	/**
+	 * constant that stores the maximum width of a world
+	 */
+	public final static double MAX_WIDTH = Double.POSITIVE_INFINITY;
 	
 	/**
 	 * Basic getter for the Height of the world
@@ -69,13 +120,40 @@ public class World {
 	 */
 	@Basic @Raw
 	public void setHeight(double height){
-		if (isValidBoundary(height))
+		if (isValidHeight(height))
 			this.height = height;	
 		else
-			this.height = Double.POSITIVE_INFINITY;
+			this.height = getMaxHeight();
 	}
 	
+	/***
+	 * Return if the given height is between zero and the maximum value
+	 * 
+	 * @see implementation
+	 */
+	private static boolean isValidHeight(double boundary){
+		return (boundary <= getMaxHeight() && boundary >= 0);
+	}
+	
+	/**
+	 * variable that stores the height of the world
+	 */
 	private double height;
+	
+	/**
+	 * @return the max height of the world
+	 */
+	@Immutable @Raw
+	public static double getMaxHeight(){
+		return MAX_HEIGHT;
+	}
+	
+	/**
+	 * constant that stores the maximum height
+	 */
+	private final static double MAX_HEIGHT = Double.POSITIVE_INFINITY;
+	
+
 
 	/***
 	 * Terminator for a world
@@ -109,16 +187,12 @@ public class World {
 		return this.isTerminated;
 	}
 	
+	/**
+	 * variable that stores the termination flag
+	 */
 	private boolean isTerminated;
 	
-	/***
-	 * Return if the given boundary is between zero and the maximum value
-	 * 
-	 * @see implementation
-	 */
-	private static boolean isValidBoundary(double boundary){
-		return (boundary <= Double.MAX_VALUE && boundary >= 0);
-	}
+
 	
 	/***
 	 * Return if two objects overlap taking account of rounding issues
@@ -238,13 +312,13 @@ public class World {
 	
 	/**
 	 * Adds a world object to the world 
+	 * @param	worldObject
+	 * 
 	 * @post	the world object in placed within the world
 	 * 			| worldObject.getWorld() == World
 	 * 
 	 * @post	the world object is added to the list of all world objects
 	 * 			|new.getAllWorldObjects.contains(worldObject)
-	 * 
-	 * @param	worldObject
 	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the worldObject is not legal
@@ -321,7 +395,7 @@ public class World {
 		if (worldObject.getWorld() != this)
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
-		worldObjects.remove(position);
+		this.getWorldObjectMap().remove(position);
 		worldObject.setWorldToNull();
 	}
 	
@@ -331,7 +405,7 @@ public class World {
 	 * @see implementation
 	 */
 	public WorldObject getEntityAt(Vector2D position){
-		WorldObject entity = worldObjects.get(position);
+		WorldObject entity = this.getWorldObjectMap().get(position);
 		return entity;
 	}
 
@@ -473,8 +547,12 @@ public class World {
 	 * advances time for a given time interval
 	 * @param 	time
 	 * 			the time that needs to be advanced
-	 * @post	all the positions and velocities of the world objects are done
-	 * 			|@see implementation
+	 * 
+	 * @effect	all the ships in the world are advanced time-seconds 
+	 * 			| for ship in getAllShips() do ship.move(time) && ship.thrust(time) && updatePosition((old ship).getPosition(), ship)
+	 * 
+	 * @effect	all the bullets in the world are advanced time-seconds
+	 * 			| for bullet in getAllBullets() do bullet.move(time)&&updatePosition((old bullet).getPosition(), bullet)
 	 */
 	public void advanceTime(double time){
 		HashSet<Ship> worldShips = this.getAllShips();
@@ -482,12 +560,8 @@ public class World {
 		// move all the ships
 		for(Ship ship: worldShips){
 			Vector2D oldPosition = ship.getPosition();
-
 			ship.move(time);
-
 			ship.thrust(time);
-
-			//this.updatePosition(oldPosition, ship.getPosition(), ship);
 			this.updatePosition(oldPosition, ship);
 
 		}
@@ -529,7 +603,13 @@ public class World {
 	 * @param collisionPos
 	 * @param collisionListener
 	 * 
-	 * @see implementation
+	 * @effect	if the collision is between a world object and the  world boundary resolve as a
+	 * 			worldObject - boundary collision
+	 * 			| resolveBoundaryCollision(collisionPos, collisionListener
+	 * 
+	 * @effect 	if the collision is between two world objects resolve as
+	 * 			a world object-world object collision
+	 * 			| resolveObjectCollision(collisionPos, collisionListener)
 	 */
 	private void resolveCollision(Vector2D collisionPos,CollisionListener collisionListener){
 		if(WorldObject.doubleEquals(collisionPos.getXComponent(),0)||WorldObject.doubleEquals(collisionPos.getXComponent(),this.getWidth())
@@ -542,11 +622,26 @@ public class World {
 		}
 
 	}
-	
 
+	
+	/**
+	 * resolves the collisions between world objects
+	 * @param 	collisionPos
+	 * 			the collision position
+	 * @param 	collisionListener
+	 * 			interface objects from collision listener
+	 * @effect	the collision between the two objects is resolved
+	 * 			| determine the colliding objects as follows and with collObjList the list
+	 * 			| that contains all the collision partners (2)
+	 * 			| for object in getAllWorldObjects if 
+	 * 			| 		object.getPosition().distanceTo(collisionPos) == object.getradius then collObjList.add(object)
+	 * 			| then identify the collision and resolve them
+	 * 			| collisionIdentifier(collisionPos, collisionListener, collisionCandidates)
+	 * 
+	 */
 	private void resolveObjectCollision(Vector2D collisionPos, CollisionListener collisionListener){
 
-		HashSet<WorldObject> worldObjects = new HashSet<WorldObject>(this.getWorldObjectMap().values());
+		HashSet<WorldObject> worldObjects = new HashSet<WorldObject>(this.getAllWorldObjects());
 		
 		ArrayList<WorldObject> collisionCandidates = new ArrayList<WorldObject>();
 		for(WorldObject object: worldObjects){
@@ -555,48 +650,89 @@ public class World {
 			
 		}
 		collisionIdentifier(collisionPos, collisionListener, collisionCandidates);
-	}
 
+	}
 	
+	/**
+	 * Identifies and resolves collision between two world objects
+	 * @param 	collisionPos
+	 * 			the position of the collision
+	 * @param 	collisionListener
+	 * 			the CollisionListener interface object
+	 * @param 	collisionCandidates
+	 * 			a list of size 2
+	 * 
+	 * @effect	if the collision is between two ships resolve as ship - ship collision
+	 * 			|((Ship)collisionCandidates.get(0)).resolve((Ship)collisionCandidates.get(1))
+	 * 
+	 * @effect 	if the collision is between a ship and a bullet resolve as ship-bullet collision
+	 * 			| ((Ship)collisionCandidates.get(0)).resolve((Ship)collisionCandidates.get(1))
+	 * 
+	 * @throws 	IllegalStateException
+	 * 			thrown if the size of collisionCandidates is not equal to two
+	 * 			| collisionCandidates.size() != 2
+	 * 
+	 * @throws 	IllegalArgumentException
+	 */
 	protected void collisionIdentifier(Vector2D collisionPos, CollisionListener collisionListener,
 			ArrayList<WorldObject> collisionCandidates) throws IllegalStateException, IllegalArgumentException {
-		//System.out.println(collisionCandidates.size());
-		for(int index1 = 0; index1 < collisionCandidates.size(); index1++){
-			WorldObject object1 = collisionCandidates.get(index1);
-			
-			for(int index2 = index1 + 1; index2 < collisionCandidates.size(); index2++ ){
-				WorldObject object2 = collisionCandidates.get(index2);
-				
-				if(apparentlyCollide(object1, object2)){
-					try{
-						collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
-					}catch(NullPointerException exc){
-					}
-					// check if object1 is a ship and object2 a bullet
-					if(object1 instanceof Ship && object2 instanceof Bullet){		
-						((Ship)object1).resolveCollision(((Bullet)object2));
-						
-					// check if object1 is a ship and object2 a ship
-					} else if( object1 instanceof Ship && object2 instanceof Ship ){
-						
-						((Ship)object1).resolveCollision(((Ship)object2));
-						
-					// we now know that object1 is a bullet so check if object 2 is a ship
-					} else if( object2 instanceof Ship){
-						
-						((Ship)object2).resolveCollision(((Bullet)object1));
-					// only option left is that object 1 is a bullet and object 2 is a bullet
-					} else{
-						((Bullet)object1).resolveCollision(((Bullet)object2));
-					}
-					
-					return;
-				}
+//		//System.out.println(collisionCandidates.size());
+//		for(int index1 = 0; index1 < collisionCandidates.size(); index1++){
+//			WorldObject object1 = collisionCandidates.get(index1);
+//			
+//			for(int index2 = index1 + 1; index2 < collisionCandidates.size(); index2++ ){
+//				WorldObject object2 = collisionCandidates.get(index2);
+			if(collisionCandidates.size() !=2){
+				throw new IllegalStateException();
 			}
 			
-		}
+			WorldObject object1 = collisionCandidates.get(0);
+			WorldObject object2 = collisionCandidates.get(1);
+			
+			if(apparentlyCollide(object1, object2)){
+				//try catch for usage in tests
+				try{
+					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
+				}catch(NullPointerException exc){
+				}
+				// check if object1 is a ship and object2 a bullet
+				if(object1 instanceof Ship && object2 instanceof Bullet){		
+					((Ship)object1).resolveCollision(((Bullet)object2));
+					
+				// check if object1 is a ship and object2 a ship
+				} else if( object1 instanceof Ship && object2 instanceof Ship ){
+					
+					((Ship)object1).resolveCollision(((Ship)object2));
+					
+				// we now know that object1 is a bullet so check if object 2 is a ship
+				} else if( object2 instanceof Ship){
+					
+					((Ship)object2).resolveCollision(((Bullet)object1));
+				// only option left is that object 1 is a bullet and object 2 is a bullet
+				} else{
+					((Bullet)object1).resolveCollision(((Bullet)object2));
+				}
+				
+				return;
+			}
+//			}
+//			
+//		}
 	}
 	
+	/**
+	 * resolves a collision at the boundary of a world
+	 * @param 	collisionPos
+	 * 			the position of the collision
+	 * @param 	collisionListener
+	 * 			collisionListener interface object
+	 * 
+	 * @effect	resolve the collision between the world object and the world boundary
+	 * 			| determine "object" as the object that collides with the boundary at collisionpos
+	 * 			|	object.getPosition().distanceTo(collisionPos) == object.getRadius()
+	 * 			| resolve the WorldObject-Boundary collision
+	 * 			|  	object.resolveCollision(this)
+	 */
 	private void resolveBoundaryCollision(Vector2D collisionPos, CollisionListener collisionListener){
 		
 		HashSet<WorldObject> worldObjects = new HashSet<WorldObject>(this.getWorldObjectMap().values());
@@ -705,13 +841,15 @@ public class World {
 			}
 		}
 		if(timeToCollision == Double.POSITIVE_INFINITY){
-			return new double[] {timeToCollision};
+			return null;
 		}else
 			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
 	
 
 
-
+	/**
+	 * variable that stores the world objects in the world
+	 */
 	private Map<Vector2D,WorldObject> worldObjects = new HashMap<Vector2D,WorldObject>();
 }

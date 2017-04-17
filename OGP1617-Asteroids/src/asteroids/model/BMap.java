@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
+ * Not for usage in Part II of the assignment, will be used in part III
  * @author Martijn
  *
  * @param <K>

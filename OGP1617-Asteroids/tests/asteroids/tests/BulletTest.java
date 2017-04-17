@@ -27,15 +27,14 @@ public class BulletTest {
 	// mass & density tests
 	@Test
 	public final void setDensity_Valid(){
-		bullet1.setDensity(bullet1.getMinimumDensity() + 1);
-		assertEquals(bullet1.getMinimumDensity(), bullet1.getDensity(), EPSILON);
-		assertEquals(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getDensity(), bullet1.getMass(), EPSILON);
+		bullet1.setMass(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getMinimumDensity());
+		assertEquals(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getMinimumDensity(), bullet1.getMass(), EPSILON);
 	}
 	
 	@Test
 	public final void setDensity_False(){
-		bullet1.setDensity(bullet1.getMinimumDensity() - 1);
-		assertEquals(bullet1.getMinimumDensity(), bullet1.getDensity(), EPSILON);
+		bullet1.setMass(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getMinimumDensity() - 1);
+		assertEquals(WorldObject.volumeSphere(bullet1.getRadius())*bullet1.getMinimumDensity(), bullet1.getMass(), EPSILON);
 	}
 	
 	// bullet-ship interaction

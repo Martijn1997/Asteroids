@@ -42,23 +42,19 @@ public class ShipTestsPart2 {
 	}
 	
 	// mass tests
-	@Test
-	public final void getMass_standardMassShip1(){
-		assertEquals(4.0/3.0 * Math.PI*Math.pow(ship1.getRadius(),3)*ship1.getDensity(), ship1.getMass(),EPSILON);
-	}
 	
 	@Test
 	public final void setDensity_valid(){
-		double oldShipMass = ship1.getDensity();
-		ship1.setDensity(oldShipMass+20);
-		assertEquals( oldShipMass + 20, ship1.getDensity(), EPSILON);
+		double oldShipMass = ship1.getMass();
+		ship1.setMass(oldShipMass+20);
+		assertEquals( oldShipMass + 20, ship1.getMass(), EPSILON);
 	}
 	
 	@Test
 	public final void setDensity_invalidDensity(){
-		double oldShipMass = ship1.getDensity();
-		ship1.setDensity(oldShipMass - 20);
-		assertEquals(4.0/3.0 * Math.PI*Math.pow(ship1.getRadius(),3)*ship1.getDensity(), ship1.getMass(), EPSILON);
+		double oldShipMass = ship1.getMass();
+		ship1.setMass(oldShipMass - 20);
+		assertEquals(4.0/3.0 * Math.PI*Math.pow(ship1.getRadius(),3)*ship1.getMinimumDensity(), ship1.getMass(), EPSILON);
 		
 	}
 
@@ -168,7 +164,7 @@ public class ShipTestsPart2 {
 	// tests getter thrust status
 	@Test
 	public final void getTrustForceConstant(){
-		assertEquals(1.1E25, ship1.getThrustForce(), EPSILON);
+		assertEquals(1.1E21, ship1.getThrustForce(), EPSILON);
 	}
 	
 	
