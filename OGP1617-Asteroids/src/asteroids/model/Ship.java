@@ -14,6 +14,7 @@ import be.kuleuven.cs.som.annotate.*;
 // die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
 // dit is gedaan om de association integrity te behouden
 
+//TODO removebullet from ship
 
 /**
  * 
@@ -53,9 +54,9 @@ public class Ship extends WorldObject{
 	 * @effect 	the orientation of the ship is set to the given orientation
 	 * 			| setOrientation(orientation)
 	 */
-	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double density)throws IllegalArgumentException{
+	public Ship(double xPos, double yPos, double orientation, double radius, double xVel, double yVel, double mass)throws IllegalArgumentException{
 		
-		super(xPos, yPos, radius, xVel, yVel, density);
+		super(xPos, yPos, radius, xVel, yVel, mass);
 		this.setOrientation(orientation);
 	}
 		
@@ -226,22 +227,22 @@ public class Ship extends WorldObject{
 		return MIN_RADIUS;
 	}
 	
-	/**
-	 * Checks if the density if valid
-	 * @return 	true if the density is greater than the minimum density
-	 * 			|result == density >= getMinimumDensity()
-	 * @return  false if the provided density is NaN
-	 * 			|result == !Double.isNan(density)
-	 */
-	@Override
-	public boolean isValidDensity(double density){
-		return density >= this.getMinimumDensity() && !Double.isNaN(density);
-	}
+//	/**
+//	 * Checks if the density if valid
+//	 * @return 	true if the density is greater than the minimum density
+//	 * 			|result == density >= getMinimumDensity()
+//	 * @return  false if the provided density is NaN
+//	 * 			|result == !Double.isNan(density)
+//	 */
+//	@Override
+//	public boolean isValidDensity(double density){
+//		return density >= this.getMinimumDensity() && !Double.isNaN(density);
+//	}
 	
 	/**
 	 * Variable that stores the minimum density of the ship
 	 */
-	public final static double MINIMUM_DENSITY = 1.42e12;
+	public final static double MINIMUM_DENSITY = 1.42E12;
 	
 	/**
 	 * returns the minimum density of the ship
@@ -249,6 +250,21 @@ public class Ship extends WorldObject{
 	@Override
 	public double getMinimumDensity(){
 		return MINIMUM_DENSITY;
+	}
+	
+	/**
+	 * checks if the mass is valid
+	 * @return 	return true if and only if the mass is larger than the minimum mass
+	 * 			| if(mass>=calcMinMass())
+	 * 			| then result == true
+	 */
+	@Override
+	public boolean canHaveAsMass(double mass){
+		if(mass>=calcMinMass())
+			return true;
+		else{
+			return false;
+		}
 	}
 	
 	/**
@@ -365,7 +381,7 @@ public class Ship extends WorldObject{
 	 * 			|result == getThrustforce/getMass();
 	 */
 	public double getAcceleration(){
-		return  this.getThrustForce()/this.getMass();
+		return  this.getThrustForce()/this.getTotalMass();
 	}
 	
 	/**
@@ -412,7 +428,7 @@ public class Ship extends WorldObject{
 	/**
 	 * variable that stores the thrust force of the ship
 	 */
-	private final double thrustForce = 1.1E25;
+	private final double thrustForce = 1.1E21;
 	
 	
 	/**
@@ -474,6 +490,7 @@ public class Ship extends WorldObject{
 		
 	}
 	
+	
 	/**
 	 * unloads the specified bullet
 	 * @param 	bullet
@@ -486,7 +503,7 @@ public class Ship extends WorldObject{
 	 * @throws 	IllegalArgumentException
 	 * 			|bullet == null || !containsBullet(bullet)
 	 */
-	protected void removeBulletFromShip(Bullet bullet) throws IllegalArgumentException{
+	public void removeBulletFromShip(Bullet bullet) throws IllegalArgumentException{
 		if(bullet == null)
 			throw new IllegalArgumentException();
 		if(!this.containsBullet(bullet))

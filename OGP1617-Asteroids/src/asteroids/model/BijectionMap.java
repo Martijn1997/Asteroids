@@ -1,5 +1,12 @@
 package asteroids.model;
-
+/**
+ * BIJECTION MAP INTERFACE FOR USE IN PART III OF ASSIGNMENT
+ * not yet implemented in the assignment part II
+ * @author Martijn
+ *
+ * @param <K>
+ * @param <V>
+ */
 public interface BijectionMap<K, V> {
 	
 		/**
