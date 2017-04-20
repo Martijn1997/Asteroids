@@ -110,8 +110,14 @@ public class BMap<K, V> implements BijectionMap<K, V>{
 	}
 	
 
-
+	/**
+	 * Map that stores the K V map
+	 */
 	private Map<K, V> keyValueMap = new HashMap<K, V>();
+	
+	/**
+	 * Map that stores the V K map
+	 */
 	private Map<V, K> valueKeyMap = new HashMap<V, K>();
 	
 }
