@@ -1,6 +1,8 @@
 package asteroids.model;
 
 public class MinorPlanet extends WorldObject {
+	
+	
 
 	@Override
 	public double getMinimumRadius() {

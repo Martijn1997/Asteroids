@@ -255,7 +255,6 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 */
 	public Bullet createBullet(double x, double y, double xVelocity, double yVelocity, double radius)
 			throws ModelException{
-		//wat te doen met mass
 		Bullet bullet = new Bullet(x, y, radius, xVelocity, yVelocity, 1);
 		return bullet;
 	}
