@@ -459,6 +459,8 @@ public class World {
 		return allObjects;
 	}
 	
+	//TODO make function such that the class is passed as the argument 
+	// see: Class myClass = Class.forName("Ship") or http://stackoverflow.com/questions/14846853/passing-a-class-as-an-argument-to-a-method-in-java
 	/**
 	 * returns all the ships currently in the world
 	 * 
@@ -494,6 +496,7 @@ public class World {
 		}
 		return allBullets;
 	}
+	
 	
 	/**
 	 * returns the HashMap containing all the world objects and their position in the world
