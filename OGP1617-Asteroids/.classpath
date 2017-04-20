@@ -6,11 +6,6 @@
 	<classpathentry kind="src" path="exception"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/AnnotationsDoclets.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://www.cs.kuleuven.be/books/OOPWithJava/doc/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Martijn/Documents/Univ/2e fase Bbi/Semester 2/Objectgericht Programmeren/AnnotationsDoclets.jar/AnnotationsDoclets.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Flor/Downloads/AnnotationsDoclets.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
