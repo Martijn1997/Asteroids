@@ -1,5 +1,9 @@
 package asteroids.Programs;
-
-public class Expression {
-
+//R the return Type, T the type of the operands
+public interface Expression<T, R> {
+	
+		@Override
+		public String toString();
+		
+		public R getValue();
 }
