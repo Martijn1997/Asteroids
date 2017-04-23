@@ -1184,20 +1184,8 @@ public abstract class WorldObject {
 	public abstract boolean canHaveAsWorld(World world);
 	
 	
-	/**
-	 * Resolves a Collision between a WorldObject and Ship
-	 * @param 	ship
-	 * 			the ship where the world object collides with
-	 */
-	public abstract void resolveCollision(Ship ship);
-	
-	
-	/**
-	 * Resolves the collision between a WorldObject and a bullet
-	 * @param 	bullet
-	 * 			the bullet where the WorldObjectcollideswith
-	 */
-	public abstract void resolveCollision(Bullet bullet);
+	public abstract void resolveCollision(WorldObject other);
+		
 	
 	
 	/**

@@ -838,7 +838,22 @@ public class World {
 			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
 	
-
+	public boolean checkTransport(Ship ship){
+		// first check if the ship is a null reference
+				if((ship != null)&&this.withinBoundary(ship)){
+					HashSet<WorldObject> WorldObjectsInWorld = this.getAllWorldObjects();
+					// check if another world object is within overlapping radius
+					for(WorldObject other: WorldObjectsInWorld){
+						if((significantOverlap(ship, other))&&(other != ship)){
+							return false;
+						}	
+					}
+					// return true if no such object can be found	
+					return true;
+				}
+				else 
+					return false;			
+	}
 
 	/**
 	 * variable that stores the world objects in the world
