@@ -370,16 +370,45 @@ public class Bullet extends WorldObject {
 	 * the total velocity of a bullet upon shooting.
 	 */
 	public final static double SHOOTING_VELOCITY=250;
+
+	
+	@Override
+	public void resolveCollision(WorldObject other){
+		if (other instanceof Bullet)
+			(this).resolveCollision((Bullet) other);
+		else
+			other.resolveCollision(this);
+	}
 	
 	/**
-	 * Resolves the collision between a bullet and a Ship
+	 * Resolves the collision between a bullet and another bullet
+	 * @param 	other
+	 * 			the other bullet involved in the collision
 	 * 
-	 * @effect  resolves the collision between a ship and a bullet
-	 * 			|ship.resolveCollision(this)
+	 * @post	both bullets are terminated
+	 * 			| terminate()
+	 * 			| other.terminate()
+	 * 
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if other is a null reference
+	 * 			| other == null
+	 * 
+	 * @throws 	IllegalStateException
+	 * 			thrown if the bullets don't collide
+	 * 			|!World.apparentlyOverlap(this, other)
 	 */
-	@Override
-	public void resolveCollision(Ship ship){
-		ship.resolveCollision(this);
+	public void resolveCollision(Bullet other){
+		
+		if(other == null){
+			throw new IllegalArgumentException();
+		}		
+		// overlap is for the case of bulletCrash
+		if(!World.apparentlyCollide(this,other)){
+			throw new IllegalStateException();
+		}
+		
+		this.terminate();
+		other.terminate();
 	}
 	
 	
@@ -442,38 +471,5 @@ public class Bullet extends WorldObject {
 	 * the maximum amount of bounces a bullet can make
 	 */
 	public final int MAX_BOUNCES = 3;
-	
-	
-	/**
-	 * Resolves the collision between a bullet and another bullet
-	 * @param 	other
-	 * 			the other bullet involved in the collision
-	 * 
-	 * @post	both bullets are terminated
-	 * 			| terminate()
-	 * 			| other.terminate()
-	 * 
-	 * @throws 	IllegalArgumentException
-	 * 			thrown if other is a null reference
-	 * 			| other == null
-	 * 
-	 * @throws 	IllegalStateException
-	 * 			thrown if the bullets don't collide
-	 * 			|!World.apparentlyOverlap(this, other)
-	 */
-	@Override
-	public void resolveCollision(Bullet other){
-		
-		if(other == null){
-			throw new IllegalArgumentException();
-		}		
-		// overlap is for the case of bulletCrash
-		if(!World.apparentlyCollide(this,other)){
-			throw new IllegalStateException();
-		}
-		
-		this.terminate();
-		other.terminate();
-	}
 
 }

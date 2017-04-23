@@ -693,6 +693,15 @@ public class Ship extends WorldObject{
 	 */
 	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
+	@Override
+	public void resolveCollision(WorldObject other){
+		if (other instanceof Ship)
+			(this).resolveCollision((Ship) other);
+		if (other instanceof Bullet)
+			(this).resolveCollision((Bullet) other);
+		else
+			other.resolveCollision(this);
+	}
 	
 	/**
 	 * Resolve the collision between a ship and a bullet
@@ -711,7 +720,6 @@ public class Ship extends WorldObject{
 	 * 			thrown if the bullet is a null reference
 	 * 			| bullet == null
 	 */
-	@Override
 	public void resolveCollision(Bullet bullet)throws IllegalStateException, IllegalArgumentException{
 		if(!World.apparentlyCollide(this,bullet))
 			throw new IllegalStateException();
@@ -735,7 +743,6 @@ public class Ship extends WorldObject{
 	 * 			thrown if the provided ship and the prime object don't collide
 	 * 			|World.apparentlyCollide(this,other)
 	 */
-	@Override
 	public void resolveCollision(Ship other) throws IllegalStateException{
 		
 		if(!World.apparentlyCollide(this, other)){
