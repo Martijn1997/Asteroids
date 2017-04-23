@@ -2,17 +2,22 @@ package asteroids.facade;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import asteroids.model.Asteroid;
 import asteroids.model.Bullet;
+import asteroids.model.Planetoid;
 import asteroids.model.Ship;
 import asteroids.model.Vector2D;
 import asteroids.model.World;
 import asteroids.model.WorldObject;
 import asteroids.part2.CollisionListener;
+import asteroids.part3.facade.Program;
+import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
 
-public class Facade implements asteroids.part2.facade.IFacade{
+public class Facade implements asteroids.part3.facade.IFacade{
 	
 	/**
 	 * Create a new ship with a default position, velocity, radius and
@@ -611,6 +616,176 @@ public class Facade implements asteroids.part2.facade.IFacade{
 	 */
 	public Set<? extends WorldObject> getEntities(World world) throws ModelException{
 		return world.getAllWorldObjects();
+	}
+
+	@Override
+	public int getNbStudentsInTeam() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Set<? extends Asteroid> getWorldAsteroids(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addAsteroidToWorld(World world, Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeAsteroidFromWorld(World world, Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Set<? extends Planetoid> getWorldPlanetoids(World world) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addPlanetoidToWorld(World world, Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removePlanetoidFromWorld(World world, Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Asteroid createAsteroid(double x, double y, double xVelocity, double yVelocity, double radius)
+			throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void terminateAsteroid(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isTerminatedAsteroid(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public double[] getAsteroidPosition(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] getAsteroidVelocity(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getAsteroidRadius(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getAsteroidMass(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public World getAsteroidWorld(Asteroid asteroid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Planetoid createPlanetoid(double x, double y, double xVelocity, double yVelocity, double radius,
+			double totalTraveledDistance) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void terminatePlanetoid(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isTerminatedPlanetoid(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public double[] getPlanetoidPosition(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] getPlanetoidVelocity(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getPlanetoidRadius(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPlanetoidMass(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPlanetoidTotalTraveledDistance(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public World getPlanetoidWorld(Planetoid planetoid) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Program getShipProgram(Ship ship) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void loadProgramOnShip(Ship ship, Program program) throws ModelException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> executeProgram(Ship ship, double dt) throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IProgramFactory<?, ?, ?, ? extends Program> createProgramFactory() throws ModelException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
