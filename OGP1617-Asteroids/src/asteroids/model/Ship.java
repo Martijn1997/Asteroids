@@ -210,8 +210,8 @@ public class Ship extends WorldObject{
 	 * @return |result == (rad >= getMinimumRadius)
 	 */
 	@Override
-	public boolean isValidRadius(double rad){
-		return rad >= this.getMinimumRadius();
+	public boolean canHaveAsRadius(double rad){
+		return rad >= this.getMinimumRadius() && !this.hasInitializedRadius();
 	}
 	
 	// the radius will not change once the radius has been set

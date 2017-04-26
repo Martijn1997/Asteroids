@@ -7,6 +7,7 @@ public class Planetoid extends MinorPlanet {
 	public Planetoid(double xPos, double yPos, double radius, double xVel, double yVel, double totalTraveledDistance, double mass)
 			throws IllegalArgumentException {
 		super(xPos, yPos, radius, xVel, yVel, mass);
+		this.setOriginalRadius(radius);
 		this.setTotalTraveledDistance(totalTraveledDistance);
 	}
 
@@ -19,6 +20,12 @@ public class Planetoid extends MinorPlanet {
 			this.totalTraveledDistance = distance;
 		else
 			this.totalTraveledDistance = 0;
+		double radius = this.getOriginalRadius();
+		double newRadius = radius - totalTraveledDistance*(0.0001/100);
+		if (newRadius < 5)
+			this.terminate();
+		else
+			this.setRadius(newRadius);
 	}
 		
 	private double totalTraveledDistance;
@@ -40,7 +47,6 @@ public class Planetoid extends MinorPlanet {
 	public void resolveCollision(Ship ship) throws IllegalStateException{
 		if(!World.apparentlyCollide(this,ship))
 			throw new IllegalStateException();
-		
 		transport(ship);
 	}
 
@@ -59,26 +65,29 @@ public class Planetoid extends MinorPlanet {
 			ship.terminate();
 	}
 	
-//	/**
-//	 * @return 	the radius of the WorldObject
-//	 */
-//	@Basic @Raw @Override
-//	public double getRadius(){
-//		return radius;
-//	}
-//	
-//	/**
-//	 * The variable that stores the radius of the WorldObject
-//	 */
-//	private double radius;
-//	
-//	@Override
-//	public void setRadius(double radius) throws IllegalArgumentException{
-//		if(! this.isValidRadius(radius))
-//			throw new IllegalArgumentException();
-//		
-//		this.radius = radius;
-//	}
+	/**
+	 * Checks whether the provided radius is valid
+	 * @param 	rad
+	 * 			the radius
+	 * 
+	 * @return |result == (radius >= MIN_RADIUS)
+	 */
+	@Override
+	public boolean canHaveAsRadius(double radius){
+		return radius >= this.getMinimumRadius();
+	}
+	
+	public double getOriginalRadius(){
+		return originalRadius;
+	}
+	
+	public void setOriginalRadius(double radius) throws IllegalArgumentException{
+		if(! this.canHaveAsRadius(radius))
+			throw new IllegalArgumentException();
+		this.originalRadius = radius;
+	}
+	
+	private double originalRadius;
 	
 	@Override
 	public void move(double time){
@@ -91,9 +100,6 @@ public class Planetoid extends MinorPlanet {
 		this.setPosition(newPosVector.getXComponent(), newPosVector.getYComponent());
 		double oldDistance = this.getTotalTraveledDistance();
 		double newDistance = oldDistance + oldPosVector.distanceTo(newPosVector);
-		double radius = this.getRadius();
-		double newRadius = radius - newDistance*(0.0001/100);
-		if (newRadius < 5)
-			this.terminate();
+		this.setTotalTraveledDistance(newDistance);
 	}
 }

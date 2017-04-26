@@ -102,12 +102,12 @@ public class ShipTests {
 
 	@Test
 	public final void isValidRadius_TrueCase() {
-		assertTrue(ship1.isValidRadius(100));
+		assertTrue(ship1.canHaveAsRadius(100));
 	}
 	
 	@Test
 	public final void isValidRadius_NegRadius() {
-		assertFalse(ship1.isValidRadius(-10));
+		assertFalse(ship1.canHaveAsRadius(-10));
 	}
 	
 	@Test

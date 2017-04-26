@@ -418,10 +418,8 @@ public abstract class WorldObject {
 	 */
 	@Basic @Immutable @Raw
 	public void setRadius(double radius) throws IllegalArgumentException, IllegalStateException{
-			if(! this.isValidRadius(radius))
+			if(! this.canHaveAsRadius(radius))
 				throw new IllegalArgumentException();
-			if(this.hasInitializedRadius())
-				throw new IllegalStateException();
 			
 			this.radius = radius;
 			this.initializedRadius= true;
@@ -433,7 +431,7 @@ public abstract class WorldObject {
 	 * 			| result == this.initializedRadius;
 	 */
 	@Model @Raw
-	private boolean hasInitializedRadius(){
+	protected boolean hasInitializedRadius(){
 		return this.initializedRadius;
 	}
 	
@@ -451,7 +449,7 @@ public abstract class WorldObject {
 	/**
 	 * checks if the provided radius is Valid
 	 */
-	public abstract boolean isValidRadius(double rad);
+	public abstract boolean canHaveAsRadius(double rad);
 	
 	/**
 	 * The variable that stores the radius of the WorldObject
@@ -1220,11 +1218,17 @@ public abstract class WorldObject {
 		
 		double[] collisionPosition = this.getCollisionPosition(world);	
 		double worldWidth = world.getWidth();
+		double worldHeigth = world.getHeight();
 		double[] currentVelocity = this.getVelocity().getVector2DArray();
 		
 		//check if the collision is with one of the x-boundaries
 		if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0)){
+			if(doubleEquals(collisionPosition[1], worldHeigth)||doubleEquals(collisionPosition[1],0)){
+				this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
+			}
+			else{
 				this.setVelocity(-currentVelocity[0], currentVelocity[1]);
+			}
 		}
 		//else it collides with the y-boundary
 		else{

@@ -27,4 +27,15 @@ public class Asteroid extends MinorPlanet {
 		ship.terminate();
 	}	
 
+	/**
+	 * Checks whether the provided radius is valid
+	 * @param 	rad
+	 * 			the radius
+	 * 
+	 * @return |result == (radius >= MIN_RADIUS)
+	 */
+	@Override
+	public boolean canHaveAsRadius(double radius){
+		return radius >= this.getMinimumRadius() && !this.hasInitializedRadius();
+	}
 }
