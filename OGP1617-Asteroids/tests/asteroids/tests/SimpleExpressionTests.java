@@ -1,6 +1,7 @@
 package asteroids.tests;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import asteroids.Programs.*;
@@ -10,22 +11,37 @@ public class SimpleExpressionTests {
 	private static final double EPSILON = 0.0001;
 	private static final double EPSILON2 = 1;
 	
+	private static LiteralExpression<Double> double1, double2, double3, zero;
+	private static LiteralExpression<Boolean> bool1, bool2;
+	private static LiteralExpression<Ship> ship1, ship2;
+	
+	@Before
+	public final void setupMutableFixture(){
+		double1 = new LiteralExpression<Double>(100.0);
+		double2 = new LiteralExpression<Double>(-100.0);
+		double3 = new LiteralExpression<Double>(1.0);
+		zero = new LiteralExpression<Double>(0.0);
+		
+		bool1 = new LiteralExpression<Boolean>(true);
+		bool2 = new LiteralExpression<Boolean>(false);
+	}
+	
 	@Test
 	public final void setVariableTest(){
-		VariableExpression<Double> myVar = new VariableExpression<Double>("myVar", 101.0);
+		VariableExpression<Double> myVar = new VariableExpression<Double>("myVar", 100.0);
 		assertEquals("myVar", myVar.getName());
-		assertEquals(101.0, myVar.getValue(),EPSILON);
+		assertEquals(100, myVar.getValue(),EPSILON);
 	}
 	
 	@Test
 	public final void equalstest_literal(){
-		EqualsExpression<Double> myExpression = new EqualsExpression<Double>(100.0,100.0);
+		EqualsExpression<Expression> myExpression = new EqualsExpression<Expression>(double1,double1);
 		assertEquals(true, myExpression.getValue());
 	}
 	
 	@Test
 	public final void coidEqualsTest_false_literal(){
-		EqualsExpression<Double> myExpression = new EqualsExpression<Double>(100.0,1.0);
+		EqualsExpression<Expression> myExpression = new EqualsExpression<Expression>(double1,double2);
 		assertFalse(myExpression.getValue());
 	}
 	
@@ -58,18 +74,56 @@ public class SimpleExpressionTests {
 	
 	@Test
 	public final void negationTest_double_literal(){
-		NegationExpression<Double> negation = new NegationExpression<Double>(100.0);
+		NegationExpression negation = new NegationExpression(double1);
 		assertEquals(-100.0, negation.getValue(),EPSILON);
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Test
 	public final void negationTest_double_variable(){
 		VariableExpression<Double> var1 = new VariableExpression<Double>("Var1", 100.0);
-		NegationExpression<Expression> negation = new NegationExpression<Expression>(var1);
+		NegationExpression negation = new NegationExpression(var1);
 		VariableExpression<Double> var2 = new VariableExpression<Double>("Var2",-100.0);
 		EqualsExpression<Expression> equals1 = new EqualsExpression<Expression>(var2, negation);
 		assert(equals1.getValue());		
 	}
 	
+
+//	@Test (expected = IllegalArgumentException.class)
+//	public final void negationTest_boolean_literal(){
+//		NegationExpression negation = new NegationExpression(bool1);
+//		System.out.println(negation.getValue());
+//	}
 	
+	@Test
+	public final void addition(){
+		AdditionExpression addition = new AdditionExpression(double1, zero);
+		assertEquals(100.0, addition.getValue(), EPSILON);
+	}
+	
+//	@Test (expected = IllegalArgumentException.class)
+//	public final void addition_wrong_use(){
+//		@SuppressWarnings("rawtypes")
+//		AdditionExpression<Expression> addition = new AdditionExpression<Expression>(double1, bool1);
+//	}
+	
+	@Test
+	public final void multiplication(){
+		MultiplicationExpression multiplication = new MultiplicationExpression(double1, double3);
+		assertEquals(100.0, multiplication.getValue(), EPSILON);
+	}
+	
+//	@Test (expected = IllegalArgumentException.class)
+//	public final void multiplication_wrong_use(){
+//		MultiplicationExpression multiplication = //new MultiplicationExpression(double1, bool1);
+//
+//	}
+	
+	@Test
+	public final void addition_mult_compound(){
+
+		MultiplicationExpression mult = new MultiplicationExpression(double1, double3);
+		AdditionExpression add = new AdditionExpression(mult, zero);
+		assertEquals(100, add.getValue(), EPSILON);
+	}
 }

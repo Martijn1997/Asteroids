@@ -13,9 +13,6 @@ public abstract class BinaryExpression<T,R> implements Expression<T,R> {
 	 */
 	@Model @Raw
 	protected BinaryExpression(T leftOperand, T rightOperand) throws IllegalArgumentException{
-		if(!isValidOperand(leftOperand)||!isValidOperand(rightOperand)){
-			throw new IllegalArgumentException();
-		}
 		this.setLeftOperand(leftOperand);
 		this.setRightoperand(rightOperand);
 	}
