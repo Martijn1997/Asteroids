@@ -6,4 +6,5 @@ public interface Expression<T, R> {
 		public String toString();
 		
 		public R getValue();
+		
 }
