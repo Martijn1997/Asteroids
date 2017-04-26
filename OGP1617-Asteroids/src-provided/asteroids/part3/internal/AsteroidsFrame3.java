@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import asteroids.Programs.Program;
+import asteroids.model.Program;
 import asteroids.model.Asteroid;
 import asteroids.model.Bullet;
 import asteroids.model.Planetoid;

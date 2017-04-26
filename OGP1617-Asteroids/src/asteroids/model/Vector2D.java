@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import java.util.Arrays;
+
 import be.kuleuven.cs.som.annotate.*;
 
 
@@ -230,6 +232,14 @@ public class Vector2D{
 		Vector2D diffVector = this.difference((Vector2D)other);
 		return diffVector.getXComponent() == 0 && diffVector.getYComponent() == 0;
 		
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(Vector2D);
+		return result;
 	}
 	
 	public final static Vector2D TEMINATED_POS = new Vector2D(-1E10, -1E10);

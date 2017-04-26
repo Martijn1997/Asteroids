@@ -67,7 +67,7 @@ public class World {
 		if (isValidWidth(width))
 			this.width = width;	
 		else 
-			this.width = Double.POSITIVE_INFINITY;
+			this.width = getMaxWidth();
 	}
 	
 	/***
@@ -95,7 +95,7 @@ public class World {
 	/**
 	 * constant that stores the maximum width of a world
 	 */
-	public final static double MAX_WIDTH = Double.POSITIVE_INFINITY;
+	public final static double MAX_WIDTH = Double.MAX_VALUE;
 	
 	/**
 	 * Basic getter for the Height of the world
@@ -151,7 +151,7 @@ public class World {
 	/**
 	 * constant that stores the maximum height
 	 */
-	private final static double MAX_HEIGHT = Double.POSITIVE_INFINITY;
+	private final static double MAX_HEIGHT = Double.MAX_VALUE;
 	
 
 
@@ -392,6 +392,8 @@ public class World {
 	 * 			|worldObject.getWorld() != this
 	 */
 	public void removeFromWorld(WorldObject worldObject) throws IllegalArgumentException{
+		if (worldObject == null)
+			throw new IllegalArgumentException();
 		if (worldObject.getWorld() != this)
 			throw new IllegalArgumentException();
 		Vector2D position = worldObject.getPosition();
@@ -405,11 +407,10 @@ public class World {
 	 * @see implementation
 	 */
 	public WorldObject getEntityAt(Vector2D position){
-		WorldObject entity = this.getWorldObjectMap().get(position);
+		WorldObject entity = (WorldObject)worldObjects.get(position);
 		return entity;
 	}
 
-	
 	/**
 	 * Returns the position of the world object where object collides with
 	 * @param 	object
@@ -497,6 +498,32 @@ public class World {
 		return allBullets;
 	}
 	
+	public HashSet<Asteroid> getAllAsteroids(){
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		HashSet<Asteroid> allAsteroids = new HashSet<Asteroid>();
+		Asteroid asteroid = null;
+		for (WorldObject i : allObjects){
+			if (i instanceof Asteroid) {
+				asteroid =(Asteroid) i;
+				allAsteroids.add(asteroid);
+			}
+		}
+		return allAsteroids;
+	}
+	
+	public HashSet<Planetoid> getAllPlanetoids(){
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
+		HashSet<Planetoid> allPlanetoids = new HashSet<Planetoid>();
+		Planetoid planetoid = null;
+		for (WorldObject i : allObjects){
+			if (i instanceof Planetoid) {
+				planetoid =(Planetoid) i;
+				allPlanetoids.add(planetoid);
+			}
+		}
+		return allPlanetoids;
+	}
+	
 	
 	/**
 	 * returns the HashMap containing all the world objects and their position in the world
@@ -552,12 +579,14 @@ public class World {
 	 * @effect	all the ships in the world are advanced time-seconds 
 	 * 			| for ship in getAllShips() do ship.move(time) && ship.thrust(time) && updatePosition((old ship).getPosition(), ship)
 	 * 
-	 * @effect	all the bullets in the world are advanced time-seconds
-	 * 			| for bullet in getAllBullets() do bullet.move(time)&&updatePosition((old bullet).getPosition(), bullet)
+	 * @effect	all the Planetoid in the world are advanced time-seconds
+	 * 			| for bullet in getAllasteroid() do bullet.move(time)&&updatePosition((old bullet).getPosition(), bullet)
 	 */
 	public void advanceTime(double time){
 		HashSet<Ship> worldShips = this.getAllShips();
 		HashSet<Bullet> worldBullets = this.getAllBullets();
+		HashSet<Planetoid> worldPlanetoids = this.getAllPlanetoids();
+		HashSet<Asteroid> worldAsteroids = this.getAllAsteroids();
 		// move all the ships
 		for(Ship ship: worldShips){
 			Vector2D oldPosition = ship.getPosition();
@@ -573,6 +602,22 @@ public class World {
 			bullet.move(time);
 			//update the position in the world
 			this.updatePosition(oldPosition, bullet);
+		}
+		
+		// move all the planetoids
+		for(Planetoid planetoid: worldPlanetoids){
+			Vector2D oldPosition = planetoid.getPosition();
+			planetoid.move(time);
+			//update the position in the world
+			this.updatePosition(oldPosition, planetoid);
+		}
+		
+		// move all the asteroids
+		for(Asteroid asteroid: worldAsteroids){
+			Vector2D oldPosition = asteroid.getPosition();
+			asteroid.move(time);
+			//update the position in the world
+			this.updatePosition(oldPosition, asteroid);
 		}
 	}
 	
@@ -690,25 +735,27 @@ public class World {
 					collisionListener.objectCollision(object1, object2, collisionPos.getXComponent(), collisionPos.getYComponent());
 				}catch(NullPointerException exc){
 				}
-				// check if object1 is a ship and object2 a bullet
-				if(object1 instanceof Ship && object2 instanceof Bullet){		
-					((Ship)object1).resolveCollision(((Bullet)object2));
-					
-				// check if object1 is a ship and object2 a ship
-				} else if( object1 instanceof Ship && object2 instanceof Ship ){
-					
-					((Ship)object1).resolveCollision(((Ship)object2));
-					
-				// we now know that object1 is a bullet so check if object 2 is a ship
-				} else if( object2 instanceof Ship){
-					
-					((Ship)object2).resolveCollision(((Bullet)object1));
-				// only option left is that object 1 is a bullet and object 2 is a bullet
-				} else{
-					((Bullet)object1).resolveCollision(((Bullet)object2));
-				}
 				
-				return;
+				object1.resolveCollision(object2);
+				
+//				// check if object1 is a ship and object2 a bullet
+//				if(object1 instanceof Ship && object2 instanceof Bullet){		
+//					((Ship)object1).resolveCollision(((Bullet)object2));
+//					
+//				// check if object1 is a ship and object2 a ship
+//				} else if( object1 instanceof Ship && object2 instanceof Ship ){
+//					
+//					((Ship)object1).resolveCollision(((Ship)object2));
+//					
+//				// we now know that object1 is a bullet so check if object 2 is a ship
+//				} else if( object2 instanceof Ship){
+//					
+//					((Ship)object2).resolveCollision(((Bullet)object1));
+//				// only option left is that object 1 is a bullet and object 2 is a bullet
+//				} else{
+//					((Bullet)object1).resolveCollision(((Bullet)object2));
+//				}
+//				
 			}
 	}
 	

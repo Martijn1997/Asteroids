@@ -164,7 +164,7 @@ public class ShipTestsPart2 {
 	// tests getter thrust status
 	@Test
 	public final void getTrustForceConstant(){
-		assertEquals(1.1E21, ship1.getThrustForce(), EPSILON);
+		assertEquals(1.1E18, ship1.getThrustForce(), EPSILON);
 	}
 	
 	
@@ -181,7 +181,7 @@ public class ShipTestsPart2 {
 	@Test
 	public final void Thrust_lightspeed(){
 		ship1.thrustOn();
-		ship1.thrust(10);
+		ship1.thrust(2000);
 		assertEquals(WorldObject.LIGHT_SPEED, ship1.getXVelocity(), EPSILON);
 	}
 	
@@ -255,7 +255,7 @@ public class ShipTestsPart2 {
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
 		assertEquals(bullet1.getWorld(), ship1.getWorld());
-		Vector2D supposedBulletPos = new Vector2D(100 + (ship1.getRadius()+bullet1.getRadius())*Ship.BULLET_OFFSET,100);
+		Vector2D supposedBulletPos = new Vector2D(100 + ship1.getRadius()+bullet1.getRadius()*Ship.BULLET_OFFSET,100);
 		assertEquals(bullet1.getPosition(), supposedBulletPos);
 		Vector2D supposedBulletVel = new Vector2D(250,0);
 		assertEquals(bullet1.getVelocity(), supposedBulletVel);
@@ -266,7 +266,7 @@ public class ShipTestsPart2 {
 		world1.addWorldObject(ship2);
 		bullet1.loadBulletOnShip(ship2);
 		ship2.fireBullet();
-		assertEquals((ship2.getRadius() + bullet1.getRadius())*Ship.BULLET_OFFSET, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
+		assertEquals(ship2.getRadius() + bullet1.getRadius()*Ship.BULLET_OFFSET, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
 		assertEquals(250*Math.cos(ship2.getOrientation()), bullet1.getVelocity().getXComponent(), EPSILON);
 		assertEquals(250*Math.sin(ship2.getOrientation()),bullet1.getVelocity().getYComponent(),EPSILON);
 	}

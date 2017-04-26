@@ -2,36 +2,57 @@ package asteroids.model;
 
 public abstract class MinorPlanet extends WorldObject {
 	
+	protected MinorPlanet(double xPos, double yPos, double radius, double xVel, double yVel, double mass) throws IllegalArgumentException{
+		super(xPos, yPos, radius, xVel, yVel, mass);
+	}
 	
-
+	/**
+	 * the minimum radius of a minor planet
+	 */
+	public final static double MIN_RADIUS = 5;
+	
+	/**
+	 * @return 	the minimum radius of a minor planet
+	 * 			|result == MIN_RADIUS
+	 */
 	@Override
-	public double getMinimumRadius() {
-		// TODO Auto-generated method stub
-		return 0;
+	public double getMinimumRadius(){
+		return MIN_RADIUS;
 	}
 
+	/**
+	 * Checks whether the provided radius is valid
+	 * @param 	rad
+	 * 			the radius
+	 * 
+	 * @return |result == (radius >= MIN_RADIUS)
+	 */
 	@Override
-	public boolean isValidRadius(double rad) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isValidRadius(double radius){
+		return radius >= this.getMinimumRadius();
 	}
-
+	
+	/**
+	 * Getter for the minimum density of the minor planet
+	 */
 	@Override
-	public double getMinimumDensity() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public abstract double getMinimumDensity();
 
 	@Override
 	public boolean canHaveAsMass(double mass) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.calcMinMass()==mass;
 	}
 
 	@Override
 	public boolean canHaveAsWorld(World world) {
-		// TODO Auto-generated method stub
-		return false;
+		if(world != null&&!residesInWorld()&&!this.isTerminated()){
+			return true;
+		}else if (this.isTerminated() && world == null){
+			return true;
+		}else if (this.getWorld().isTerminated() && world == null){
+			return true;
+		}else
+			return false;
 	}
 
 	@Override
