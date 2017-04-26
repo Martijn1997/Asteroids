@@ -381,7 +381,10 @@ public class Ship extends WorldObject{
 	 * 			|result == getThrustforce/getMass();
 	 */
 	public double getAcceleration(){
-		return  this.getThrustForce()/this.getTotalMass();
+		if (this.getThrusterStatus())
+			return  this.getThrustForce()/this.getTotalMass();
+		else
+			return 0;
 	}
 	
 	/**
@@ -428,7 +431,7 @@ public class Ship extends WorldObject{
 	/**
 	 * variable that stores the thrust force of the ship
 	 */
-	private final double thrustForce = 1.1E21;
+	private final double thrustForce = 1.1E18;
 	
 	
 	/**
@@ -594,9 +597,12 @@ public class Ship extends WorldObject{
 		if(bullet == null)
 			return;
 		
+		if (this.getWorld() == null)
+			return;
+		
 		// set the position of the bullet.
-		double nextToShipX = this.getXPosition() + Math.cos(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
-		double nextToShipY = this.getYPosition() + Math.sin(this.getOrientation())*((this.getRadius()+bullet.getRadius())*BULLET_OFFSET);
+		double nextToShipX = this.getXPosition() + Math.cos(this.getOrientation())*(this.getRadius()+bullet.getRadius()*BULLET_OFFSET);
+		double nextToShipY = this.getYPosition() + Math.sin(this.getOrientation())*(this.getRadius()+bullet.getRadius()*BULLET_OFFSET);
 		
 		// set the bullet next to the ship
 		bullet.setPosition(nextToShipX, nextToShipY);
@@ -696,9 +702,9 @@ public class Ship extends WorldObject{
 	@Override
 	public void resolveCollision(WorldObject other){
 		if (other instanceof Ship)
-			(this).resolveCollision((Ship) other);
+			this.resolveCollision((Ship) other);
 		if (other instanceof Bullet)
-			(this).resolveCollision((Bullet) other);
+			this.resolveCollision((Bullet) other);
 		else
 			other.resolveCollision(this);
 	}

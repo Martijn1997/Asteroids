@@ -221,7 +221,7 @@ public abstract class WorldObject {
 	 */
 	@Basic @Raw
 	public boolean canHaveAsPosition(double xPos,double yPos){
-		if(Double.isNaN(xPos) || Double.isNaN(yPos)|| Double.isInfinite(xPos)|| Double.isInfinite(yPos))
+		if(Double.isNaN(xPos) || Double.isNaN(yPos))
 			return false;
 		if(!this.residesInWorld())
 			return true;
@@ -339,6 +339,9 @@ public abstract class WorldObject {
 	 */
 	@Basic @Raw
 	public void setVelocity(double xVel, double yVel){
+		if(Double.isNaN(xVel) || Double.isNaN(yVel)){
+			this.velocity = new Vector2D(0, 0);
+			return;}
 		double totalVelocity = totalVelocity(xVel, yVel);
 		if (isValidTotalVelocity(totalVelocity)){
 			this.velocity = new Vector2D(xVel, yVel);
@@ -414,7 +417,7 @@ public abstract class WorldObject {
 	 * 			| hasInitializedRadius()
 	 */
 	@Basic @Immutable @Raw
-	public void setRadius(double radius) throws IllegalArgumentException{
+	public void setRadius(double radius) throws IllegalArgumentException, IllegalStateException{
 			if(! this.isValidRadius(radius))
 				throw new IllegalArgumentException();
 			if(this.hasInitializedRadius())
@@ -426,7 +429,7 @@ public abstract class WorldObject {
 	
 	/**
 	 * checks if the radius is initialized
-	 * @return 	true if and only if the radius is uninitialized
+	 * @return 	true if and only if the radius is initialized
 	 * 			| result == this.initializedRadius;
 	 */
 	@Model @Raw
@@ -768,6 +771,8 @@ public abstract class WorldObject {
 	 * 
 	 * @return	if the WorldObjects never collide return positive infinity
 	 * 
+	 * @return	if the WorldObjects are not in the same world return positive infinity
+	 * 
 	 * @throws 	IllegalArgumentException
 	 * 			| other == null || this.overlap(other)
 	 * 
@@ -783,6 +788,9 @@ public abstract class WorldObject {
 		// if(World.significantOverlap(this, other))
 		if (this.overlap(other))
 			throw new IllegalArgumentException();
+		
+		if(this.getWorld() != other.getWorld())
+			return Double.POSITIVE_INFINITY;
 		
 		Vector2D deltaR = this.getPosition().difference(other.getPosition());
 		Vector2D deltaV = this.getVelocity().difference(other.getVelocity());
@@ -935,7 +943,7 @@ public abstract class WorldObject {
 		
 		double time = this.getTimeToCollision(world);
 		if(time == Double.POSITIVE_INFINITY)
-			return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
+			return null;
 		Vector2D center = this.getPosition().vectorSum(this.getVelocity().rescale(time));
 		
 		// initialize all the possible collisions
@@ -950,9 +958,8 @@ public abstract class WorldObject {
 		}
 		
 		// added to prevent that the compiler starts complaining
-		return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};
-			
-		}
+		return new double [] {Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY};		
+	}
 
 
 	/**
@@ -1185,7 +1192,6 @@ public abstract class WorldObject {
 	
 	
 	public abstract void resolveCollision(WorldObject other);
-		
 	
 	
 	/**

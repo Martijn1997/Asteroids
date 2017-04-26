@@ -150,11 +150,6 @@ public class WorldTest {
 	}
 	
 	@Test
-	public final void evolve_IllegalCase(){
-		
-	}
-	
-	@Test
 	public final void getNextCollision_1Collision(){
 		world1.addWorldObject(ship5);
 		world1.addWorldObject(ship6);
@@ -234,17 +229,14 @@ public class WorldTest {
 	@Test
 	public final void getEntityAt_TrueCase(){
 		world1.addWorldObject(ship1);
-		world1.addWorldObject(ship3);
-		world1.addWorldObject(bullet1);
 		Vector2D position = ship1.getPosition();
-		assertTrue(ship1 == world1.getEntityAt(position));
+		WorldObject result = world1.getEntityAt(position); 
+		assertEquals(ship1, result);
 	}
 	
 	@Test
 	public final void getEntityAt_FalseCase(){
 		world1.addWorldObject(ship1);
-		world1.addWorldObject(ship3);
-		world1.addWorldObject(bullet1);
 		Vector2D position = ship2.getPosition();
 		assertTrue(null == world1.getEntityAt(position));
 	}

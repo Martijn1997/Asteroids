@@ -375,7 +375,7 @@ public class Bullet extends WorldObject {
 	@Override
 	public void resolveCollision(WorldObject other){
 		if (other instanceof Bullet)
-			(this).resolveCollision((Bullet) other);
+			this.resolveCollision((Bullet) other);
 		else
 			other.resolveCollision(this);
 	}
