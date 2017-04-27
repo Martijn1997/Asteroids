@@ -22,7 +22,7 @@ public class VariableExpression<T> extends BasicExpression<T> {
 	 * Basic getter for values of type T
 	 */
 	@Basic
-	public T getValue(){
+	public T evaluate(){
 		return this.varValue;
 	}
 	
@@ -53,10 +53,10 @@ public class VariableExpression<T> extends BasicExpression<T> {
 		if (getClass() != obj.getClass())
 			return false;
 		VariableExpression other = (VariableExpression) obj;
-		if (this.getValue() == null) {
-			if (other.getValue() != null)
+		if (this.evaluate() == null) {
+			if (other.evaluate() != null)
 				return false;
-		} else if (!this.getValue().equals(other.getValue()))
+		} else if (!this.evaluate().equals(other.evaluate()))
 			return false;
 		return true;
 	}

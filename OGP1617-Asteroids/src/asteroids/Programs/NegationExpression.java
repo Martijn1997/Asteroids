@@ -20,9 +20,9 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 * 			|-this.getOperand()
 	 */
 	@SuppressWarnings("unchecked")
-	public Double getValue(){
+	public Double evaluate(){
 		// because the cast is checked in the isValid the warning may be surpressed
-		return -this.getOperand().getValue();
+		return -this.getOperand().evaluate();
 	}
 	
 //	@SuppressWarnings("unchecked")

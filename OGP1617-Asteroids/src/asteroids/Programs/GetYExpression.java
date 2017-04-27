@@ -14,7 +14,7 @@ public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	/**
 	 * returns the Y position of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getYPosition();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getYPosition();
 	}
 }

@@ -14,7 +14,7 @@ public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Doubl
 		/**
 		 * returns the sqrtExpression value
 		 */
-		public Double getValue(){
-			return Math.sqrt(this.getOperand().getValue());
+		public Double evaluate(){
+			return Math.sqrt(this.getOperand().evaluate());
 		}
 }

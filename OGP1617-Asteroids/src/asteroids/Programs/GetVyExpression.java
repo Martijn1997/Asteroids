@@ -15,7 +15,7 @@ public class GetVyExpression extends UnaryExpression<Expression<?, WorldObject>,
 	/**
 	 * returns the y velocity of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getYVelocity();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getYVelocity();
 	}
 }
