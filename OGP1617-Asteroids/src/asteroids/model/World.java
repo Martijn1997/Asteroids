@@ -437,7 +437,7 @@ public class World {
 	 * 			
 	 */
 	private static boolean withinRadius(WorldObject object1, WorldObject object2){
-		double radiusRatio = 1.01;
+		double radiusRatio = 1.001;
 		return object1.getPosition().distanceTo(object2.getPosition()) <= (object1.getRadius() + object2.getRadius())*radiusRatio;
 	}
 	

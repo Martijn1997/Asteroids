@@ -74,7 +74,6 @@ public class Bullet extends WorldObject {
 		// unload the bullet from the ship
 		if(this.getShip() != null && this.getShip().containsBullet(this))
 			this.getShip().removeBulletFromShip(this);
-		this.associatedShip = null;
 		super.terminate();
 	}
 	
