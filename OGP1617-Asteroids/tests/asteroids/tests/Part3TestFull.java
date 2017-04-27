@@ -2852,6 +2852,5 @@ public class Part3TestFull {
   //acceleration 0 if thruster not active
   //positie worldObject mag infinite zijn
   //als velocity NaN dan velocity 0
-  //
   
 }
