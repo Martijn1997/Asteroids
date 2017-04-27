@@ -1,0 +1,16 @@
+package asteroids.Programs;
+
+public abstract class Statement {
+	
+	public Statement(Program program){
+		//TODO implement constructor
+	}
+	
+	protected void setProgram(Program program){
+		this.associatedProgram = program;
+	}
+	
+	public abstract void executeStatement();
+	
+	private Program associatedProgram;
+}
