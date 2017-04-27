@@ -5,6 +5,6 @@ public interface Expression<T, R> {
 		@Override
 		public String toString();
 		
-		public R getValue();
+		public R evaluate();
 		
 }

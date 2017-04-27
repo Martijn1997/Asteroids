@@ -36,7 +36,7 @@ public class LiteralExpression<T> implements Expression<T,T> {
 		}
 	}
 	
-	public T getValue(){
+	public T evaluate(){
 		return this.value;
 	}
 	

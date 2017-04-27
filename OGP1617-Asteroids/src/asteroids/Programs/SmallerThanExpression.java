@@ -17,7 +17,7 @@ public class SmallerThanExpression extends BinaryExpression<Expression<?, Double
 	/**
 	 * returns true if and only if the left operand is smaller than the right operand
 	 */
-	public Boolean getValue(){
-		return this.getLeftOperand().getValue()<this.getRightOperand().getValue();
+	public Boolean evaluate(){
+		return this.getLeftOperand().evaluate()<this.getRightOperand().evaluate();
 	}
 }
