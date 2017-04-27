@@ -126,4 +126,15 @@ public class SimpleExpressionTests {
 		AdditionExpression add = new AdditionExpression(mult, zero);
 		assertEquals(100, add.getValue(), EPSILON);
 	}
+	
+	@Test
+	public final void mult_change_var(){
+		VariableExpression<Double> myVar1 = new VariableExpression<Double>("myVar", 100.0);
+		VariableExpression<Double> myVar2 = new VariableExpression<Double>("myVar", 1.0);
+		MultiplicationExpression mult1 = new MultiplicationExpression(myVar1, myVar2);
+		assertEquals(100.0, mult1.getValue(), EPSILON);
+		myVar1.setValue(1.0);
+		assertEquals(1.0, mult1.getValue(), EPSILON);
+		
+	}
 }
