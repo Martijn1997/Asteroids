@@ -1,5 +1,5 @@
 package asteroids.tests;
-
+ 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
