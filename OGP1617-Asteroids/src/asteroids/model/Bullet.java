@@ -86,8 +86,8 @@ public class Bullet extends WorldObject {
 	 * @return |result == (radius >= MIN_RADIUS)
 	 */
 	@Override
-	public boolean isValidRadius(double radius){
-		return radius >= this.getMinimumRadius();
+	public boolean canHaveAsRadius(double radius){
+		return radius >= this.getMinimumRadius() && !this.hasInitializedRadius();
 	}
 	
 	/**

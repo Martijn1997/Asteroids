@@ -19,18 +19,6 @@ public abstract class MinorPlanet extends WorldObject {
 	public double getMinimumRadius(){
 		return MIN_RADIUS;
 	}
-
-	/**
-	 * Checks whether the provided radius is valid
-	 * @param 	rad
-	 * 			the radius
-	 * 
-	 * @return |result == (radius >= MIN_RADIUS)
-	 */
-	@Override
-	public boolean isValidRadius(double radius){
-		return radius >= this.getMinimumRadius();
-	}
 	
 	/**
 	 * Getter for the minimum density of the minor planet
