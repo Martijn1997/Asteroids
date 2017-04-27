@@ -41,12 +41,16 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	 */
 	public Ship createShip(double x, double y, double xVelocity, double yVelocity, double radius, double direction,
 			double mass) throws ModelException{	
-			assert((direction <= 2*Math.PI)&&(direction >= 0));
+			try {
+				assert((direction <= 2*Math.PI)&&(direction >= 0));
+			}catch(AssertionError exc){
+				throw new ModelException(exc);
+			}
 			try {
 				Ship newShip = new Ship(x, y, direction, radius, xVelocity, yVelocity, mass);
 				return newShip;
-			} catch(IllegalArgumentException exc){
-				throw new ModelException(exc);			
+			} catch(IllegalArgumentException exc1){
+				throw new ModelException(exc1);			
 			}
 	}
 	
