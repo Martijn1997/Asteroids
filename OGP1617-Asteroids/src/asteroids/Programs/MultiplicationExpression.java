@@ -8,11 +8,11 @@ public class MultiplicationExpression extends BinaryExpression<Expression<?, Dou
 		super(leftOperand, rightOperand);
 	}
 	
-	public Double getValue(){
+	public Double evaluate(){
 		Expression<?, Double> leftOperand = this.getLeftOperand();
 		Expression<?, Double> rightOperand = this.getRightOperand();
 		
-		return ((Expression<?,Double>) leftOperand).getValue() * ((Expression<?, Double>) rightOperand).getValue();
+		return ((Expression<?,Double>) leftOperand).evaluate() * ((Expression<?, Double>) rightOperand).evaluate();
 		
 	}
 	

@@ -14,7 +14,7 @@ public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>,
 	/**
 	 * returns the x velocity of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getXVelocity();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getXVelocity();
 	}
 }

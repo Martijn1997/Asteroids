@@ -8,7 +8,7 @@ public class GetRadiusExpression extends UnaryExpression<Expression<?, WorldObje
 		super(operand);
 	}
 		
-	public Double getValue(){
-		return this.getOperand().getValue().getRadius();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getRadius();
 	}
 }

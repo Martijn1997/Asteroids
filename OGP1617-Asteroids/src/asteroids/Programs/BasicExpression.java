@@ -20,7 +20,7 @@ public abstract class BasicExpression<T> implements Expression<T,T>{
 	 * basic getter for the value of the basic expression
 	 * @return
 	 */
-	public abstract T getValue();
+	public abstract T evaluate();
 	
 	/**
 	 * basic getter for the name of the basicExpression

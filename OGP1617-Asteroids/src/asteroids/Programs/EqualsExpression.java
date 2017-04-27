@@ -7,7 +7,7 @@ public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
 		super(leftOperand, rightOperand);
 	}
 	
-	public Boolean getValue(){
+	public Boolean evaluate(){
 		T leftOperand = this.getLeftOperand();
 		T rightOperand = this.getRightOperand();
 		
@@ -15,7 +15,7 @@ public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
 			return false;
 		}
 		
-		if(((Expression) leftOperand).getValue().equals(((Expression) rightOperand).getValue())){
+		if(((Expression) leftOperand).evaluate().equals(((Expression) rightOperand).evaluate())){
 			return true;
 		}else{
 			return false;
