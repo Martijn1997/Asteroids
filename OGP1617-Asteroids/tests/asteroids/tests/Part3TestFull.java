@@ -1,5 +1,5 @@
 package asteroids.tests;
-
+ 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -136,6 +136,7 @@ public class Part3TestFull {
     score += 3;
   }
 
+  @Test
   public void testCreateShipRadiusNan() throws ModelException {
     try {
       max_score += 1;
@@ -160,7 +161,7 @@ public class Part3TestFull {
     try {
       max_score += 1;
       facade.createShip(100, 120, 10, 5, 50, -Math.PI, 1.0E20);
-    } catch (AssertionError exc) {
+    } catch (ModelException exc) {
       score += 1;
     }
   }
@@ -170,7 +171,7 @@ public class Part3TestFull {
     try {
       max_score += 1;
       facade.createShip(100, 120, 10, 5, 50, 3 * Math.PI, 1.0E20);
-    } catch (AssertionError exc) {
+    } catch (ModelException exc) {
       score += 1;
     }
   }
@@ -1220,19 +1221,18 @@ public class Part3TestFull {
     World world = facade.createWorld(1000, 1000);
     Bullet bullet = facade.createBullet(200, 200, -10, 0, 50);
     facade.addBulletToWorld(world, bullet);
+    // first bounce after 15 sec
     // second bounce after 105 sec
-    facade.evolve(world, 104.0, null);
+    // third bounce after 195 sec
+    facade.evolve(world, 194.0, null);
     assertEquals(1, facade.getWorldBullets(world).size());
-    assertEquals(940, facade.getBulletPosition(bullet)[0], EPSILON);
+    assertEquals(60, facade.getBulletPosition(bullet)[0], EPSILON);
     assertEquals(200, facade.getBulletPosition(bullet)[1], EPSILON);
-    assertEquals(10, facade.getBulletVelocity(bullet)[0], EPSILON);
+    assertEquals(-10, facade.getBulletVelocity(bullet)[0], EPSILON);
     assertEquals(0, facade.getBulletVelocity(bullet)[1], EPSILON);
-    // own fix of the third bounce issue
-    facade.evolve(world, 500, null);
+    facade.evolve(world, 2.0, null);
     assertEquals(0, facade.getWorldBullets(world).size());
     assertTrue(facade.isTerminatedBullet(bullet));
-    
-    
     score += 12;
   }
 
@@ -2843,16 +2843,15 @@ public class Part3TestFull {
 
   //gettimetocollision geimplementeerd dat de time oneindig is bij verschillende werelden
   //firebullet bulletoffset veranderd
-  //collisionidentifier nog wel nodig door double dispatch? double dispatch veroorzaakt soms stackoverflow...
+  //double dispatch gefixt
   //bij 2 collisions tegen boundary stackoverflow
   //getEntityAt opgelost door override hashcode in Vector2D
   //max height en width nu Max value ipv infinity
   //thrustforce aangepast van x10^21 naar x10^18
-  //Bullet dies on second bounce????
   //fire no bullet if ship isnt in a world
   //acceleration 0 if thruster not active
   //positie worldObject mag infinite zijn
   //als velocity NaN dan velocity 0
-  //
+  
   
 }
