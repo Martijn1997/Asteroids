@@ -14,7 +14,6 @@ import be.kuleuven.cs.som.annotate.*;
 // die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
 // dit is gedaan om de association integrity te behouden
 
-//TODO removebullet from ship
 
 /**
  * 

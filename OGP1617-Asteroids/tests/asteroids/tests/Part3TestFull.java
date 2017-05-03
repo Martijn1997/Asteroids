@@ -160,7 +160,7 @@ public class Part3TestFull {
     try {
       max_score += 1;
       facade.createShip(100, 120, 10, 5, 50, -Math.PI, 1.0E20);
-    } catch (AssertionError exc) {
+    } catch (ModelException exc) {
       score += 1;
     }
   }
@@ -170,7 +170,7 @@ public class Part3TestFull {
     try {
       max_score += 1;
       facade.createShip(100, 120, 10, 5, 50, 3 * Math.PI, 1.0E20);
-    } catch (AssertionError exc) {
+    } catch (ModelException exc) {
       score += 1;
     }
   }
@@ -806,9 +806,9 @@ public class Part3TestFull {
   public void testFireBulletOutOfBounds() throws ModelException {
     max_score += 8;
     World world = facade.createWorld(5000, 5000);
-    Ship ship = facade.createShip(550, 500, 0, 0, 500, 3 * Math.PI / 2, 1.0E20);
+    Ship ship = facade.createShip(550, 550, 0, 0, 500, 3 * Math.PI / 2, 1.0E20);
     facade.addShipToWorld(world, ship);
-    Bullet bullet1 = facade.createBullet(520, 170, 10, 5, 10);
+    Bullet bullet1 = facade.createBullet(520, 170, 10, 5, 30);
     Bullet bullet2 = facade.createBullet(480, 300, 10, 5, 30);
     facade.loadBulletOnShip(ship, bullet1);
     facade.loadBulletOnShip(ship, bullet2);
@@ -850,14 +850,14 @@ public class Part3TestFull {
   public void testBoundaryCollision_FiniteTimeRightCollision() throws ModelException {
     max_score += 6;
     World world = facade.createWorld(5000, 5000);
-    Ship ship = facade.createShip(500, 100, 100, 0, 100, 0, 1.0E20);
+    Ship ship = facade.createShip(500, 300, 100, 0, 100, 0, 1.0E20);
     facade.addShipToWorld(world, ship);
     double timeToCollision = facade.getTimeCollisionBoundary(ship);
     double expectedTime = (5000.0 - 600.0) / 100.0;
     assertEquals(expectedTime, timeToCollision, EPSILON);
     double[] collisionPosition = facade.getPositionCollisionBoundary(ship);
     assertEquals(5000, collisionPosition[0], EPSILON);
-    assertEquals(100, collisionPosition[1], EPSILON);
+    assertEquals(300, collisionPosition[1], EPSILON);
     score += 6;
   }
 
@@ -865,10 +865,10 @@ public class Part3TestFull {
   public void testBoundaryCollision_FiniteTimeTopCollision() throws ModelException {
     max_score += 4;
     World world = facade.createWorld(5000, 5000);
-    Ship ship = facade.createShip(500, 100, 0, 100, 100, 0, 1.0E20);
+    Ship ship = facade.createShip(500, 300, 0, 100, 100, 0, 1.0E20);
     facade.addShipToWorld(world, ship);
     double timeToCollision = facade.getTimeCollisionBoundary(ship);
-    double expectedTime = (5000.0 - 200.0) / 100.0;
+    double expectedTime = (5000.0 - 300.0 - 100.0) / 100.0;
     assertEquals(expectedTime, timeToCollision, EPSILON);
     double[] collisionPosition = facade.getPositionCollisionBoundary(ship);
     assertEquals(500, collisionPosition[0], EPSILON);
@@ -880,7 +880,7 @@ public class Part3TestFull {
   public void testBoundaryCollision_NoVelocity() throws ModelException {
     max_score += 5;
     World world = facade.createWorld(5000, 5000);
-    Ship ship = facade.createShip(500, 100, 0, 0, 100, 0, 1.0E20);
+    Ship ship = facade.createShip(500, 300, 0, 0, 100, 0, 1.0E20);
     facade.addShipToWorld(world, ship);
     double timeToCollision = facade.getTimeCollisionBoundary(ship);
     assertEquals(Double.POSITIVE_INFINITY, timeToCollision, EPSILON);
@@ -1220,19 +1220,18 @@ public class Part3TestFull {
     World world = facade.createWorld(1000, 1000);
     Bullet bullet = facade.createBullet(200, 200, -10, 0, 50);
     facade.addBulletToWorld(world, bullet);
+    // first bounce after 15 sec
     // second bounce after 105 sec
-    facade.evolve(world, 104.0, null);
+    // third bounce after 195 sec
+    facade.evolve(world, 194.0, null);
     assertEquals(1, facade.getWorldBullets(world).size());
-    assertEquals(940, facade.getBulletPosition(bullet)[0], EPSILON);
+    assertEquals(60, facade.getBulletPosition(bullet)[0], EPSILON);
     assertEquals(200, facade.getBulletPosition(bullet)[1], EPSILON);
-    assertEquals(10, facade.getBulletVelocity(bullet)[0], EPSILON);
+    assertEquals(-10, facade.getBulletVelocity(bullet)[0], EPSILON);
     assertEquals(0, facade.getBulletVelocity(bullet)[1], EPSILON);
-    // own fix of the third bounce issue
-    facade.evolve(world, 500, null);
+    facade.evolve(world, 2.0, null);
     assertEquals(0, facade.getWorldBullets(world).size());
     assertTrue(facade.isTerminatedBullet(bullet));
-    
-    
     score += 12;
   }
 
@@ -1948,7 +1947,7 @@ public class Part3TestFull {
 //  public void testBreakStatement_InFunctionBody() throws ModelException {
 //    if (nbStudentsInTeam > 1) {
 //      max_score += 16;
-//      String code = "def f { " + "  break; " + "}" + "a := 10; " + "while a < 20.5 { " + "  print a; "
+//      String code = "def f { " + "  break; " + "  return 0.0;" + "}" + "a := 10; " + "while a < 20.5 { " + "  print a; "
 //          + "  if 14.5 < a { " + "    b := f(); " + "  }" + "  a := a + 2.0; " + "}" + "print 0.0; ";
 //      Program program = ProgramParser.parseProgramFromString(code, programFactory);
 //      facade.loadProgramOnShip(ship1, program);

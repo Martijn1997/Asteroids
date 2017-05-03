@@ -26,14 +26,27 @@ public abstract class MinorPlanet extends WorldObject {
 	@Override
 	public abstract double getMinimumDensity();
 
+	/**
+	 * checks if the mass is valid
+	 * @return 	return true if and only if the mass is equal to the minimumMass
+	 * 			| result  == (this.calcMinMass() == mass )
+	 */
 	@Override
 	public boolean canHaveAsMass(double mass) {
 		return this.calcMinMass()==mass;
 	}
 
+	/**
+	 * Checker for adding a minor planet to a world
+	 * @return  true if the world is not a null reference and the minor planet isn't already in a world.
+	 * 			|result == ((world != null &&this.getWorld()==null)
+	 * @return 	true if the minor planet is terminated and the provided world is a null reference
+	 * 			|result == (this.isTerminated() && world == null))
+	 * @return  true if the world is a null reference and the current associated world is terminated
+	 */
 	@Override
 	public boolean canHaveAsWorld(World world) {
-		if(world != null&&!residesInWorld()&&!this.isTerminated()){
+		if(world != null && !residesInWorld() && !this.isTerminated()){
 			return true;
 		}else if (this.isTerminated() && world == null){
 			return true;
@@ -43,6 +56,10 @@ public abstract class MinorPlanet extends WorldObject {
 			return false;
 	}
 
+	/**
+	 * Function that checks of what instance the collisions are and resolves it.
+	 * @see implementation
+	 */
 	@Override
 	public void resolveCollision(WorldObject other) {
 		if (other instanceof Ship)
@@ -53,6 +70,10 @@ public abstract class MinorPlanet extends WorldObject {
 			this.resolveCollision((MinorPlanet) other);
 	}
 	
+	/**
+	 * Function that resolves the collision between two minor planets.
+	 * @see implementation
+	 */
 	public void resolveCollision(MinorPlanet other) throws IllegalStateException{
 		if(!World.apparentlyCollide(this, other)){
 			throw new IllegalStateException();
@@ -82,6 +103,10 @@ public abstract class MinorPlanet extends WorldObject {
 //		this.getWorld().updatePosition(object2Pos, other);
 	}
 	
+	/**
+	 * Function that resolves the collision between a minor planet and a bullet.
+	 * @see implementation
+	 */
 	public void resolveCollision(Bullet bullet) throws IllegalStateException, IllegalArgumentException{
 		if(!World.apparentlyCollide(this,bullet))
 			throw new IllegalStateException();

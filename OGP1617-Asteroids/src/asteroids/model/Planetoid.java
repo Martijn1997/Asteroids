@@ -111,10 +111,13 @@ public class Planetoid extends MinorPlanet {
 			double yPos2 = yPos - rad * Math.sin(orientation);
 			Asteroid asteroid1 = new Asteroid(xPos1, yPos1, rad, xVel1, yVel1, 0);
 			Asteroid asteroid2 = new Asteroid(xPos2, yPos2, rad, -xVel1, -yVel1, 0);
+			super.terminate();
 			world.addWorldObject(asteroid1);
 			world.addWorldObject(asteroid2);
 		}
-		super.terminate();
+		else{
+			super.terminate();
+		}
 	}
 	
 }
