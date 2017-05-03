@@ -9,8 +9,8 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 * @effect 	constructs the unary expression of a negation
 	 * 			|UnaryExpression(Operand)
 	 */
-	public NegationExpression(Expression<?, Double> operand){
-		super(operand);
+	public NegationExpression(Expression<?, Double> operand, Statement statement){
+		super(operand, statement);
 		
 	}
 	

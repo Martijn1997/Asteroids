@@ -15,11 +15,12 @@ import asteroids.model.WorldObject;
  */
 public class LiteralExpression<T> implements Expression<T,T> {
 	
-	public LiteralExpression(T value) throws IllegalArgumentException{
+	public LiteralExpression(T value, Statement statement) throws IllegalArgumentException{
 		if(!isValidValue(value)){
 			throw new IllegalArgumentException();
 		}
 		this.value = value;
+		this.setStatement(statement);
 	}
 	
 	/**
@@ -40,5 +41,22 @@ public class LiteralExpression<T> implements Expression<T,T> {
 		return this.value;
 	}
 	
+	/**
+	 * Basic getter for a statement
+	 */
+	public Statement getStatement(){
+		return this.associatedStatement;
+	}
+	
+	/**
+	 * Basic setter for a associated statement
+	 * @param statement
+	 */
+	private void setStatement(Statement statement){
+		this.associatedStatement = statement;
+	}
+	
 	private final T value;
+	
+	private Statement associatedStatement;
 }

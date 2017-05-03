@@ -7,8 +7,8 @@ public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getY expression
 	 * @param operand
 	 */
-	public GetYExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetYExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**

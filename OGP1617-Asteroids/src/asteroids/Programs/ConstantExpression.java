@@ -16,8 +16,8 @@ public class ConstantExpression<T> extends BasicExpression<T>{
 	 * 			thrown if the value is not valid
 	 * 			|canHaveAsValue(value)
 	 */
-	public ConstantExpression(String name, T value) throws IllegalArgumentException{
-		super(name);
+	public ConstantExpression(String name, T value, Statement statement) throws IllegalArgumentException{
+		super(name, statement);
 		if(!canHaveAsValue(value)){
 			throw new IllegalArgumentException();
 		}

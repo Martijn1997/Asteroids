@@ -7,4 +7,6 @@ public interface Expression<T, R> {
 		
 		public R evaluate();
 		
+		public Statement getStatement();
+		
 }

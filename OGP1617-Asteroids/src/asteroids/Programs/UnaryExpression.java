@@ -17,11 +17,9 @@ public abstract class UnaryExpression<T,R> implements Expression<T,R> {
 	 * 			| !isValidOperand(operand)
 	 */
 	@Model @Raw
-	protected UnaryExpression(T operand){
-		if(!isValidOperand(operand)){
-			throw new IllegalArgumentException();
-		}
+	protected UnaryExpression(T operand, Statement statement){
 		this.setOperand(operand);
+		this.setStatement(statement);
 	}
 	
 	/**
@@ -59,10 +57,27 @@ public abstract class UnaryExpression<T,R> implements Expression<T,R> {
 		}
 	}
 	
+	/**
+	 * Basic getter for a statement
+	 */
+	public Statement getStatement(){
+		return this.associatedStatement;
+	}
+	
+	/**
+	 * Basic setter for a associated statement
+	 * @param statement
+	 */
+	private void setStatement(Statement statement){
+		this.associatedStatement = statement;
+	}
+	
 
 	/**
 	 * variable that stores the operand
 	 */
 	private T operand;
 	
+	
+	private Statement associatedStatement;
 }

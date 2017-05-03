@@ -9,8 +9,8 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 	 * 
 	 * @effect BinaryExpression(leftOperand,rightOperand)
 	 */
-	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
+		super(leftOperand, rightOperand, statement);
 	}
 	
 	/**
