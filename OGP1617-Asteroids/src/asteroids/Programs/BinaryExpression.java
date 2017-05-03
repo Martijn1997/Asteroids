@@ -12,9 +12,10 @@ public abstract class BinaryExpression<T,R> implements Expression<T,R> {
 	 * @param rightOperand
 	 */
 	@Model @Raw
-	protected BinaryExpression(T leftOperand, T rightOperand) throws IllegalArgumentException{
+	protected BinaryExpression(T leftOperand, T rightOperand, Statement statement) throws IllegalArgumentException{
 		this.setLeftOperand(leftOperand);
 		this.setRightoperand(rightOperand);
+		this.setStatement(statement);
 	}
 	
 	/**
@@ -73,9 +74,26 @@ public abstract class BinaryExpression<T,R> implements Expression<T,R> {
 		}
 	}
 	
+	/**
+	 * Basic getter for a statement
+	 */
+	public Statement getStatement(){
+		return this.associatedStatement;
+	}
+	
+	/**
+	 * Basic setter for a associated statement
+	 * @param statement
+	 */
+	private void setStatement(Statement statement){
+		this.associatedStatement = statement;
+	}
+	
 	
 	private T leftOperand;
 		
 	private T rightOperand;
+	
+	private Statement associatedStatement;
 
 }

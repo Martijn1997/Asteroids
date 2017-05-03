@@ -40,6 +40,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	 * located in a world.
 	 */
 	public Ship createShip(double x, double y, double xVelocity, double yVelocity, double radius, double direction,
+
 		double mass) throws ModelException{
 		try{
 			assert((direction <= 2*Math.PI)&&(direction >= 0));
@@ -52,6 +53,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 		} catch(IllegalArgumentException exc){
 			throw new ModelException(exc);			
 		}
+
 	}
 	
 	/**

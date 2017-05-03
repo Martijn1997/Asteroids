@@ -30,19 +30,19 @@ public class SimpleExpressionTests {
 	public final void setVariableTest(){
 		VariableExpression<Double> myVar = new VariableExpression<Double>("myVar", 100.0);
 		assertEquals("myVar", myVar.getName());
-		assertEquals(100, myVar.getValue(),EPSILON);
+		assertEquals(100, myVar.evaluate(),EPSILON);
 	}
 	
 	@Test
 	public final void equalstest_literal(){
 		EqualsExpression<Expression> myExpression = new EqualsExpression<Expression>(double1,double1);
-		assertEquals(true, myExpression.getValue());
+		assertEquals(true, myExpression.evaluate());
 	}
 	
 	@Test
 	public final void coidEqualsTest_false_literal(){
 		EqualsExpression<Expression> myExpression = new EqualsExpression<Expression>(double1,double2);
-		assertFalse(myExpression.getValue());
+		assertFalse(myExpression.evaluate());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -55,7 +55,7 @@ public class SimpleExpressionTests {
 		VariableExpression<Double> myVar1 = new VariableExpression<Double>("myVar1",1.0);
 		VariableExpression<Double> myVar2 = new VariableExpression<Double>("myVar2",1.0);
 		EqualsExpression<Expression> equals1 = new EqualsExpression<Expression>(myVar1, myVar2);
-		assert(equals1.getValue());
+		assert(equals1.evaluate());
 	}
 	
 	@Test
@@ -67,15 +67,15 @@ public class SimpleExpressionTests {
 		VariableExpression<Ship> myVar3 = new VariableExpression<Ship>("myVar3",ship2);
 		EqualsExpression<Expression> equals1 = new EqualsExpression<Expression>(myVar1, myVar2);
 		EqualsExpression<Expression> equals2 = new EqualsExpression<Expression>(myVar1, myVar3);
-		assert(equals1.getValue());
-		assert(equals2.getValue());
+		assert(equals1.evaluate());
+		assert(equals2.evaluate());
 		
 	}
 	
 	@Test
 	public final void negationTest_double_literal(){
 		NegationExpression negation = new NegationExpression(double1);
-		assertEquals(-100.0, negation.getValue(),EPSILON);
+		assertEquals(-100.0, negation.evaluate(),EPSILON);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -85,7 +85,7 @@ public class SimpleExpressionTests {
 		NegationExpression negation = new NegationExpression(var1);
 		VariableExpression<Double> var2 = new VariableExpression<Double>("Var2",-100.0);
 		EqualsExpression<Expression> equals1 = new EqualsExpression<Expression>(var2, negation);
-		assert(equals1.getValue());		
+		assert(equals1.evaluate());		
 	}
 	
 
@@ -98,7 +98,7 @@ public class SimpleExpressionTests {
 	@Test
 	public final void addition(){
 		AdditionExpression addition = new AdditionExpression(double1, zero);
-		assertEquals(100.0, addition.getValue(), EPSILON);
+		assertEquals(100.0, addition.evaluate(), EPSILON);
 	}
 	
 //	@Test (expected = IllegalArgumentException.class)
@@ -110,7 +110,7 @@ public class SimpleExpressionTests {
 	@Test
 	public final void multiplication(){
 		MultiplicationExpression multiplication = new MultiplicationExpression(double1, double3);
-		assertEquals(100.0, multiplication.getValue(), EPSILON);
+		assertEquals(100.0, multiplication.evaluate(), EPSILON);
 	}
 	
 //	@Test (expected = IllegalArgumentException.class)
@@ -124,7 +124,7 @@ public class SimpleExpressionTests {
 
 		MultiplicationExpression mult = new MultiplicationExpression(double1, double3);
 		AdditionExpression add = new AdditionExpression(mult, zero);
-		assertEquals(100, add.getValue(), EPSILON);
+		assertEquals(100, add.evaluate(), EPSILON);
 	}
 	
 	@Test
@@ -132,9 +132,9 @@ public class SimpleExpressionTests {
 		VariableExpression<Double> myVar1 = new VariableExpression<Double>("myVar", 100.0);
 		VariableExpression<Double> myVar2 = new VariableExpression<Double>("myVar", 1.0);
 		MultiplicationExpression mult1 = new MultiplicationExpression(myVar1, myVar2);
-		assertEquals(100.0, mult1.getValue(), EPSILON);
+		assertEquals(100.0, mult1.evaluate(), EPSILON);
 		myVar1.setValue(1.0);
-		assertEquals(1.0, mult1.getValue(), EPSILON);
+		assertEquals(1.0, mult1.evaluate(), EPSILON);
 		
 	}
 }

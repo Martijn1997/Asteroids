@@ -1,8 +1,11 @@
 package asteroids.model;
 
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+//import asteroids.Programs.*;
+import asteroids.Programs.Program;
 
 import be.kuleuven.cs.som.annotate.*;
 
@@ -649,12 +652,7 @@ public class Ship extends WorldObject{
 		else{
 			WorldObject other = this.getWorld().getEntityAt(otherPos);
 			try {
-				// if the collision partner is a bullet resolve as a bullet bullet collision
-				if(other instanceof Bullet){
-					bullet.resolveCollision((Bullet)other);
-				// otherwise the collision partner is a Ship
-				}else
-					bullet.resolveCollision((Ship)other);
+				bullet.resolveCollision(other);
 			//if there is no significant overlap between the bullet and the other entity
 			//means that they are positioned within each other, terminate both
 			} catch (IllegalStateException exc) {
@@ -702,8 +700,10 @@ public class Ship extends WorldObject{
 	public void resolveCollision(WorldObject other){
 		if (other instanceof Ship){
 			this.resolveCollision((Ship) other);
+
 		}
 		else if (other instanceof Bullet){
+
 			this.resolveCollision((Bullet) other);
 		}
 		else{
@@ -780,5 +780,34 @@ public class Ship extends WorldObject{
 //		this.getWorld().updatePosition(object1Pos, this);
 //		this.getWorld().updatePosition(object2Pos, other);
 	}
+	
+	/**
+	 * Returns the program associated with the ship
+	 */
+	@Basic
+	public Program getProgram(){
+		return this.associatedProgram;
+	}
+	
+	//TODO add documentation
+	/**
+	 * 
+	 * @param program
+	 * @throws IllegalArgumentException
+	 */
+	public void setProgram(Program program)throws IllegalArgumentException{
+		if(this.getProgram()== null && program.getShip() == this){
+			this.associatedProgram = program;
+		}else{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	/**
+	 * variable that stores the associated program
+	 */
+	private Program associatedProgram;
+	
+	
 
 }

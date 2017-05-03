@@ -3,11 +3,11 @@ package asteroids.Programs;
 public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
 	
 	
-	public EqualsExpression(T leftOperand, T rightOperand){
-		super(leftOperand, rightOperand);
+	public EqualsExpression(T leftOperand, T rightOperand, Statement statement){
+		super(leftOperand, rightOperand, statement);
 	}
 	
-	public Boolean getValue(){
+	public Boolean evaluate(){
 		T leftOperand = this.getLeftOperand();
 		T rightOperand = this.getRightOperand();
 		
@@ -15,7 +15,7 @@ public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
 			return false;
 		}
 		
-		if(((Expression) leftOperand).getValue().equals(((Expression) rightOperand).getValue())){
+		if(((Expression<?,?>) leftOperand).evaluate().equals(((Expression<?,?>) rightOperand).evaluate())){
 			return true;
 		}else{
 			return false;

@@ -7,14 +7,14 @@ public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>,
 	 * constructor for the getVx expression
 	 * @param operand
 	 */
-	public GetVxExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetVxExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**
 	 * returns the x velocity of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getXVelocity();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getXVelocity();
 	}
 }

@@ -1,5 +1,5 @@
 package asteroids.tests;
-
+ 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -136,6 +136,7 @@ public class Part3TestFull {
     score += 3;
   }
 
+  @Test
   public void testCreateShipRadiusNan() throws ModelException {
     try {
       max_score += 1;
@@ -2842,16 +2843,15 @@ public class Part3TestFull {
 
   //gettimetocollision geimplementeerd dat de time oneindig is bij verschillende werelden
   //firebullet bulletoffset veranderd
-  //collisionidentifier nog wel nodig door double dispatch? double dispatch veroorzaakt soms stackoverflow...
+  //double dispatch gefixt
   //bij 2 collisions tegen boundary stackoverflow
   //getEntityAt opgelost door override hashcode in Vector2D
   //max height en width nu Max value ipv infinity
   //thrustforce aangepast van x10^21 naar x10^18
-  //Bullet dies on second bounce????
   //fire no bullet if ship isnt in a world
   //acceleration 0 if thruster not active
   //positie worldObject mag infinite zijn
   //als velocity NaN dan velocity 0
-  //
+  
   
 }

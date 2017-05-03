@@ -8,14 +8,14 @@ public class GetVyExpression extends UnaryExpression<Expression<?, WorldObject>,
 	 * constructor for the getVy expression
 	 * @param operand
 	 */
-	public GetVyExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetVyExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**
 	 * returns the y velocity of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getYVelocity();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getYVelocity();
 	}
 }

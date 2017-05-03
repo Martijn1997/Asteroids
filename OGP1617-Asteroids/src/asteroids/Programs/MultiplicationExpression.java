@@ -4,15 +4,15 @@ package asteroids.Programs;
 
 public class MultiplicationExpression extends BinaryExpression<Expression<?, Double>, Double>{
 	
-	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
+		super(leftOperand, rightOperand, statement);
 	}
 	
-	public Double getValue(){
+	public Double evaluate(){
 		Expression<?, Double> leftOperand = this.getLeftOperand();
 		Expression<?, Double> rightOperand = this.getRightOperand();
 		
-		return ((Expression<?,Double>) leftOperand).getValue() * ((Expression<?, Double>) rightOperand).getValue();
+		return ((Expression<?,Double>) leftOperand).evaluate() * ((Expression<?, Double>) rightOperand).evaluate();
 		
 	}
 	

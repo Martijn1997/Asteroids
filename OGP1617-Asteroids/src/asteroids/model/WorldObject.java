@@ -1263,6 +1263,7 @@ public abstract class WorldObject {
 		return a-EPSILON <= b && a+EPSILON >= b;
 	}
 	
+
 	/**		
 	 * error margin used in calculations with vectors		
 	 */		
@@ -1274,6 +1275,7 @@ public abstract class WorldObject {
 	 */		
 	public static boolean doubleEqualsLessAccurate(double a, double b){		
 		return a-EPSILON2 <= b && a+EPSILON2 >= b;		
+
 	}
 
 }
