@@ -1263,17 +1263,19 @@ public abstract class WorldObject {
 		return a-EPSILON <= b && a+EPSILON >= b;
 	}
 	
-	/**
-	 * error margin used in calculations with vectors
-	 */
-	protected static final double EPSILON2 = 1E-3;
-	
-	/**
-	 * equals used for double precision floating point numbers
-	 * @return if a and b are equal to eachother within acceptable margins return true
-	 */
-	public static boolean doubleEqualsLessAccurate(double a, double b){
-		return a-EPSILON2 <= b && a+EPSILON2 >= b;
+
+	/**		
+	 * error margin used in calculations with vectors		
+	 */		
+	protected static final double EPSILON2 = 1E-3;		
+			
+	/**		
+	 * equals used for double precision floating point numbers		
+	 * @return if a and b are equal to eachother within acceptable margins return true		
+	 */		
+	public static boolean doubleEqualsLessAccurate(double a, double b){		
+		return a-EPSILON2 <= b && a+EPSILON2 >= b;		
+
 	}
 
 }

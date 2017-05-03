@@ -17,7 +17,6 @@ import be.kuleuven.cs.som.annotate.*;
 // die het schip binden aan de bullet is protected en kan dus niet zomaar gebruikt worden
 // dit is gedaan om de association integrity te behouden
 
-//TODO removebullet from ship
 
 /**
  * 
@@ -699,12 +698,17 @@ public class Ship extends WorldObject{
 	
 	@Override
 	public void resolveCollision(WorldObject other){
-		if (other instanceof Ship)
+		if (other instanceof Ship){
 			this.resolveCollision((Ship) other);
-		else if (other instanceof Bullet)
+
+		}
+		else if (other instanceof Bullet){
+
 			this.resolveCollision((Bullet) other);
-		else
+		}
+		else{
 			other.resolveCollision(this);
+		}
 	}
 	
 	/**

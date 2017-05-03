@@ -90,6 +90,37 @@ public class Planetoid extends MinorPlanet {
 	private double originalRadius;
 	
 	@Override
+	public void terminate(){
+		double radP = this.getRadius();
+		World world = this.getWorld();
+		if((radP >= 30) && (world != null)){
+			double rad = radP/2;
+			double xVelP = this.getXVelocity();
+			double yVelP = this.getYVelocity();
+			double velP = totalVelocity(xVelP, yVelP);
+			double totalVelocity = 1.5 * velP;
+			Random r = new Random();
+			double orientation = 2 * Math.PI * r.nextDouble();
+			double xVel1 = totalVelocity * Math.cos(orientation);
+			double yVel1 = totalVelocity * Math.sin(orientation);
+			double xPos = this.getXPosition();
+			double yPos = this.getYPosition();
+			double xPos1 = xPos + rad * Math.cos(orientation);
+			double yPos1 = yPos + rad * Math.sin(orientation);
+			double xPos2 = xPos - rad * Math.cos(orientation);
+			double yPos2 = yPos - rad * Math.sin(orientation);
+			Asteroid asteroid1 = new Asteroid(xPos1, yPos1, rad, xVel1, yVel1, 0);
+			Asteroid asteroid2 = new Asteroid(xPos2, yPos2, rad, -xVel1, -yVel1, 0);
+			super.terminate();
+			world.addWorldObject(asteroid1);
+			world.addWorldObject(asteroid2);
+		}
+		else{
+			super.terminate();
+		}
+	}
+	
+	@Override
 	public void move(double time){
 		if(!isValidTime(time))
 			throw new IllegalArgumentException();
@@ -102,4 +133,5 @@ public class Planetoid extends MinorPlanet {
 		double newDistance = oldDistance + oldPosVector.distanceTo(newPosVector);
 		this.setTotalTraveledDistance(newDistance);
 	}
+	
 }
