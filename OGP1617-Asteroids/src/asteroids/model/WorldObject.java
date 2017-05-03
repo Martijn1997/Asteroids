@@ -1219,16 +1219,29 @@ public abstract class WorldObject {
 		double[] collisionPosition = this.getCollisionPosition(world);	
 		double worldWidth = world.getWidth();
 		double worldHeigth = world.getHeight();
+		double radius = this.getRadius();
 		double[] currentVelocity = this.getVelocity().getVector2DArray();
 		
+		//check if it collides with both
+		if(doubleEquals(collisionPosition[0], 0) && 
+				(doubleEquals(collisionPosition[1], 0 + radius) || doubleEquals(collisionPosition[1], worldHeigth - radius))){
+			this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
+		}
+		else if(doubleEquals(collisionPosition[0], worldWidth) && 
+				(doubleEquals(collisionPosition[1], 0 + radius) || doubleEquals(collisionPosition[1], worldHeigth - radius))){
+			this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
+		}
+		else if(doubleEquals(collisionPosition[1], worldHeigth) && 
+				(doubleEquals(collisionPosition[0], 0 + radius) || doubleEquals(collisionPosition[0], worldWidth - radius))){
+			this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
+		}
+		else if(doubleEquals(collisionPosition[1], 0) && 
+				(doubleEquals(collisionPosition[0], 0 + radius) || doubleEquals(collisionPosition[0], worldWidth - radius))){
+			this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
+		}
 		//check if the collision is with one of the x-boundaries
-		if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0)){
-			if(doubleEquals(collisionPosition[1], worldHeigth)||doubleEquals(collisionPosition[1],0)){
-				this.setVelocity(-currentVelocity[0], -currentVelocity[1]);
-			}
-			else{
-				this.setVelocity(-currentVelocity[0], currentVelocity[1]);
-			}
+		else if(doubleEquals(collisionPosition[0], worldWidth)||doubleEquals(collisionPosition[0],0)){
+			this.setVelocity(-currentVelocity[0], currentVelocity[1]);
 		}
 		//else it collides with the y-boundary
 		else{
@@ -1248,6 +1261,19 @@ public abstract class WorldObject {
 	 */
 	public static boolean doubleEquals(double a, double b){
 		return a-EPSILON <= b && a+EPSILON >= b;
+	}
+	
+	/**		
+	 * error margin used in calculations with vectors		
+	 */		
+	protected static final double EPSILON2 = 1E-3;		
+			
+	/**		
+	 * equals used for double precision floating point numbers		
+	 * @return if a and b are equal to eachother within acceptable margins return true		
+	 */		
+	public static boolean doubleEqualsLessAccurate(double a, double b){		
+		return a-EPSILON2 <= b && a+EPSILON2 >= b;		
 	}
 
 }

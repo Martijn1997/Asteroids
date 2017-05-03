@@ -691,9 +691,15 @@ public class World {
 		
 		ArrayList<WorldObject> collisionCandidates = new ArrayList<WorldObject>();
 		for(WorldObject object: worldObjects){
-			if(WorldObject.doubleEquals(object.getPosition().distanceTo(collisionPos), object.getRadius()))
+			//Radius of a planetoid changes
+			if(object instanceof Planetoid){
+				if(WorldObject.doubleEqualsLessAccurate(object.getPosition().distanceTo(collisionPos), object.getRadius())){
 					collisionCandidates.add(object);
-			
+				}
+			}
+			else if(WorldObject.doubleEquals(object.getPosition().distanceTo(collisionPos), object.getRadius())){
+					collisionCandidates.add(object);
+			}
 		}
 		collisionIdentifier(collisionPos, collisionListener, collisionCandidates);
 

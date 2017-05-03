@@ -64,9 +64,9 @@ public abstract class MinorPlanet extends WorldObject {
 	public void resolveCollision(WorldObject other) {
 		if (other instanceof Ship)
 			this.resolveCollision((Ship) other);
-		if (other instanceof Bullet)
+		else if (other instanceof Bullet)
 			this.resolveCollision((Bullet) other);
-		if (other instanceof MinorPlanet)
+		else if (other instanceof MinorPlanet)
 			this.resolveCollision((MinorPlanet) other);
 	}
 	

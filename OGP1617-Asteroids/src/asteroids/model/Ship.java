@@ -700,12 +700,15 @@ public class Ship extends WorldObject{
 	
 	@Override
 	public void resolveCollision(WorldObject other){
-		if (other instanceof Ship)
+		if (other instanceof Ship){
 			this.resolveCollision((Ship) other);
-		if (other instanceof Bullet)
+		}
+		else if (other instanceof Bullet){
 			this.resolveCollision((Bullet) other);
-		else
+		}
+		else{
 			other.resolveCollision(this);
+		}
 	}
 	
 	/**

@@ -120,4 +120,18 @@ public class Planetoid extends MinorPlanet {
 		}
 	}
 	
+	@Override
+	public void move(double time){
+		if(!isValidTime(time))
+			throw new IllegalArgumentException();
+		
+		Vector2D oldPosVector = this.getPosition();
+		Vector2D newPosVector = this.getPosition().vectorSum(this.getVelocity().rescale(time));
+		
+		this.setPosition(newPosVector.getXComponent(), newPosVector.getYComponent());
+		double oldDistance = this.getTotalTraveledDistance();
+		double newDistance = oldDistance + oldPosVector.distanceTo(newPosVector);
+		this.setTotalTraveledDistance(newDistance);
+	}
+	
 }
