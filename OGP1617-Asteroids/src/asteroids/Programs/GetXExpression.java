@@ -8,8 +8,8 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getX expression
 	 * @param operand
 	 */
-	public GetXExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetXExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**

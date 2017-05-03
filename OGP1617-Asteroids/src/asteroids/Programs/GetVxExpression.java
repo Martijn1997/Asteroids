@@ -7,8 +7,8 @@ public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>,
 	 * constructor for the getVx expression
 	 * @param operand
 	 */
-	public GetVxExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetVxExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**

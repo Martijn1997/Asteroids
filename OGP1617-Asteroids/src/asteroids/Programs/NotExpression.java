@@ -8,8 +8,8 @@ public class NotExpression extends UnaryExpression<Expression<?,Boolean>, Boolea
 	 * @param operand
 	 * @effect UnaryExpression(operand)
 	 */
-	public NotExpression(Expression<?, Boolean> operand){
-		super(operand);
+	public NotExpression(Expression<?, Boolean> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**

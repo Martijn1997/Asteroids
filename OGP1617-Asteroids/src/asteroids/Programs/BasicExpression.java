@@ -12,8 +12,9 @@ public abstract class BasicExpression<T> implements Expression<T,T>{
 	 * 			| new.getName() = name
 	 */
 	@Model @Raw
-	protected BasicExpression(String name){
+	protected BasicExpression(String name, Statement statement){
 		this.name = name;
+		this.setStatement(statement);
 	}
 	
 	/**
@@ -48,4 +49,21 @@ public abstract class BasicExpression<T> implements Expression<T,T>{
 	 * variable that stores the variableName
 	 */
 	private final String name;
+	
+	/**
+	 * Basic getter for a statement
+	 */
+	public Statement getStatement(){
+		return this.associatedStatement;
+	}
+	
+	/**
+	 * Basic setter for a associated statement
+	 * @param statement
+	 */
+	private void setStatement(Statement statement){
+		this.associatedStatement = statement;
+	}
+	
+	private Statement associatedStatement;
 }

@@ -8,8 +8,8 @@ public class GetVyExpression extends UnaryExpression<Expression<?, WorldObject>,
 	 * constructor for the getVy expression
 	 * @param operand
 	 */
-	public GetVyExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetVyExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**

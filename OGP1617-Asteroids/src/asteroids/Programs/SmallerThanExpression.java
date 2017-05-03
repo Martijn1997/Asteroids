@@ -9,8 +9,8 @@ public class SmallerThanExpression extends BinaryExpression<Expression<?, Double
 	 * @param rightOperand
 	 * @effect binaryExpression(leftOperand, rightOperand)
 	 */
-	public SmallerThanExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public SmallerThanExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
+		super(leftOperand, rightOperand, statement);
 	}
 	
 	

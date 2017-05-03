@@ -1,8 +1,11 @@
 package asteroids.model;
 
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+//import asteroids.Programs.*;
+import asteroids.Programs.Program;
 
 import be.kuleuven.cs.som.annotate.*;
 
@@ -773,5 +776,34 @@ public class Ship extends WorldObject{
 //		this.getWorld().updatePosition(object1Pos, this);
 //		this.getWorld().updatePosition(object2Pos, other);
 	}
+	
+	/**
+	 * Returns the program associated with the ship
+	 */
+	@Basic
+	public Program getProgram(){
+		return this.associatedProgram;
+	}
+	
+	//TODO add documentation
+	/**
+	 * 
+	 * @param program
+	 * @throws IllegalArgumentException
+	 */
+	public void setProgram(Program program)throws IllegalArgumentException{
+		if(this.getProgram()== null && program.getShip() == this){
+			this.associatedProgram = program;
+		}else{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	/**
+	 * variable that stores the associated program
+	 */
+	private Program associatedProgram;
+	
+	
 
 }
