@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
 	

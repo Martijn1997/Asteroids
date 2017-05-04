@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 //R the return Type, T the type of the operands
 public interface Expression<T, R> {
 	

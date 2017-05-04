@@ -1,6 +1,4 @@
-package asteroids.Programs;
-
-import asteroids.model.WorldObject;
+package asteroids.model;
 
 /**
  * Class for a literal creation

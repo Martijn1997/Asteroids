@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Double>{
 		

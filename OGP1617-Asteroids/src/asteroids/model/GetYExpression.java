@@ -1,6 +1,4 @@
-package asteroids.Programs;
-
-import asteroids.model.WorldObject;
+package asteroids.model;
 
 public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	/**

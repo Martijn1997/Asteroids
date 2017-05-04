@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 // return type is a double, the needed input is an expression with a double return type
 public class SmallerThanExpression extends BinaryExpression<Expression<?, Double>, Boolean>{

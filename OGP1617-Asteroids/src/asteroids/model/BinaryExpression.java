@@ -1,7 +1,6 @@
-package asteroids.Programs;
+package asteroids.model;
 
 
-import asteroids.model.WorldObject;
 import be.kuleuven.cs.som.annotate.*;
 
 public abstract class BinaryExpression<T,R> implements Expression<T,R> {

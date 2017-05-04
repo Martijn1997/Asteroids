@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 /**
  * Class to create a variable assignment statement

@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 import java.util.ArrayList;
 import java.util.List;
