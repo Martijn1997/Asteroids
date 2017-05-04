@@ -1,9 +1,13 @@
 package asteroids.Programs;
 
-import asteroids.model.WorldObject;
 import be.kuleuven.cs.som.annotate.*;
 
-public class VariableExpression extends BasicExpression<Expression<?,?>> {
+/**
+ * A variable can be any type (double, boolean and WorldObject)
+ * @author Martijn & Flor
+ *
+ */
+public class VariableExpression extends BasicExpression<Object> {
 	
 	/**
 	 * constructor for a variable
@@ -12,35 +16,22 @@ public class VariableExpression extends BasicExpression<Expression<?,?>> {
 	 */
 	public VariableExpression(String varName, Statement statement){
 		super(varName, statement);
+		// store the literal in the specified variable
+		this.literal = this.getStatement().getProgram().getGlobals().get(this.getName());
 	}
 	
 	/**
-	 * Basic getter for values of type T
+	 * Basic getter for values of type Object
+	 * @return 
 	 */
 	@Basic
-	public Expression<?, ?> evaluate(){
-		Program program = this.getStatement().getProgram();
-		return program.getGlobals().get(this.getName());
+	public Object evaluate(){
+		return getLiteralExpression().evaluate();
 	}
-
-
 	
-
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (obj == null)
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		VariableExpression other = (VariableExpression) obj;
-//		if (this.evaluate() == null) {
-//			if (other.evaluate() != null)
-//				return false;
-//		} else if (!this.evaluate().equals(other.evaluate()))
-//			return false;
-//		return true;
-//	}
-
+	public LiteralExpression<?> getLiteralExpression(){
+		return this.literal;
+	}
+	
+	private final LiteralExpression<?> literal;
 }
