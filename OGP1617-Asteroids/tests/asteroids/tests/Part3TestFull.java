@@ -2841,17 +2841,5 @@ public class Part3TestFull {
 //    }
 //  }
 
-  //gettimetocollision geimplementeerd dat de time oneindig is bij verschillende werelden
-  //firebullet bulletoffset veranderd
-  //double dispatch gefixt
-  //bij 2 collisions tegen boundary stackoverflow
-  //getEntityAt opgelost door override hashcode in Vector2D
-  //max height en width nu Max value ipv infinity
-  //thrustforce aangepast van x10^21 naar x10^18
-  //fire no bullet if ship isnt in a world
-  //acceleration 0 if thruster not active
-  //positie worldObject mag infinite zijn
-  //als velocity NaN dan velocity 0
-  
-  
+
 }
