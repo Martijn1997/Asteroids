@@ -171,11 +171,21 @@ public class Bullet extends WorldObject {
 		if(residesInWorld()){
 			this.getWorld().removeFromWorld(this);
 		}
+		else if(!this.bulletInShip(ship)){		
+			throw new IllegalArgumentException();		
+		}
 		this.setShip(ship);
 		ship.loadBullet(this);
 		this.syncBulletVectors();
 		this.resetBounceCount();
 				
+	}
+	
+	private boolean bulletInShip(Ship ship){		
+		if(this.getPosition().distanceTo(ship.getPosition()) + this.getRadius() <= ship.getRadius())		
+			return true;		
+		else		
+			return false;		
 	}
 	
 	/**
