@@ -1,15 +1,16 @@
-package asteroids.Programs;
+package asteroids.model;
 
-public class IfStatement extends Statement implements NormalStatement{
+public class IfStatement extends ChainedStatement{
 	
 	public IfStatement(Program program, Expression<?,Boolean> condition, Statement statement){
-		super(program);
+		super();
 	}
 	
 	
 	/**
 	 * executes the if - (else) statement
 	 */
+	@Override
 	public void executeStatement(){
 		
 		if(this.getCondition().evaluate()){
@@ -38,6 +39,7 @@ public class IfStatement extends Statement implements NormalStatement{
 	/**
 	 * Basic getter for the statement of the if statement
 	 */
+	@Override
 	public Statement getStatement(){
 		return this.statement;
 	}
@@ -64,14 +66,13 @@ public class IfStatement extends Statement implements NormalStatement{
 	 * @param elseStatement
 	 */
 	public void createElseStatement(Statement statement){
-		this.associatedElse = this.new ElseStatement(this.getProgram(),statement);
+		this.associatedElse = this.new ElseStatement(statement);
 		this.hasElseStatement = true;
 	}
 	
 	public boolean hasElseStatement(){
 		return this.hasElseStatement;
 	}
-	
 	
 	/**
 	 * variable that stores the condition of the if statement
@@ -101,18 +102,20 @@ public class IfStatement extends Statement implements NormalStatement{
 	 * (enforced by private class and pseudo constructor)
 	 *
 	 */
-	private class ElseStatement extends Statement implements NormalStatement{
+	private class ElseStatement extends ChainedStatement{
 		
-		public ElseStatement(Program program, Statement Statement){
-			super(program);
+		public ElseStatement(Statement Statement){
+			super();
 			this.setStatement(statement);
 		}
 		
+		@Override
 		public void executeStatement(){
 			this.getStatement().executeStatement();
 		}
 		
-		private Statement getStatement(){
+		@Override
+		public Statement getStatement(){
 			return this.statement;
 		}
 		
@@ -123,5 +126,6 @@ public class IfStatement extends Statement implements NormalStatement{
 		 * variable that stores the statement for the else statement
 		 */
 		private Statement statement;
+		
 	}
 }

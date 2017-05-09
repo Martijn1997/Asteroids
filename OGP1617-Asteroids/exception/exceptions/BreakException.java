@@ -1,5 +1,5 @@
 package exceptions;
-import asteroids.Programs.WhileStatement;
+import asteroids.model.WhileStatement;
 
 public class BreakException extends RuntimeException{
 	

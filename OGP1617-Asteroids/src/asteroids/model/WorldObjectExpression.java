@@ -1,16 +1,16 @@
-package asteroids.Programs;
+package asteroids.model;
 
 import java.util.Set;
 
-import asteroids.model.World;
-import asteroids.model.WorldObject;
-
-public class WorldObjectExpression<T> extends LiteralExpression<T> {
+public class WorldObjectExpression<T extends WorldObject> extends LiteralExpression<T> {
 	
 	public WorldObjectExpression(T value, Statement statement){
 		super(value, statement);
 	}
 	
+	/**
+	 * also checks if the said value T is in the world
+	 */
 	@Override
 	public boolean isValidValue(T value){
 		if(!super.isValidValue(value))
@@ -18,9 +18,7 @@ public class WorldObjectExpression<T> extends LiteralExpression<T> {
 		Program program = this.getStatement().getProgram();
 		World shipWorld = program.getShip().getWorld();
 		Set<WorldObject> worldObjects = shipWorld.getAllWorldObjects();
-		//TODO use streams and lambda functions to check if the desired object is in the world
-		
-		return false;
+		return worldObjects.contains(value);
 	}
 
 }

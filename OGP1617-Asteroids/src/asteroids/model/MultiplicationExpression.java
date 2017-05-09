@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 //TODO ask TA if this is good practice?
 //public class MultiplicationExpression extends BinaryExpression<Expression<?, Double>, Double>
 

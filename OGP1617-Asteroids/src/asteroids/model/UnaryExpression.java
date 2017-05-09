@@ -1,10 +1,9 @@
-package asteroids.Programs;
+package asteroids.model;
 
-import asteroids.model.WorldObject;
 import be.kuleuven.cs.som.annotate.*;
 
 
-public abstract class UnaryExpression<T,R> implements Expression<T,R> {
+public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expression<T,R> {
 	
 	/**
 	 * Constructor for a unary expression
@@ -50,34 +49,24 @@ public abstract class UnaryExpression<T,R> implements Expression<T,R> {
 	 * @return
 	 */
 	public boolean isValidOperand(T operand){
-		if(operand!=null&&(operand instanceof Double || operand instanceof Boolean || operand instanceof WorldObject || operand instanceof Expression)){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
-	/**
-	 * Basic getter for a statement
-	 */
-	public Statement getStatement(){
-		return this.associatedStatement;
-	}
-	
-	/**
-	 * Basic setter for a associated statement
-	 * @param statement
-	 */
-	private void setStatement(Statement statement){
-		this.associatedStatement = statement;
-	}
-	
+		return operand instanceof Expression;
 
+	}
+
+	
 	/**
 	 * variable that stores the operand
 	 */
 	private T operand;
 	
 	
-	private Statement associatedStatement;
+	/**
+	 * Sets the statement of the operand to statement (cascade)
+	 * set the associated statement to statement
+	 */
+	@Override
+	protected void setStatement(Statement statement){
+		this.getOperand().setStatement(statement);
+		super.setStatement(statement);
+	}
 }

@@ -1,6 +1,6 @@
-package asteroids.Programs;
+package asteroids.model;
 
-public class EqualsExpression<T> extends BinaryExpression<T, Boolean>{
+public class EqualsExpression<T extends Expression<?,?>> extends BinaryExpression<T, Boolean>{
 	
 	
 	public EqualsExpression(T leftOperand, T rightOperand, Statement statement){

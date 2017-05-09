@@ -1,6 +1,4 @@
-package asteroids.Programs;
-
-import asteroids.model.WorldObject;
+package asteroids.model;
 
 public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	/**

@@ -1,8 +1,8 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public abstract class Statement {
 	
-	public Statement(Program program){
+	public Statement(){
 		//TODO implement constructor
 	}
 	
@@ -11,8 +11,13 @@ public abstract class Statement {
 	}
 	
 	protected void setProgram(Program program){
+		if(!canHaveAsProgram(program)){
+			throw new IllegalArgumentException();
+		}
 		this.associatedProgram = program;
 	}
+	
+	public abstract boolean canHaveAsProgram(Program program);
 	
 	public abstract void executeStatement();
 	

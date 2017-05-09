@@ -5,7 +5,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import asteroids.Programs.*;
+import asteroids.model.AdditionExpression;
+import asteroids.model.EqualsExpression;
+import asteroids.model.Expression;
+import asteroids.model.LiteralExpression;
+import asteroids.model.MultiplicationExpression;
+import asteroids.model.NegationExpression;
 import asteroids.model.Ship;
+import asteroids.model.VariableExpression;
 
 public class SimpleExpressionTests {
 	private static final double EPSILON = 0.0001;

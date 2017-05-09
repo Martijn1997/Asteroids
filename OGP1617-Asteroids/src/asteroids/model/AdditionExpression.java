@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public class AdditionExpression extends BinaryExpression<Expression<?, Double>, Double>{
 	

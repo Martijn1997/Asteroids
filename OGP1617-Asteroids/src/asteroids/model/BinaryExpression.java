@@ -1,10 +1,9 @@
-package asteroids.Programs;
+package asteroids.model;
 
 
-import asteroids.model.WorldObject;
 import be.kuleuven.cs.som.annotate.*;
 
-public abstract class BinaryExpression<T,R> implements Expression<T,R> {
+public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expression<T,R> {
 	
 	/**
 	 * Constructor for a binary expression
@@ -67,26 +66,17 @@ public abstract class BinaryExpression<T,R> implements Expression<T,R> {
 	 * @return true if and only if the expression can have the operand as operand
 	 */
 	public boolean isValidOperand(T operand){
-		if(operand instanceof Double || operand instanceof Boolean || operand instanceof WorldObject || operand instanceof Expression ){
-			return true;
-		}else{
-			return false;
-		}
+		return operand instanceof Expression;
 	}
 	
 	/**
-	 * Basic getter for a statement
+	 * Set statement for a Binary expression
 	 */
-	public Statement getStatement(){
-		return this.associatedStatement;
-	}
-	
-	/**
-	 * Basic setter for a associated statement
-	 * @param statement
-	 */
-	private void setStatement(Statement statement){
-		this.associatedStatement = statement;
+	@Override
+	protected void setStatement(Statement statement){
+		this.getLeftOperand().setStatement(statement);
+		this.getRightOperand().setStatement(statement);
+		super.setStatement(statement);
 	}
 	
 	
@@ -94,6 +84,5 @@ public abstract class BinaryExpression<T,R> implements Expression<T,R> {
 		
 	private T rightOperand;
 	
-	private Statement associatedStatement;
 
 }

@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public class NegationExpression extends UnaryExpression<Expression<?, Double>,Double> {
 	

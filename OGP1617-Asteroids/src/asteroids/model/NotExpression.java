@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 // return type is boolean and the nested expression needs to have a boolean as return type as well
 public class NotExpression extends UnaryExpression<Expression<?,Boolean>, Boolean> {

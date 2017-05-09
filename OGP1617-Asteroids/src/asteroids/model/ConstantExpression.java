@@ -1,4 +1,4 @@
-package asteroids.Programs;
+package asteroids.model;
 
 public class ConstantExpression<T> extends BasicExpression<T>{
 	
@@ -17,7 +17,7 @@ public class ConstantExpression<T> extends BasicExpression<T>{
 	 * 			|canHaveAsValue(value)
 	 */
 	public ConstantExpression(String name, T value, Statement statement) throws IllegalArgumentException{
-		super(name, statement);
+		super(name);
 		if(!canHaveAsValue(value)){
 			throw new IllegalArgumentException();
 		}

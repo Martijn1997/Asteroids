@@ -4,8 +4,6 @@ package asteroids.model;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-//import asteroids.Programs.*;
-import asteroids.Programs.Program;
 
 import be.kuleuven.cs.som.annotate.*;
 
