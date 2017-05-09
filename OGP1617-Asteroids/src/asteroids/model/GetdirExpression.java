@@ -1,7 +1,7 @@
 package asteroids.model;
 
 
-public class GetdirExpression implements Expression<WorldObject, Vector2D>{
+public class GetdirExpression extends Expression<WorldObject, Vector2D>{
 	
 	public GetdirExpression(Statement statement){
 		this.setStatement(statement);

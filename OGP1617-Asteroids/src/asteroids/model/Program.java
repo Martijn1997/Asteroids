@@ -1,8 +1,11 @@
 package asteroids.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+// the program sets the associations with the statements
 public class Program {
 	
 	public Program(Statement statement){
@@ -29,6 +32,36 @@ public class Program {
 		this.associatedStatement = statement;
 		statement.setProgram(this);
 	}
+	
+	/**
+	 * variable that stores the associatedStatement
+	 */
+	private Statement associatedStatement;
+	
+	
+	public List<Function> getFunctions(){
+		return this.functions;
+	}
+	
+	/**
+	 * set the function list to the provided functions
+	 * @param functions
+	 */
+	public void setFunctions(List<Function> functions){
+		this.functions = functions;
+		for(Function function: functions){
+			function.setProgram(this);
+		}
+	}
+	
+	public boolean canHaveAsFunction(Function function){
+		return function != null & function.getProgram()==this;
+	}
+	
+	/**
+	 * List that stores all the functions associated with the program
+	 */
+	private List<Function> functions = new ArrayList<Function>();
 	
 	//TODO verify that the if statement effectively rejects non same type var's
 	/**
@@ -68,6 +101,8 @@ public class Program {
 		return this.globals;
 	}
 	
+	private Map<String, LiteralExpression<?>> globals = new HashMap<String, LiteralExpression<?>>();
+	
 	/**
 	 * basic getter for the associated ship
 	 * @return
@@ -80,10 +115,7 @@ public class Program {
 		this.associatedShip = ship;
 		ship.setProgram(this);
 	}
-	
-	private Statement associatedStatement;
-	
 	private Ship associatedShip;
 	
-	private Map<String, LiteralExpression<?>> globals = new HashMap<String, LiteralExpression<?>>();
+
 }

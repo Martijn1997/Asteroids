@@ -3,16 +3,24 @@ package asteroids.model;
 /**
  * Class to create a variable assignment statement
  */
-public class VarAssignStatement<T> extends Statement implements NormalStatement{
+public class VarAssignStatement<T> extends NormalStatement{
 	
-	public VarAssignStatement(Program program, Expression<?,T> expression, String varName){
-		super(program);
+	public VarAssignStatement(Expression<?,T> expression, String varName){
+		super();
 		this.setExpression(expression);
 	}
 
 	public void executeStatement(){
-		LiteralExpression<T> var = new LiteralExpression<T>(this.getVariable().evaluate(), this);
-		this.getProgram().addGlobalVariable(this.getName(), var);
+		
+		// if the statement is associated with a program, write the variable to the globals
+		if(this.isAssociatedWithProgram()){
+			LiteralExpression<T> var = new LiteralExpression<T>(this.getVariable().evaluate(), this);
+			this.getProgram().addGlobalVariable(this.getName(), var);
+		}else{
+			// otherwise write the variable to the locals
+			LiteralExpression<T> var = new LiteralExpression<T>(this.getVariable().evaluate(), this);
+			this.getFunction().addLocalVariable(this.getName(), var);
+		}
 	}
 	
 	/**

@@ -2,14 +2,15 @@ package asteroids.model;
 
 import exceptions.BreakException;
 
-public class WhileStatement extends Statement implements NormalStatement{
+public class WhileStatement extends ChainedStatement{
 	
 	public WhileStatement(Program program, Expression<?, Boolean> condition, Statement statement){
-		super(program);
+		super();
 		
 	}
 	
 	
+	@Override
 	public Statement getStatement(){
 		return this.statement;
 	}
@@ -22,10 +23,14 @@ public class WhileStatement extends Statement implements NormalStatement{
 		return this.condition;
 	}
 	
+	// the statements are responsible to set the condition-statement bidirectional relation
 	public void setCondition(Expression<?, Boolean> condition){
 		this.condition = condition;
+		condition.setStatement(this);
+		
 	}
 	
+	@Override
 	public void executeStatement() throws IllegalStateException{
 		try{
 		while(this.getCondition().evaluate()){
@@ -45,9 +50,9 @@ public class WhileStatement extends Statement implements NormalStatement{
 	 * @author Martijn
 	 *
 	 */
-	public class BreakStatement extends Statement implements NormalStatement{
+	public class BreakStatement extends NormalStatement{
 		public BreakStatement(Program program){
-			super(program);
+			super();
 		}
 		
 		public void executeStatement(){

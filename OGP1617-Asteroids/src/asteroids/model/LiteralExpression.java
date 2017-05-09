@@ -11,7 +11,7 @@ package asteroids.model;
  * @Invar	The parameter T shall be of type Double, Boolean or WorldObject
  * 			| isValidValue(T value)
  */
-public class LiteralExpression<T> implements Expression<T,T> {
+public class LiteralExpression<T> extends Expression<T,T> {
 	
 	public LiteralExpression(T value, Statement statement) throws IllegalArgumentException{
 		if(!isValidValue(value)){
@@ -39,22 +39,6 @@ public class LiteralExpression<T> implements Expression<T,T> {
 		return this.value;
 	}
 	
-	/**
-	 * Basic getter for a statement
-	 */
-	public Statement getStatement(){
-		return this.associatedStatement;
-	}
-	
-	/**
-	 * Basic setter for a associated statement
-	 * @param statement
-	 */
-	private void setStatement(Statement statement){
-		this.associatedStatement = statement;
-	}
-	
 	private final T value;
 	
-	private Statement associatedStatement;
 }

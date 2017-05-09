@@ -2,7 +2,7 @@ package asteroids.model;
 
 import be.kuleuven.cs.som.annotate.*;
 
-public abstract class BasicExpression<T> implements Expression<T,T>{
+public abstract class BasicExpression<T> extends Expression<T,T>{
 	
 	/**
 	 * Constructor for a BasicExpression
@@ -11,9 +11,8 @@ public abstract class BasicExpression<T> implements Expression<T,T>{
 	 * 			| new.getName() = name
 	 */
 	@Model @Raw
-	protected BasicExpression(String name, Statement statement){
+	protected BasicExpression(String name){
 		this.name = name;
-		this.setStatement(statement);
 	}
 	
 	/**
@@ -49,20 +48,4 @@ public abstract class BasicExpression<T> implements Expression<T,T>{
 	 */
 	private final String name;
 	
-	/**
-	 * Basic getter for a statement
-	 */
-	public Statement getStatement(){
-		return this.associatedStatement;
-	}
-	
-	/**
-	 * Basic setter for a associated statement
-	 * @param statement
-	 */
-	private void setStatement(Statement statement){
-		this.associatedStatement = statement;
-	}
-	
-	private Statement associatedStatement;
 }

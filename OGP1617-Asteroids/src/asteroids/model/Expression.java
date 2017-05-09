@@ -1,12 +1,23 @@
 package asteroids.model;
 //R the return Type, T the type of the operands
-public interface Expression<T, R> {
+public abstract class Expression<T, R> {
 	
-		@Override
-		public String toString();
+//		@Override
+//		public abstract String toString();
 		
-		public R evaluate();
+		public abstract R evaluate();
 		
-		public Statement getStatement();
+		/**
+		 * basic getter for the return statement
+		 * @return
+		 */
+		public Statement getStatement(){
+			return this.statement;
+		}
 		
+		protected void setStatement(Statement statement){
+			this.statement = statement;
+		}
+		
+		private Statement statement;		
 }

@@ -1,12 +1,13 @@
 package asteroids.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class SequenceStatement extends Statement implements NormalStatement {
+public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
 	public SequenceStatement(Program program, List<Statement> statements){
-		super(program);
+		super();
 		this.setStatementSequence(statements);
 	}
 	
@@ -19,6 +20,9 @@ public class SequenceStatement extends Statement implements NormalStatement {
 		}
 	}
 	
+	/**
+	 * Basic getter for the list of statements
+	 */
 	public List<Statement> getStatementSequence(){
 		return this.statementSequence;
 	}
@@ -27,5 +31,72 @@ public class SequenceStatement extends Statement implements NormalStatement {
 		this.statementSequence = statements;
 	}
 	
+	/**
+	 * returns the first statement of the statement sequence
+	 */
+	public Statement getStatement(){
+		return this.iterator().next();
+	}
+	
+	//TODO create iterator, everytime getStatement is invoked, the next statement is selected in the selection
+	// sequence
+	public boolean hasAllNormalSubStatement(){
+		
+		//TODO count the amount of times it gives true/break down loop if a false is detected
+		for(int index = 0; index < this.getStatementSequence().size(); index++ ){
+			if(!super.hasAllNormalSubStatement()){
+				return false;
+			}
+		}
+		return true;
+		
+	}
+	
+	@Override
+	public Iterator<Statement> iterator(){
+		return new Iterator<Statement>(){
+			
+			public boolean hasNext(){
+				return iteratorIndex > 0 && iteratorIndex < SequenceStatement.this.getStatementSequence().size();
+			}
+			
+			public Statement next() throws IndexOutOfBoundsException{
+				if(!hasNext()){
+					setIndex(0);
+					throw new IndexOutOfBoundsException();
+				}else{
+					setIndex(getIndex()+1);
+					return SequenceStatement.this.getStatementSequence().get(getIndex()-1);
+					
+				}
+			}
+		};
+	}
+	
+	/**
+	 * Set the associated function for each statement
+	 * if there is non normal function in the statement sequence, throw IllegalStateException
+	 */
+	@Override
+	protected void setFunction(Function function)throws IllegalStateException{
+
+		for(int index = 0; index < this.getStatementSequence().size(); index++){
+			super.setFunction(function);
+		}
+	}
+	
+	/**
+	 * List that stores all the statements belonging to the statement sequences
+	 */
 	private List<Statement> statementSequence = new ArrayList<Statement>();
+	
+	private int getIndex(){
+		return this.iteratorIndex;
+	}
+	
+	private void setIndex(int index){
+		this.iteratorIndex = index;
+	}
+	
+	private int iteratorIndex = 0;
 }
