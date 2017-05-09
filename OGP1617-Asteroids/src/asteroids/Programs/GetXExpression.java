@@ -8,14 +8,14 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getX expression
 	 * @param operand
 	 */
-	public GetXExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetXExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**
 	 * returns the x position of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getXPosition();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getXPosition();
 	}
 }

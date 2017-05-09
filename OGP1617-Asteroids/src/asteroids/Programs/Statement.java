@@ -6,6 +6,10 @@ public abstract class Statement {
 		//TODO implement constructor
 	}
 	
+	protected Program getProgram(){
+		return this.associatedProgram;
+	}
+	
 	protected void setProgram(Program program){
 		this.associatedProgram = program;
 	}

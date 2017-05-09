@@ -7,14 +7,14 @@ public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Doubl
 		 * @param operand
 		 * @effect	UnaryExpression(operand)
 		 */
-		public SqrtExpression(Expression<?, Double> operand){
-			super(operand);
+		public SqrtExpression(Expression<?, Double> operand, Statement statement){
+			super(operand, statement);
 		}
 		
 		/**
 		 * returns the sqrtExpression value
 		 */
-		public Double getValue(){
-			return Math.sqrt(this.getOperand().getValue());
+		public Double evaluate(){
+			return Math.sqrt(this.getOperand().evaluate());
 		}
 }

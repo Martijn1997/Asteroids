@@ -1,3 +1,4 @@
+package exceptions;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -19,7 +20,4 @@ public class RadiusException extends RuntimeException{
 	}
 	
 	private final double value;
-	// why serial UID?
-	// documentation with checkers
-	// how does git work?
 }

@@ -9,18 +9,18 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 	 * 
 	 * @effect BinaryExpression(leftOperand,rightOperand)
 	 */
-	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
+		super(leftOperand, rightOperand, statement);
 	}
 	
 	/**
 	 * returns the sum of the left operand and the right operand of the expression.
 	 */
-	public Double getValue(){
+	public Double evaluate(){
 		Expression<?, Double> leftOperand = this.getLeftOperand();
 		Expression<?, Double> rightOperand = this.getRightOperand();
 		
-		return leftOperand.getValue() + rightOperand.getValue();
+		return leftOperand.evaluate() + rightOperand.evaluate();
 	}
 	
 //	/**

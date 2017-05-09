@@ -7,14 +7,14 @@ public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getY expression
 	 * @param operand
 	 */
-	public GetYExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetYExpression(Expression<?,WorldObject> operand, Statement statement){
+		super(operand, statement);
 	}
 	
 	/**
 	 * returns the Y position of the provided ship
 	 */
-	public Double getValue(){
-		return this.getOperand().getValue().getYPosition();
+	public Double evaluate(){
+		return this.getOperand().evaluate().getYPosition();
 	}
 }

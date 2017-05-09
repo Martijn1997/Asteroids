@@ -1,5 +1,5 @@
 package asteroids.tests;
-
+ 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -136,6 +136,7 @@ public class Part3TestFull {
     score += 3;
   }
 
+  @Test
   public void testCreateShipRadiusNan() throws ModelException {
     try {
       max_score += 1;
@@ -2840,5 +2841,5 @@ public class Part3TestFull {
 //    }
 //  }
 
- 
+
 }

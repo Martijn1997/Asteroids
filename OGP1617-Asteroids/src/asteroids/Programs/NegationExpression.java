@@ -9,8 +9,8 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 * @effect 	constructs the unary expression of a negation
 	 * 			|UnaryExpression(Operand)
 	 */
-	public NegationExpression(Expression<?, Double> operand){
-		super(operand);
+	public NegationExpression(Expression<?, Double> operand, Statement statement){
+		super(operand, statement);
 		
 	}
 	
@@ -20,9 +20,9 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 * 			|-this.getOperand()
 	 */
 	@SuppressWarnings("unchecked")
-	public Double getValue(){
+	public Double evaluate(){
 		// because the cast is checked in the isValid the warning may be surpressed
-		return -this.getOperand().getValue();
+		return -this.getOperand().evaluate();
 	}
 	
 //	@SuppressWarnings("unchecked")
