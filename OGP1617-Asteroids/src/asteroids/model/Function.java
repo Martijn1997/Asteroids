@@ -3,11 +3,45 @@ package asteroids.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import exceptions.ReturnException;
+
 public class Function {
 	
-	// TODO adjust variableStatement so that it can only add local variables to the function where it belongs to, also set the statements such that they can also belong to a function.
 	public Function(String functionName, NormalStatement statement){
-		
+		this.setFunctionName(functionName);
+		this.setStatement(statement);
+	}
+	
+	/**
+	 * Basic getter for the function name
+	 */
+	public String getFunctionName(){
+		return this.functionName;
+	}
+	
+	/**
+	 * Basic setter for the function name
+	 * @param name
+	 */
+	public void setFunctionName(String name){
+		this.functionName = name;
+	}
+	
+	/**
+	 * Variable that stores the function name
+	 */
+	private String functionName;
+	
+	/**
+	 * Evaluates the function and returns a LiteralExpression containing the return value
+	 */
+	public LiteralExpression<?> evaluate(){
+		try{
+			this.getStatement().executeStatement();
+		}catch (ReturnException returnVal){
+			return returnVal.getValue();
+		}
+		return null; // return null if no value was returned (default case)
 	}
 	
 	/**
@@ -45,7 +79,7 @@ public class Function {
 	 * @return
 	 */
 	public boolean canHaveAsStatement(NormalStatement statement){
-		return statement != null && statement.getFunction() != null && statement.canHaveAsFunction(this);
+		return statement != null && statement.getFunction() == null && statement.canHaveAsFunction(this);
 			
 	}
 	
@@ -81,11 +115,32 @@ public class Function {
 	}
 	
 	public boolean canHaveAsLocalVar(LiteralExpression<?> variable){
-		return variable != null; //TODO also check if the variable expression points to the function
+		return (variable.evaluate() instanceof WorldObject || variable.evaluate() instanceof Double || variable.evaluate() instanceof Boolean);
+		
 	}
 	
 	private Map<String, LiteralExpression<?>> localVariables = new HashMap<String, LiteralExpression<?>>();
 	
 	
 	private NormalStatement associatedStatement;
+	
+//	/**
+//	 * adds a parameter to the parameter Map
+//	 * @param name
+//	 * @param expression
+//	 */
+//	public void addParameter(String name, Expression<?,?> expression){
+//		this.getParameters().put(name, expression);
+//	}
+//	
+//	/**
+//	 * returns the parameters
+//	 * @return
+//	 */
+//	private Map<String, Expression<?,?>> getParameters(){
+//		return this.parameters;
+//	}
+//	
+//	private Map<String, Expression<?,?>> parameters = new HashMap<String, Expression<?,?>>();
+	
 }

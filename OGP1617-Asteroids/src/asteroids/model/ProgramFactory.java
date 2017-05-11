@@ -4,8 +4,10 @@ import java.util.List;
 import asteroids.Programs.*;
 
 import asteroids.part3.programs.SourceLocation;
+import asteroids.util.ModelException;
 
-public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgramFactory<E,S,F,P>{
+@SuppressWarnings("unchecked")
+public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<Expression<?,?>,Statement,Function,Program>{
 	/* PROGRAM */
 
 	/**
@@ -18,7 +20,10 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 *            sequence statement.
 	 * @return A new program.
 	 */
-	public P createProgram(List<F> functions, S main);
+	@Override
+	public Program createProgram(List<Function> functions, Statement main){
+		return new Program(functions, main);
+	}
 		
 	/* FUNCTION DEFINITIONS */
 
@@ -31,7 +36,10 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param body
 	 *            The body of the function.
 	 */
-	public F createFunctionDefinition(String functionName, S body, SourceLocation sourceLocation);
+	@Override
+	public Function createFunctionDefinition(String functionName, Statement body, SourceLocation sourceLocation){
+		return new Function(functionName, (NormalStatement) body);
+	}
 
 	/* STATEMENTS */
 
@@ -43,7 +51,10 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param value
 	 *            An expression that evaluates to the assigned value
 	 */
-	public S createAssignmentStatement(String variableName, E value, SourceLocation sourceLocation);
+	@Override
+	public Statement createAssignmentStatement(String variableName, Expression<?,?> value, SourceLocation sourceLocation){
+		return new VarAssignStatement(value, variableName);
+	}
 
 	/**
 	 * Create a statement that represents a while loop.
@@ -54,12 +65,18 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 *            The body of the loop (most likely this is a sequence
 	 *            statement).
 	 */
-	public S createWhileStatement(E condition, S body, SourceLocation sourceLocation);
+	@Override
+	public Statement createWhileStatement(Expression<?,?> condition, Statement body, SourceLocation sourceLocation){
+			return new WhileStatement((Expression<?,Boolean>)condition, body);
+	}
 
 	/**
 	 * Create a statement that represents a break statement.
 	 */
-	public S createBreakStatement(SourceLocation sourceLocation);
+	@Override
+	public Statement createBreakStatement(SourceLocation sourceLocation){
+		return new BreakStatement();
+	}
 
 	/**
 	 * Create a statement that represents a return statement.
@@ -67,7 +84,10 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param value
 	 *            An expression that evaluates to the value to be returned
 	 */
-	public S createReturnStatement(E value, SourceLocation sourceLocation);
+	@Override
+	public Statement createReturnStatement(Expression<?,?> value, SourceLocation sourceLocation){
+		return new ReturnStatement(value);
+	}
 
 	/**
 	 * Create an if-then-else statement.
@@ -82,7 +102,10 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 *            condition evaluates to false. Can be null if no else clause is
 	 *            specified.
 	 */
-	public S createIfStatement(E condition, S ifBody, S elseBody, SourceLocation sourceLocation);
+	@Override
+	public Statement createIfStatement(Expression<?,?> condition, Statement ifBody, Statement elseBody, SourceLocation sourceLocation){
+		return new IfStatement((Expression<?,Boolean>)condition, ifBody, elseBody);
+	}
 
 	/**
 	 * Create a print statement that prints the value obtained by evaluating the
@@ -91,7 +114,9 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param value
 	 *            The expression to evaluate and print
 	 */
-	public S createPrintStatement(E value, SourceLocation sourceLocation);
+	public Statement createPrintStatement(Expression<?,?> value, SourceLocation sourceLocation){
+		return new PrintStatement(value);
+	}
 
 	/**
 	 * Create a sequence of statements.
@@ -99,7 +124,9 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param statements
 	 *            The statements that must be executed in the given order.
 	 */
-	public S createSequenceStatement(List<S> statements, SourceLocation sourceLocation);
+	public Statement createSequenceStatement(List<Statement> statements, SourceLocation sourceLocation){
+		return new SequenceStatement(statements);
+	}
 
 	/* EXPRESSIONS */
 
@@ -110,7 +137,9 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param variableName
 	 *            The name of the variable to read.
 	 */
-	public E createReadVariableExpression(String variableName, SourceLocation sourceLocation);
+	public Expression<?,?>createReadVariableExpression(String variableName, SourceLocation sourceLocation){
+		return new VariableExpression(variableName);
+	}
 
 	/**
 	 * Create an expression that evaluates to the current value of the given
@@ -119,7 +148,9 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param parameterName
 	 *            The name of the parameter to read.
 	 */
-	public E createReadParameterExpression(String parameterName, SourceLocation sourceLocation);
+	public Expression<?,?> createReadParameterExpression(String parameterName, SourceLocation sourceLocation){
+		return new ParameterExpression(parameterName);
+	}
 
 	/**
 	 * Create an expression that evaluates to result of calling the given
@@ -130,7 +161,9 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * @param actualArgs
 	 *            A list of expressions that act as actual arguments.
 	 */
-	public E createFunctionCallExpression(String functionName, List<E> actualArgs, SourceLocation sourceLocation);
+	public Expression<?,?> createFunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs, SourceLocation sourceLocation){
+		return new FunctionCallExpression(functionName, actualArgs);
+	}
 
 	/**
 	 * Create an expression that evaluates to the given expression with changed
@@ -138,7 +171,11 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * 
 	 * @param expression
 	 */
-	public E createChangeSignExpression(E expression, SourceLocation sourceLocation);
+	@Override
+	public Expression<Expression<?,Double>,Double> createChangeSignExpression(Expression<?,?> expression, SourceLocation sourceLocation){
+		return new NegationExpression((Expression<?,Double>)expression);
+	
+	}
 
 	/**
 	 * Create an expression that evaluates to true when the given expression
@@ -146,154 +183,231 @@ public class ProgramFactory<E,S,F,P> implements asteroids.part3.programs.IProgra
 	 * 
 	 * @param expression
 	 */
-	public E createNotExpression(E expression, SourceLocation sourceLocation);
+	@Override
+	public Expression<Expression<?,Boolean>,Boolean> createNotExpression(Expression<?,?> expression, SourceLocation sourceLocation){
+		return new NotExpression((Expression<?,Boolean>) expression);
+	}
 
 	/**
 	 * Creates an expression that represents a literal double value.
 	 */
-	public E createDoubleLiteralExpression(double value, SourceLocation location);
+	@Override
+	public Expression<Double,Double> createDoubleLiteralExpression(double value, SourceLocation location){
+		return new LiteralExpression<Double>(value);
+	}
 
 	/**
 	 * Creates an expression that represents the null value.
 	 */
-	public E createNullExpression(SourceLocation location);
+	@Override
+	public Expression<WorldObject,WorldObject> createNullExpression(SourceLocation location){
+		return new NullExpression();
+	}
 
 	/**
 	 * Creates an expression that represents the self value, evaluating to the
 	 * ship that executes the program.
 	 */
-	public E createSelfExpression(SourceLocation location);
+	@Override
+	public Expression<Ship,Ship> createSelfExpression(SourceLocation location){
+		return new SelfExpression();
+	}
 
 	/**
 	 * Creates an expression that evaluates to the ship that is closest to the
 	 * ship that is executing the program.
 	 */
-	public E createShipExpression(SourceLocation location);
+	@Override
+	public Expression<Ship,Ship> createShipExpression(SourceLocation location){
+		return new ClosestWorldObject<Ship>("Ship");
+	}
 
 	/**
 	 * Creates an expression that evaluates to the asteroid that is closest to
 	 * the ship that is executing the program.
 	 */
-	public E createAsteroidExpression(SourceLocation location);
+	@Override
+	public Expression<Asteroid,Asteroid> createAsteroidExpression(SourceLocation location){
+		return new ClosestWorldObject<Asteroid>("Asteroid");
+	}
 
 	/**
 	 * Creates an expression that evaluates to the planetoid that is closest to
 	 * the ship that is executing the program.
 	 */
-	public E createPlanetoidExpression(SourceLocation location);
+	@Override
+	public Expression<Planetoid,Planetoid> createPlanetoidExpression(SourceLocation location){
+		return new ClosestWorldObject<Planetoid>("Planetoid");
+	}
 
 	/**
 	 * Creates an expression that evaluates to one of the bullets fired by the
 	 * ship that executes the program.
 	 */
-	public E createBulletExpression(SourceLocation location);
+	@Override
+	public Expression<Bullet,Bullet> createBulletExpression(SourceLocation location){
+		return new BulletExpression();
+	}
 
 	/**
 	 * Creates an expression that evaluates to the minor planet that is closest
 	 * to the ship that is executing the program.
 	 */
-	public E createPlanetExpression(SourceLocation location);
+	@Override
+	public Expression<MinorPlanet,MinorPlanet> createPlanetExpression(SourceLocation location){
+		return new ClosestWorldObject<MinorPlanet>("MinorPlanet");
+	}
 
 	/**
 	 * Creates an expression that evaluates to an arbitrary entity in the world
 	 * of the ship that is executing the program.
 	 */
-	public E createAnyExpression(SourceLocation location);
+	@Override
+	public Expression<?,?> createAnyExpression(SourceLocation location){
+		return new AnyExpression();
+	}
 
 	/**
 	 * Returns an expression that evaluates to the position along the x-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public E createGetXExpression(E e, SourceLocation location);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetXExpression(Expression<?,?> e, SourceLocation location){
+		return new GetXExpression((Expression<?,WorldObject>)e);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the position along the y-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public E createGetYExpression(E e, SourceLocation location);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetYExpression(Expression<?,?> e, SourceLocation location){
+		return new GetYExpression((Expression<?, WorldObject>) e);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the velocity along the x-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public E createGetVXExpression(E e, SourceLocation location);
-
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetVXExpression(Expression<?,?> e, SourceLocation location){
+		return new GetVxExpression((Expression<?, WorldObject>) e);
+	}
 	/**
 	 * Returns an expression that evaluates to the velocity along the y-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public E createGetVYExpression(E e, SourceLocation location);
-
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetVYExpression(Expression<?,?> e, SourceLocation location){
+		return new GetVyExpression((Expression<?, WorldObject>) e);
+	}
 	/**
 	 * Returns an expression that evaluates to the radius of the entity to which
 	 * the given expression evaluates.
 	 */
-	public E createGetRadiusExpression(E e, SourceLocation location);
+	@Override
+	public Expression<Expression<?, WorldObject>,Double> createGetRadiusExpression(Expression<?,?> e, SourceLocation location){
+		return new GetRadiusExpression((Expression<?, WorldObject>) e);
+	}
 
 	/**
 	 * Returns an expression that evaluates to true if the evaluation of the
 	 * first expression yields a value that is less than the value obtained by
 	 * evaluating the second expression.
 	 */
-	public E createLessThanExpression(E e1, E e2, SourceLocation location);
+	@Override
+	public Expression<Expression<?,Double>, Boolean> createLessThanExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new SmallerThanExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+	}
 
 	/**
 	 * Returns an expression that evaluates to true if the evaluation of the
 	 * first expression yields a value that is equal to the value obtained by
 	 * evaluating the second expression.
 	 */
-	public E createEqualityExpression(E e1, E e2, SourceLocation location);
+	@Override
+	public Expression<?,Boolean> createEqualityExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new EqualsExpression<Expression<?,? extends Expression<?,?>>>((Expression<?,? extends Expression<?,?>>)e1,
+				(Expression<?,? extends Expression<?,?>>)e2);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the addition of the values
 	 * obtained by evaluating the first and second given expressions.
 	 */
-	public E createAdditionExpression(E e1, E e2, SourceLocation location);
+	@Override
+	public Expression<Expression<?,Double>,Double> createAdditionExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new AdditionExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the multiplication of the values
 	 * obtained by evaluating the first and second given expressions.
 	 */
-	public E createMultiplicationExpression(E e1, E e2, SourceLocation location);
+	@Override
+	public Expression<Expression<?,Double>,Double> createMultiplicationExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new MultiplicationExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the square root of the value
 	 * obtained by evaluating the given expression.
 	 */
-	public E createSqrtExpression(E e, SourceLocation location);
+	@Override
+	public Expression<Expression<?, Double>,Double> createSqrtExpression(Expression<?,?> e, SourceLocation location){
+		return new SqrtExpression((Expression<?, Double>) e);
+	}
 
 	/**
 	 * Returns an expression that evaluates to the direction (in radians) of the
 	 * ship executing the program.
 	 */
-	public E createGetDirectionExpression(SourceLocation location);
+	@Override
+	public Expression<?,?> createGetDirectionExpression(SourceLocation location){
+		return new GetdirExpression();
+	}
 
 	/**
 	 * Returns a statement that turns the thruster of the ship executing the
 	 * program on.
 	 */
-	public S createThrustOnStatement(SourceLocation location);
+	@Override
+	public Statement createThrustOnStatement(SourceLocation location){
+		return null;
+	}
 
 	/**
 	 * Returns a statement that turns the thruster of the ship executing the
 	 * program off.
 	 */
-	public S createThrustOffStatement(SourceLocation location);
+	@Override
+	public Statement createThrustOffStatement(SourceLocation location){
+		return null;
+	}
 
 	/**
 	 * Returns a statement that fires a bullet from the ship that is executing
 	 * the program.
 	 */
-	public S createFireStatement(SourceLocation location);
+	@Override
+	public Statement createFireStatement(SourceLocation location){
+		return null;
+	}
 
 	/**
 	 * Returns a statement that makes the ship that is executing the program
 	 * turn by the given amount.
 	 */
-	public S createTurnStatement(E angle, SourceLocation location);
+	@Override
+	public Statement createTurnStatement(Expression<?,?> angle, SourceLocation location){
+		return null;
+	}
 
 	/**
 	 * Returns a statement that does nothing.
 	 */
-	public S createSkipStatement(SourceLocation location);
+	@Override
+	public Statement createSkipStatement(SourceLocation location){
+		return null;
+	}
 }

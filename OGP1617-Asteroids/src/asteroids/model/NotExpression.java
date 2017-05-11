@@ -8,8 +8,8 @@ public class NotExpression extends UnaryExpression<Expression<?,Boolean>, Boolea
 	 * @param operand
 	 * @effect UnaryExpression(operand)
 	 */
-	public NotExpression(Expression<?, Boolean> operand, Statement statement){
-		super(operand, statement);
+	public NotExpression(Expression<?, Boolean> operand){
+		super(operand);
 	}
 	
 	/**
@@ -17,5 +17,10 @@ public class NotExpression extends UnaryExpression<Expression<?,Boolean>, Boolea
 	 */
 	public Boolean evaluate(){
 		return !this.getOperand().evaluate();
+	}
+	
+	@Override
+	public String getOperatorString(){
+		return "!";
 	}
 }

@@ -5,6 +5,8 @@ public abstract class Expression<T, R> {
 //		@Override
 //		public abstract String toString();
 		
+		//create constructor
+	
 		public abstract R evaluate();
 		
 		/**
@@ -15,8 +17,16 @@ public abstract class Expression<T, R> {
 			return this.statement;
 		}
 		
-		protected void setStatement(Statement statement){
-			this.statement = statement;
+		protected void setStatement(Statement statement)throws IllegalArgumentException{
+			if(canHaveAsStatement(statement)){
+				this.statement = statement;
+			}else
+				throw new IllegalArgumentException();
+			
+		}
+		
+		public boolean canHaveAsStatement(Statement statement){
+			return statement != null;
 		}
 		
 		private Statement statement;		

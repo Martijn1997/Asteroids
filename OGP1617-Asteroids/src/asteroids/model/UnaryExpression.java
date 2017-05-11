@@ -3,7 +3,7 @@ package asteroids.model;
 import be.kuleuven.cs.som.annotate.*;
 
 
-public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expression<T,R> {
+public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expression<T,R> /*implements SubExprExpression*/ {
 	
 	/**
 	 * Constructor for a unary expression
@@ -16,9 +16,8 @@ public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expre
 	 * 			| !isValidOperand(operand)
 	 */
 	@Model @Raw
-	protected UnaryExpression(T operand, Statement statement){
+	protected UnaryExpression(T operand){
 		this.setOperand(operand);
-		this.setStatement(statement);
 	}
 	
 	/**
@@ -69,4 +68,29 @@ public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expre
 		this.getOperand().setStatement(statement);
 		super.setStatement(statement);
 	}
+	
+	/**
+	 * scans if the operands have a parameter as expression
+	 */
+//	@Override
+//	public void scanForParameter(Function function){
+//		if(this.getOperand() instanceof ParameterExpression){
+//			function.addParameter(((ParameterExpression) this.getOperand()).getName(), null);
+//		}else if(this.getOperand() instanceof SubExprExpression){
+//				((SubExprExpression) this.getOperand()).scanForParameter(function);		
+//		}
+//	}
+	
+	@Override
+	public String toString(){
+		
+		String string = getOperatorString() + "( " + getOperand().toString() + ") ";
+		
+		return string;
+		
+	}
+	
+	public abstract String getOperatorString();
+	
+	
 }

@@ -1,9 +1,15 @@
 package asteroids.model;
 
-public class IfStatement extends ChainedStatement{
+public class IfStatement extends ChainedStatement implements ExpressionStatement<Expression<?, Boolean>>{
 	
-	public IfStatement(Program program, Expression<?,Boolean> condition, Statement statement){
+	public IfStatement(Expression<?,Boolean> condition, Statement ifstatement, Statement elseStatement){
 		super();
+		this.setStatement(ifstatement);
+		this.setExpression(condition);
+		if(elseStatement != null){
+			this.createElseStatement(elseStatement);
+		}
+		
 	}
 	
 	
@@ -13,7 +19,7 @@ public class IfStatement extends ChainedStatement{
 	@Override
 	public void executeStatement(){
 		
-		if(this.getCondition().evaluate()){
+		if(this.getExpression().evaluate()){
 			this.getStatement().executeStatement();
 		} else if(this.hasElseStatement()){
 			this.getElseStatement().executeStatement();
@@ -23,7 +29,7 @@ public class IfStatement extends ChainedStatement{
 	/**
 	 * Basic getter for the condition of the if statement
 	 */
-	public Expression<?, Boolean> getCondition(){
+	public Expression<?, Boolean> getExpression(){
 		return this.condition;
 	}
 	
@@ -32,8 +38,9 @@ public class IfStatement extends ChainedStatement{
 	 * @param condition
 	 * @post new getCondition == condition;
 	 */
-	public void setCondition(Expression<?, Boolean> condition){
+	public void setExpression(Expression<?, Boolean> condition){
 		this.condition = condition;
+		condition.setStatement(this);
 	}
 
 	/**

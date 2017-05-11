@@ -7,7 +7,7 @@ import be.kuleuven.cs.som.annotate.*;
  * @author Martijn & Flor
  *
  */
-public class VariableExpression extends BasicExpression<Object> {
+public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 	
 	/**
 	 * constructor for a variable
@@ -30,20 +30,21 @@ public class VariableExpression extends BasicExpression<Object> {
 	 * 			thrown if the varName cannot be resolved to a local or global variable
 	 */
 	@Basic
-	public Object evaluate() throws IllegalArgumentException{
+	public LiteralExpression<?> evaluate() throws IllegalArgumentException{
 		Statement statement = this.getStatement();
 		// check if the associated statement is a normal statement
 		// if so check also if it is connected to a function or not
 		if(statement instanceof NormalStatement){
 			if(((NormalStatement) statement).getFunction() != null){
 				if(((NormalStatement) statement).getFunction().getLocalVariables().containsKey(this.getName())){
-					return ((NormalStatement) statement).getFunction().getLocalVariables().get(this.getName());
+					return new LiteralExpression<Object>(((NormalStatement) statement).getFunction().
+							getLocalVariables().get(this.getName()));
 				}
 			}
 		}
 		// else read the global variable
 		if(this.getStatement().getProgram().getGlobals().containsKey(this.getName())){
-			return this.getStatement().getProgram().getGlobals().get(this.getName());
+			return new LiteralExpression<Object>(this.getStatement().getProgram().getGlobals().get(this.getName()));
 		}else{
 			throw new IllegalArgumentException();
 		}

@@ -48,4 +48,9 @@ public abstract class BasicExpression<T> extends Expression<T,T>{
 	 */
 	private final String name;
 	
+	@Override
+	public String toString(){
+		return this.getName();
+	}
+	
 }

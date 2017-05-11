@@ -2,19 +2,41 @@ package asteroids.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 // the program sets the associations with the statements
 public class Program {
 	
-	public Program(Statement statement){
-		//TODO implement constructor
+	public Program(List<Function> functions, Statement statement){
+		this.setFunctions(functions);
+		this.setStatement(statement);
 	}
 	
-	public void excecuteProgram(){
-		//TODO implement the execution of the program
+	public List<Object> excecuteProgram(double deltaTime){
+		this.getStatement().executeStatement();
+		this.setTime(deltaTime);
+		return this.getPrintedObjects();
 	}
+	
+	public double getTime(){
+		return time;
+	}
+	
+	public void setTime(double time){
+		if(isValidTime(time)){
+		this.time = time;
+		}else{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	public static boolean isValidTime(double time){
+		return time>=0;
+	}
+	
+	private double time;
 	
 	/**
 	 * basic getter for the associated program
@@ -28,9 +50,14 @@ public class Program {
 	 * sets the associated statement to statement (most of the time a sequential statement)
 	 * @param statement
 	 */
-	public void setStatement(Statement statement){
-		this.associatedStatement = statement;
-		statement.setProgram(this);
+	public void setStatement(Statement statement)throws IllegalArgumentException{
+		// checks if the statement can be added to the program
+		if(statement!= null&& statement.getProgram() == null&& statement.canHaveAsProgram(this)){
+			this.associatedStatement = statement;
+			statement.setProgram(this);
+		} else{
+			throw new IllegalArgumentException();
+		} 
 	}
 	
 	/**
@@ -47,7 +74,17 @@ public class Program {
 	 * set the function list to the provided functions
 	 * @param functions
 	 */
+	//TODO check if there are no functions with the same name
 	public void setFunctions(List<Function> functions){
+		for(Function function: functions){
+			if(!this.canHaveAsFunction(function)){
+				throw new IllegalStateException();
+			}
+		}
+		HashSet<Function> temp_set = new HashSet<Function>(functions);
+		if(temp_set.size() != functions.size()){
+			throw new IllegalArgumentException();
+		}
 		this.functions = functions;
 		for(Function function: functions){
 			function.setProgram(this);
@@ -55,7 +92,11 @@ public class Program {
 	}
 	
 	public boolean canHaveAsFunction(Function function){
-		return function != null & function.getProgram()==this;
+		if(function != null && function.getProgram()==this){
+			return !this.containsGlobalVariable(function.getFunctionName());
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -117,5 +158,14 @@ public class Program {
 	}
 	private Ship associatedShip;
 	
+	public List<Object> getPrintedObjects(){
+		return this.printedObjects;
+	}
+	
+	public void addPrintedObject(Object object){
+		this.getPrintedObjects().add(object);
+	}
+
+	private List<Object> printedObjects = new ArrayList<Object>();
 
 }
