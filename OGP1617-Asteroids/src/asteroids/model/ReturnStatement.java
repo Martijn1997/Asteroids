@@ -11,7 +11,7 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	
 	public ReturnStatement(Expression<?,?> value){
 		super();
-		//TODO Implement constructor
+		this.setExpression(value);
 	}
 	
 	public void executeStatement() throws ReturnException{

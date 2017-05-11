@@ -2,6 +2,7 @@ package asteroids.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +10,33 @@ import java.util.Map;
 public class Program {
 	
 	public Program(List<Function> functions, Statement statement){
-		//TODO implement constructor
+		this.setFunctions(functions);
+		this.setStatement(statement);
 	}
 	
-	public void excecuteProgram(){
-		//TODO implement the execution of the program
+	public List<Object> excecuteProgram(double deltaTime){
+		this.getStatement().executeStatement();
+		this.setTime(deltaTime);
+		return this.getPrintedObjects();
 	}
+	
+	public double getTime(){
+		return time;
+	}
+	
+	public void setTime(double time){
+		if(isValidTime(time)){
+		this.time = time;
+		}else{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	public static boolean isValidTime(double time){
+		return time>=0;
+	}
+	
+	private double time;
 	
 	/**
 	 * basic getter for the associated program
@@ -54,6 +76,15 @@ public class Program {
 	 */
 	//TODO check if there are no functions with the same name
 	public void setFunctions(List<Function> functions){
+		for(Function function: functions){
+			if(!this.canHaveAsFunction(function)){
+				throw new IllegalStateException();
+			}
+		}
+		HashSet<Function> temp_set = new HashSet<Function>(functions);
+		if(temp_set.size() != functions.size()){
+			throw new IllegalArgumentException();
+		}
 		this.functions = functions;
 		for(Function function: functions){
 			function.setProgram(this);
@@ -61,7 +92,11 @@ public class Program {
 	}
 	
 	public boolean canHaveAsFunction(Function function){
-		return function != null & function.getProgram()==this;
+		if(function != null && function.getProgram()==this){
+			return !this.containsGlobalVariable(function.getFunctionName());
+		}else{
+			return false;
+		}
 	}
 	
 	/**
@@ -123,5 +158,14 @@ public class Program {
 	}
 	private Ship associatedShip;
 	
+	public List<Object> getPrintedObjects(){
+		return this.printedObjects;
+	}
+	
+	public void addPrintedObject(Object object){
+		this.getPrintedObjects().add(object);
+	}
+
+	private List<Object> printedObjects = new ArrayList<Object>();
 
 }

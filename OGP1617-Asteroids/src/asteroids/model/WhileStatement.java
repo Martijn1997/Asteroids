@@ -63,5 +63,6 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 //	}
 	
 	private Expression<?, Boolean> condition;
+	
 	private Statement statement;
 }

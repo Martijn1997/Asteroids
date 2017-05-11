@@ -4,7 +4,6 @@ public abstract class NormalStatement extends Statement{
 	
 	public NormalStatement(){
 		super();
-		//TODO implement constructor
 	}
 	
 	public Function getFunction(){

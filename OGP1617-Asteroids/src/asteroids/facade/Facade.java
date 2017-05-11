@@ -13,9 +13,13 @@ import asteroids.model.Vector2D;
 import asteroids.model.World;
 import asteroids.model.WorldObject;
 import asteroids.model.Program;
+import asteroids.model.ProgramFactory;
 import asteroids.part2.CollisionListener;
 import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
+import asteroids.model.Expression;
+import asteroids.model.Function;
+import asteroids.model.Statement;
 
 public class Facade implements asteroids.part3.facade.IFacade{
 	
@@ -766,26 +770,29 @@ public class Facade implements asteroids.part3.facade.IFacade{
 
 	@Override
 	public Program getShipProgram(Ship ship) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return ship.getProgram();
 	}
 
 	@Override
 	public void loadProgramOnShip(Ship ship, Program program) throws ModelException {
-		// TODO Auto-generated method stub
+		program.setShip(ship);
 		
 	}
 
 	@Override
 	public List<Object> executeProgram(Ship ship, double dt) throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		try{
+		return ship.getProgram().excecuteProgram(dt);
+		}catch(IllegalArgumentException exc){
+			throw new ModelException(exc);
+		}catch(IllegalStateException exc){
+			throw new ModelException(exc);
+		}
 	}
 
 	@Override
 	public IProgramFactory<?, ?, ?, ? extends Program> createProgramFactory() throws ModelException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ProgramFactory();
 	}
 	
 }

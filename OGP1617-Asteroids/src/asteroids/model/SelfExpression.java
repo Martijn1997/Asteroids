@@ -10,4 +10,8 @@ public class SelfExpression extends Expression<Ship,Ship> {
 		return this.getStatement().getProgram().getShip();
 	}
 	
+	public String toString(){
+		return "Self";
+	}
+	
 }

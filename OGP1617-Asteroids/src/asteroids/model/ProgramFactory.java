@@ -4,7 +4,9 @@ import java.util.List;
 import asteroids.Programs.*;
 
 import asteroids.part3.programs.SourceLocation;
+import asteroids.util.ModelException;
 
+@SuppressWarnings("unchecked")
 public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<Expression<?,?>,Statement,Function,Program>{
 	/* PROGRAM */
 
@@ -18,6 +20,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            sequence statement.
 	 * @return A new program.
 	 */
+	@Override
 	public Program createProgram(List<Function> functions, Statement main){
 		return new Program(functions, main);
 	}
@@ -33,6 +36,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * @param body
 	 *            The body of the function.
 	 */
+	@Override
 	public Function createFunctionDefinition(String functionName, Statement body, SourceLocation sourceLocation){
 		return new Function(functionName, (NormalStatement) body);
 	}
@@ -47,6 +51,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * @param value
 	 *            An expression that evaluates to the assigned value
 	 */
+	@Override
 	public Statement createAssignmentStatement(String variableName, Expression<?,?> value, SourceLocation sourceLocation){
 		return new VarAssignStatement(value, variableName);
 	}
@@ -60,13 +65,15 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            The body of the loop (most likely this is a sequence
 	 *            statement).
 	 */
-	public Statement createWhileStatement(Expression<?,Boolean> condition, Statement body, SourceLocation sourceLocation){
-			return new WhileStatement(condition, body);
+	@Override
+	public Statement createWhileStatement(Expression<?,?> condition, Statement body, SourceLocation sourceLocation){
+			return new WhileStatement((Expression<?,Boolean>)condition, body);
 	}
 
 	/**
 	 * Create a statement that represents a break statement.
 	 */
+	@Override
 	public Statement createBreakStatement(SourceLocation sourceLocation){
 		return new BreakStatement();
 	}
@@ -77,6 +84,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * @param value
 	 *            An expression that evaluates to the value to be returned
 	 */
+	@Override
 	public Statement createReturnStatement(Expression<?,?> value, SourceLocation sourceLocation){
 		return new ReturnStatement(value);
 	}
@@ -94,8 +102,9 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            condition evaluates to false. Can be null if no else clause is
 	 *            specified.
 	 */
-	public Statement createIfStatement(Expression<?,Boolean> condition, Statement ifBody, Statement elseBody, SourceLocation sourceLocation){
-		return new IfStatement(condition, ifBody, elseBody);
+	@Override
+	public Statement createIfStatement(Expression<?,?> condition, Statement ifBody, Statement elseBody, SourceLocation sourceLocation){
+		return new IfStatement((Expression<?,Boolean>)condition, ifBody, elseBody);
 	}
 
 	/**
@@ -162,8 +171,10 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * 
 	 * @param expression
 	 */
-	public Expression<Expression<?,Double>,Double> createChangeSignExpression(Expression<?,Double> expression, SourceLocation sourceLocation){
-		return new NegationExpression(expression);
+	@Override
+	public Expression<Expression<?,Double>,Double> createChangeSignExpression(Expression<?,?> expression, SourceLocation sourceLocation){
+		return new NegationExpression((Expression<?,Double>)expression);
+	
 	}
 
 	/**
@@ -172,13 +183,15 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * 
 	 * @param expression
 	 */
-	public Expression<Expression<?,Boolean>,Boolean> createNotExpression(Expression<?,Boolean> expression, SourceLocation sourceLocation){
-		return new NotExpression(expression);
+	@Override
+	public Expression<Expression<?,Boolean>,Boolean> createNotExpression(Expression<?,?> expression, SourceLocation sourceLocation){
+		return new NotExpression((Expression<?,Boolean>) expression);
 	}
 
 	/**
 	 * Creates an expression that represents a literal double value.
 	 */
+	@Override
 	public Expression<Double,Double> createDoubleLiteralExpression(double value, SourceLocation location){
 		return new LiteralExpression<Double>(value);
 	}
@@ -186,6 +199,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	/**
 	 * Creates an expression that represents the null value.
 	 */
+	@Override
 	public Expression<WorldObject,WorldObject> createNullExpression(SourceLocation location){
 		return new NullExpression();
 	}
@@ -194,6 +208,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that represents the self value, evaluating to the
 	 * ship that executes the program.
 	 */
+	@Override
 	public Expression<Ship,Ship> createSelfExpression(SourceLocation location){
 		return new SelfExpression();
 	}
@@ -202,6 +217,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to the ship that is closest to the
 	 * ship that is executing the program.
 	 */
+	@Override
 	public Expression<Ship,Ship> createShipExpression(SourceLocation location){
 		return new ClosestWorldObject<Ship>("Ship");
 	}
@@ -210,6 +226,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to the asteroid that is closest to
 	 * the ship that is executing the program.
 	 */
+	@Override
 	public Expression<Asteroid,Asteroid> createAsteroidExpression(SourceLocation location){
 		return new ClosestWorldObject<Asteroid>("Asteroid");
 	}
@@ -218,6 +235,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to the planetoid that is closest to
 	 * the ship that is executing the program.
 	 */
+	@Override
 	public Expression<Planetoid,Planetoid> createPlanetoidExpression(SourceLocation location){
 		return new ClosestWorldObject<Planetoid>("Planetoid");
 	}
@@ -226,6 +244,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to one of the bullets fired by the
 	 * ship that executes the program.
 	 */
+	@Override
 	public Expression<Bullet,Bullet> createBulletExpression(SourceLocation location){
 		return new BulletExpression();
 	}
@@ -234,6 +253,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to the minor planet that is closest
 	 * to the ship that is executing the program.
 	 */
+	@Override
 	public Expression<MinorPlanet,MinorPlanet> createPlanetExpression(SourceLocation location){
 		return new ClosestWorldObject<MinorPlanet>("MinorPlanet");
 	}
@@ -242,6 +262,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Creates an expression that evaluates to an arbitrary entity in the world
 	 * of the ship that is executing the program.
 	 */
+	@Override
 	public Expression<?,?> createAnyExpression(SourceLocation location){
 		return new AnyExpression();
 	}
@@ -250,38 +271,43 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Returns an expression that evaluates to the position along the x-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public Expression<Expression<?,WorldObject>,Double> createGetXExpression(Expression<?,WorldObject> e, SourceLocation location){
-		return new GetXExpression(e);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetXExpression(Expression<?,?> e, SourceLocation location){
+		return new GetXExpression((Expression<?,WorldObject>)e);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the position along the y-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public Expression<Expression<?,WorldObject>,Double> createGetYExpression(Expression<?,WorldObject> e, SourceLocation location){
-		return new GetYExpression(e);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetYExpression(Expression<?,?> e, SourceLocation location){
+		return new GetYExpression((Expression<?, WorldObject>) e);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the velocity along the x-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public Expression<Expression<?,WorldObject>,Double> createGetVXExpression(Expression<?,WorldObject> e, SourceLocation location){
-		return new GetVxExpression(e);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetVXExpression(Expression<?,?> e, SourceLocation location){
+		return new GetVxExpression((Expression<?, WorldObject>) e);
 	}
 	/**
 	 * Returns an expression that evaluates to the velocity along the y-axis of
 	 * the entity to which the given expression evaluates.
 	 */
-	public Expression<Expression<?,WorldObject>,Double> createGetVYExpression(Expression<?,WorldObject> e, SourceLocation location){
-		return new GetVyExpression(e);
+	@Override
+	public Expression<Expression<?,WorldObject>,Double> createGetVYExpression(Expression<?,?> e, SourceLocation location){
+		return new GetVyExpression((Expression<?, WorldObject>) e);
 	}
 	/**
 	 * Returns an expression that evaluates to the radius of the entity to which
 	 * the given expression evaluates.
 	 */
-	public Expression<Expression<?, WorldObject>,Double> createGetRadiusExpression(Expression<?,WorldObject> e, SourceLocation location){
-		return new GetRadiusExpression(e);
+	@Override
+	public Expression<Expression<?, WorldObject>,Double> createGetRadiusExpression(Expression<?,?> e, SourceLocation location){
+		return new GetRadiusExpression((Expression<?, WorldObject>) e);
 	}
 
 	/**
@@ -289,8 +315,9 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * first expression yields a value that is less than the value obtained by
 	 * evaluating the second expression.
 	 */
-	public Expression<Expression<?,Double>, Boolean> createLessThanExpression(Expression<?,Double> e1, Expression<?,Double> e2, SourceLocation location){
-		return new SmallerThanExpression(e1,e2);
+	@Override
+	public Expression<Expression<?,Double>, Boolean> createLessThanExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new SmallerThanExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
 	}
 
 	/**
@@ -298,38 +325,44 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * first expression yields a value that is equal to the value obtained by
 	 * evaluating the second expression.
 	 */
-	public Expression<?,Boolean> createEqualityExpression(Expression<?,? extends Expression<?,?>> e1, Expression<?,? extends Expression<?,?>> e2, SourceLocation location){
-		return new EqualsExpression<Expression<?,? extends Expression<?,?>>>(e1,e2);
+	@Override
+	public Expression<?,Boolean> createEqualityExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new EqualsExpression<Expression<?,? extends Expression<?,?>>>((Expression<?,? extends Expression<?,?>>)e1,
+				(Expression<?,? extends Expression<?,?>>)e2);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the addition of the values
 	 * obtained by evaluating the first and second given expressions.
 	 */
-	public Expression<Expression<?,Double>,Double> createAdditionExpression(Expression<?,Double> e1, Expression<?,Double> e2, SourceLocation location){
-		return new AdditionExpression(e1,e2);
+	@Override
+	public Expression<Expression<?,Double>,Double> createAdditionExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new AdditionExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the multiplication of the values
 	 * obtained by evaluating the first and second given expressions.
 	 */
-	public Expression<Expression<?,Double>,Double> createMultiplicationExpression(Expression<?,Double> e1, Expression<?,Double> e2, SourceLocation location){
-		return new MultiplicationExpression(e1,e2);
+	@Override
+	public Expression<Expression<?,Double>,Double> createMultiplicationExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
+		return new MultiplicationExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the square root of the value
 	 * obtained by evaluating the given expression.
 	 */
-	public Expression<Expression<?, Double>,Double> createSqrtExpression(Expression<?,Double> e, SourceLocation location){
-		return new SqrtExpression(e);
+	@Override
+	public Expression<Expression<?, Double>,Double> createSqrtExpression(Expression<?,?> e, SourceLocation location){
+		return new SqrtExpression((Expression<?, Double>) e);
 	}
 
 	/**
 	 * Returns an expression that evaluates to the direction (in radians) of the
 	 * ship executing the program.
 	 */
+	@Override
 	public Expression<?,?> createGetDirectionExpression(SourceLocation location){
 		return new GetdirExpression();
 	}
@@ -338,6 +371,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Returns a statement that turns the thruster of the ship executing the
 	 * program on.
 	 */
+	@Override
 	public Statement createThrustOnStatement(SourceLocation location){
 		return null;
 	}
@@ -346,6 +380,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Returns a statement that turns the thruster of the ship executing the
 	 * program off.
 	 */
+	@Override
 	public Statement createThrustOffStatement(SourceLocation location){
 		return null;
 	}
@@ -354,6 +389,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Returns a statement that fires a bullet from the ship that is executing
 	 * the program.
 	 */
+	@Override
 	public Statement createFireStatement(SourceLocation location){
 		return null;
 	}
@@ -362,6 +398,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 * Returns a statement that makes the ship that is executing the program
 	 * turn by the given amount.
 	 */
+	@Override
 	public Statement createTurnStatement(Expression<?,?> angle, SourceLocation location){
 		return null;
 	}
@@ -369,6 +406,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	/**
 	 * Returns a statement that does nothing.
 	 */
+	@Override
 	public Statement createSkipStatement(SourceLocation location){
 		return null;
 	}

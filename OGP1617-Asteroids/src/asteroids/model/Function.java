@@ -8,7 +8,8 @@ import exceptions.ReturnException;
 public class Function {
 	
 	public Function(String functionName, NormalStatement statement){
-		
+		this.setFunctionName(functionName);
+		this.setStatement(statement);
 	}
 	
 	/**
