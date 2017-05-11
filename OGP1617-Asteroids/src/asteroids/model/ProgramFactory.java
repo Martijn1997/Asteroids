@@ -1,8 +1,6 @@
 package asteroids.model;
 
 import java.util.List;
-import asteroids.Programs.*;
-
 import asteroids.part3.programs.SourceLocation;
 import asteroids.util.ModelException;
 

@@ -1,5 +1,5 @@
 package asteroids.model;
 
-public interface ActionStatement {
+public abstract class ActionStatement extends Statement{
 
 }
