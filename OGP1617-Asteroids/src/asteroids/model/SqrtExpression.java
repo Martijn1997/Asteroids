@@ -7,8 +7,8 @@ public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Doubl
 		 * @param operand
 		 * @effect	UnaryExpression(operand)
 		 */
-		public SqrtExpression(Expression<?, Double> operand, Statement statement){
-			super(operand, statement);
+		public SqrtExpression(Expression<?, Double> operand){
+			super(operand);
 		}
 		
 		/**
@@ -16,5 +16,10 @@ public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Doubl
 		 */
 		public Double evaluate(){
 			return Math.sqrt(this.getOperand().evaluate());
+		}
+		
+		@Override
+		public String getOperatorString(){
+			return "Sqrt";
 		}
 }

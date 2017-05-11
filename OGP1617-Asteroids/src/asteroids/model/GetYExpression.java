@@ -5,8 +5,8 @@ public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getY expression
 	 * @param operand
 	 */
-	public GetYExpression(Expression<?,WorldObject> operand, Statement statement){
-		super(operand, statement);
+	public GetYExpression(Expression<?,WorldObject> operand){
+		super(operand);
 	}
 	
 	/**
@@ -14,5 +14,10 @@ public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 */
 	public Double evaluate(){
 		return this.getOperand().evaluate().getYPosition();
+	}
+	
+	@Override
+	public String getOperatorString(){
+		return "gety";
 	}
 }

@@ -13,12 +13,11 @@ package asteroids.model;
  */
 public class LiteralExpression<T> extends Expression<T,T> {
 	
-	public LiteralExpression(T value, Statement statement) throws IllegalArgumentException{
+	public LiteralExpression(T value) throws IllegalArgumentException{
 		if(!isValidValue(value)){
 			throw new IllegalArgumentException();
 		}
 		this.value = value;
-		this.setStatement(statement);
 	}
 	
 	/**

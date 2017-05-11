@@ -4,8 +4,8 @@ package asteroids.model;
 
 public class MultiplicationExpression extends BinaryExpression<Expression<?, Double>, Double>{
 	
-	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
-		super(leftOperand, rightOperand, statement);
+	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
+		super(leftOperand, rightOperand);
 	}
 	
 	public Double evaluate(){
@@ -14,6 +14,11 @@ public class MultiplicationExpression extends BinaryExpression<Expression<?, Dou
 		
 		return ((Expression<?,Double>) leftOperand).evaluate() * ((Expression<?, Double>) rightOperand).evaluate();
 		
+	}
+	
+	@Override
+	public String getOperatorString(){
+		return "*";
 	}
 	
 //	public boolean isValidOperand(T operand){

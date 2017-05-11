@@ -3,7 +3,7 @@ package asteroids.model;
 
 import be.kuleuven.cs.som.annotate.*;
 
-public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expression<T,R> {
+public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expression<T,R>/* implements SubExprExpression*/{
 	
 	/**
 	 * Constructor for a binary expression
@@ -11,10 +11,9 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 	 * @param rightOperand
 	 */
 	@Model @Raw
-	protected BinaryExpression(T leftOperand, T rightOperand, Statement statement) throws IllegalArgumentException{
+	protected BinaryExpression(T leftOperand, T rightOperand) throws IllegalArgumentException{
 		this.setLeftOperand(leftOperand);
 		this.setRightoperand(rightOperand);
-		this.setStatement(statement);
 	}
 	
 	/**
@@ -84,5 +83,29 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 		
 	private T rightOperand;
 	
+//	@Override
+//	public void scanForParameter(Function function){
+//		//first see for the left operand
+//		if(this.getLeftOperand() instanceof ParameterExpression){
+//			function.addParameter(((ParameterExpression) this.getLeftOperand()).getName(), null);
+//		}else if(this.getLeftOperand() instanceof SubExprExpression){
+//				((SubExprExpression) this.getLeftOperand()).scanForParameter(function);		
+//		}
+//		
+//		//second see for the right operand
+//		if(this.getRightOperand() instanceof ParameterExpression){
+//			function.addParameter(((ParameterExpression) this.getRightOperand()).getName(), null);
+//		}else if(this.getRightOperand() instanceof SubExprExpression){
+//				((SubExprExpression) this.getRightOperand()).scanForParameter(function);		
+//		}
+//	}
+	
 
+	@Override
+	public String toString(){
+		
+		return "(" + getLeftOperand().toString() + " " + this.getOperatorString() + " "+ getRightOperand().toString() + ")";
+	}
+	
+	public abstract String getOperatorString();
 }

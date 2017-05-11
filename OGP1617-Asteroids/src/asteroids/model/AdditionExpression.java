@@ -9,8 +9,8 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 	 * 
 	 * @effect BinaryExpression(leftOperand,rightOperand)
 	 */
-	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, Statement statement){
-		super(leftOperand, rightOperand, statement);
+	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
+		super(leftOperand, rightOperand);
 	}
 	
 	/**
@@ -21,6 +21,11 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 		Expression<?, Double> rightOperand = this.getRightOperand();
 		
 		return leftOperand.evaluate() + rightOperand.evaluate();
+	}
+	
+	@Override
+	public String getOperatorString(){
+		return "+";
 	}
 	
 //	/**

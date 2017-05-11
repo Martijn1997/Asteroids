@@ -1,14 +1,34 @@
 package asteroids.model;
 
 
-public class GetdirExpression extends Expression<WorldObject, Vector2D>{
+public class GetdirExpression extends Expression<WorldObject, Double>{
 	
-	public GetdirExpression(Statement statement){
-		this.setStatement(statement);
+	public GetdirExpression(){
+		
 	}
 	
-	public Vector2D evaluate(){	
-		return this.getStatement().getProgram().getShip().getVelocity();
+	public Double evaluate(){	
+		Ship self;
+		if(this.getStatement().getProgram() != null){
+			self = this.getStatement().getProgram().getShip();
+		}else if(this.getStatement() instanceof NormalStatement){
+			if(((NormalStatement) this.getStatement()).getFunction() != null){
+				self = ((NormalStatement) this.getStatement()).getFunction().getProgram().getShip();
+			}else{
+				throw new IllegalStateException();
+			}
+		}else{
+			throw new IllegalStateException();
+		}
+		
+		Double xVelocity = self.getXVelocity();
+		Double yVelocity = self.getYVelocity();
+		
+		if(Math.signum(xVelocity)>0){
+			return Math.atan(yVelocity/xVelocity);
+		}else{
+			return Math.atan(yVelocity/xVelocity) + Math.PI;
+		}
 	}
 	
 	public void setStatement(Statement statement){
@@ -20,4 +40,6 @@ public class GetdirExpression extends Expression<WorldObject, Vector2D>{
 	}
 	
 	private Statement associatedStatement;
+	
+	
 }

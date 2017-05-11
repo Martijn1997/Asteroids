@@ -8,7 +8,7 @@ import java.util.Map;
 // the program sets the associations with the statements
 public class Program {
 	
-	public Program(Statement statement){
+	public Program(List<Function> functions, Statement statement){
 		//TODO implement constructor
 	}
 	
@@ -28,9 +28,14 @@ public class Program {
 	 * sets the associated statement to statement (most of the time a sequential statement)
 	 * @param statement
 	 */
-	public void setStatement(Statement statement){
-		this.associatedStatement = statement;
-		statement.setProgram(this);
+	public void setStatement(Statement statement)throws IllegalArgumentException{
+		// checks if the statement can be added to the program
+		if(statement!= null&& statement.getProgram() == null&& statement.canHaveAsProgram(this)){
+			this.associatedStatement = statement;
+			statement.setProgram(this);
+		} else{
+			throw new IllegalArgumentException();
+		} 
 	}
 	
 	/**
@@ -47,6 +52,7 @@ public class Program {
 	 * set the function list to the provided functions
 	 * @param functions
 	 */
+	//TODO check if there are no functions with the same name
 	public void setFunctions(List<Function> functions){
 		this.functions = functions;
 		for(Function function: functions){

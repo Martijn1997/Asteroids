@@ -3,8 +3,8 @@ package asteroids.model;
 public class EqualsExpression<T extends Expression<?,?>> extends BinaryExpression<T, Boolean>{
 	
 	
-	public EqualsExpression(T leftOperand, T rightOperand, Statement statement){
-		super(leftOperand, rightOperand, statement);
+	public EqualsExpression(T leftOperand, T rightOperand){
+		super(leftOperand, rightOperand);
 	}
 	
 	public Boolean evaluate(){
@@ -23,7 +23,10 @@ public class EqualsExpression<T extends Expression<?,?>> extends BinaryExpressio
 	}
 	
 	
-	
+	@Override
+	public String getOperatorString(){
+		return "==";
+	}
 	
 
 }

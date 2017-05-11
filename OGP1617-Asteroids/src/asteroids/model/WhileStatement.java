@@ -2,11 +2,12 @@ package asteroids.model;
 
 import exceptions.BreakException;
 
-public class WhileStatement extends ChainedStatement{
+public class WhileStatement extends ChainedStatement implements ExpressionStatement<Expression<?,Boolean>>{
 	
-	public WhileStatement(Program program, Expression<?, Boolean> condition, Statement statement){
+	public WhileStatement(Expression<?, Boolean> condition, Statement statement){
 		super();
-		
+		this.setExpression(condition);
+		this.setStatement(statement);
 	}
 	
 	
@@ -19,12 +20,12 @@ public class WhileStatement extends ChainedStatement{
 		this.statement = statement;
 	}
 	
-	public Expression<?, Boolean> getCondition(){
+	public Expression<?, Boolean> getExpression(){
 		return this.condition;
 	}
 	
 	// the statements are responsible to set the condition-statement bidirectional relation
-	public void setCondition(Expression<?, Boolean> condition){
+	public void setExpression(Expression<?, Boolean> condition){
 		this.condition = condition;
 		condition.setStatement(this);
 		
@@ -33,7 +34,7 @@ public class WhileStatement extends ChainedStatement{
 	@Override
 	public void executeStatement() throws IllegalStateException{
 		try{
-		while(this.getCondition().evaluate()){
+		while(this.getExpression().evaluate()){
 			this.getStatement().executeStatement();
 		}
 		// if during the execution a break is thrown catch the BreakException
@@ -45,21 +46,21 @@ public class WhileStatement extends ChainedStatement{
 		}
 	}
 	
-	/**
-	 * Break class only accessible by While statements enclosing the break
-	 * @author Martijn
-	 *
-	 */
-	public class BreakStatement extends NormalStatement{
-		public BreakStatement(Program program){
-			super();
-		}
-		
-		public void executeStatement(){
-			throw new BreakException(WhileStatement.this);
-		}
-		
-	}
+//	/**
+//	 * Break class only accessible by While statements enclosing the break
+//	 * @author Martijn
+//	 *
+//	 */
+//	public class BreakStatement extends NormalStatement{
+//		public BreakStatement(Program program){
+//			super();
+//		}
+//		
+//		public void executeStatement(){
+//			throw new BreakException(WhileStatement.this);
+//		}
+//		
+//	}
 	
 	private Expression<?, Boolean> condition;
 	private Statement statement;

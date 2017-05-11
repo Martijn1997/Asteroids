@@ -171,7 +171,7 @@ public class Bullet extends WorldObject {
 		if(residesInWorld()){
 			this.getWorld().removeFromWorld(this);
 		}
-<
+
 		else if(!this.bulletInShip(ship)){		
 			throw new IllegalArgumentException();		
 

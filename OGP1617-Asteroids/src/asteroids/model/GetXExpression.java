@@ -6,8 +6,8 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * constructor for the getX expression
 	 * @param operand
 	 */
-	public GetXExpression(Expression<?,WorldObject> operand, Statement statement){
-		super(operand, statement);
+	public GetXExpression(Expression<?,WorldObject> operand){
+		super(operand);
 	}
 	
 	/**
@@ -15,5 +15,10 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 */
 	public Double evaluate(){
 		return this.getOperand().evaluate().getXPosition();
+	}
+	
+	@Override
+	public String getOperatorString(){
+		return "getx";
 	}
 }

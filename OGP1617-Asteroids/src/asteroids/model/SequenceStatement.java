@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
-	public SequenceStatement(Program program, List<Statement> statements){
+	public SequenceStatement(List<Statement> statements){
 		super();
 		this.setStatementSequence(statements);
 	}
@@ -40,9 +40,8 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	
 	//TODO create iterator, everytime getStatement is invoked, the next statement is selected in the selection
 	// sequence
+	@Override
 	public boolean hasAllNormalSubStatement(){
-		
-		//TODO count the amount of times it gives true/break down loop if a false is detected
 		for(int index = 0; index < this.getStatementSequence().size(); index++ ){
 			if(!super.hasAllNormalSubStatement()){
 				return false;
@@ -79,9 +78,12 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	@Override
 	protected void setFunction(Function function)throws IllegalStateException{
-
+		try{
 		for(int index = 0; index < this.getStatementSequence().size(); index++){
 			super.setFunction(function);
+		}
+		}catch (Throwable exc){
+			this.setIndex(0);
 		}
 	}
 	
