@@ -9,28 +9,30 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 	}
 	
 	@Override
-	public T evaluate(){
-		Ship self;
-		if(this.getStatement().getProgram() != null){
-			self = this.getStatement().getProgram().getShip();
-		}else if(this.getStatement() instanceof NormalStatement){
-			if(((NormalStatement) this.getStatement()).getFunction() != null){
-				self = ((NormalStatement) this.getStatement()).getFunction().getProgram().getShip();
-			}else{
-				throw new IllegalStateException();
-			}
-		}else{
-			throw new IllegalStateException();
-		}
+	public T evaluate() throws IllegalStateException{
+//		Ship self;
+//		if(this.getStatement().getProgram() != null){
+//			self = this.getStatement().getProgram().getShip();
+//		}else if(this.getStatement() instanceof NormalStatement){
+//			if(((NormalStatement) this.getStatement()).getFunction() != null){
+//				self = ((NormalStatement) this.getStatement()).getFunction().getProgram().getShip();
+//			}else{
+//				throw new IllegalStateException();
+//			}
+//		}else{
+//			throw new IllegalStateException();
+//		}
+//		
+//		World currentWorld = self.getWorld();
+//			
+//		Set<WorldObject> worldObjects = currentWorld.getAllWorldObjects();
+//		T result = 	worldObjects.stream()
+//					.filter(worldObject -> ((WorldObject)worldObject) instanceof Class.forName(className)) // filter for the right types
+//					.reduce((WorldObject a, WorldObject b) -> self.getDistanceBetween(a) <= self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
+//
+//		return (T)result;
 		
-		World currentWorld = self.getWorld();
-			
-		Set<WorldObject> worldObjects = currentWorld.getAllWorldObjects();
-		T result = 	worldObjects.stream()
-					.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types
-					.reduce((a, b) -> self.getDistanceBetween(a) < self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
-
-		return result;
+		return null;
 		}
 	
 	public String getClassName(){
