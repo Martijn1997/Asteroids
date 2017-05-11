@@ -36,7 +36,7 @@ public class Part3TestFull {
 
   static int nbStudentsInTeam;
   IFacade facade;
-  //IProgramFactory<?, ?, ?, Program> programFactory = new ProgramFactory();
+  IProgramFactory<?, ?, ?, Program> programFactory = new ProgramFactory();
   World filledWorld;
   Ship ship1, ship2, ship3;
   Bullet bullet1;
