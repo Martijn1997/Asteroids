@@ -134,4 +134,9 @@ public class Planetoid extends MinorPlanet {
 		this.setTotalTraveledDistance(newDistance);
 	}
 	
+	@Override
+	public String toString(){
+		return "Planetoid";
+	}
+	
 }

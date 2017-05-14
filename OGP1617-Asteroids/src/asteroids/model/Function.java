@@ -3,13 +3,15 @@ package asteroids.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import exceptions.BuilderException;
 import exceptions.ReturnException;
 
 public class Function {
 	
-	public Function(String functionName, NormalStatement statement){
-		this.setFunctionName(functionName);
-		this.setStatement(statement);
+	public Function(String functionName, Statement statement){
+			this.setFunctionName(functionName);
+			this.setStatement(statement);
+		
 	}
 	
 	/**
@@ -64,12 +66,16 @@ public class Function {
 	 * @throws 	IllegalArgumentException
 	 * 			thrown if the function cannot have the statement as statement
 	 */
-	public void setStatement(NormalStatement statement) throws IllegalArgumentException{
+	public void setStatement(Statement statement) throws IllegalArgumentException{
 		if(!this.canHaveAsStatement(statement)){
-			throw new IllegalArgumentException();
+			this.setBuildError();
 		}else{
-			this.associatedStatement = statement;
-			statement.setFunction(this);
+			this.associatedStatement = (NormalStatement)statement;
+		try{
+		((NormalStatement) statement).setFunction(this);
+		}catch (IllegalArgumentException exc){
+			this.setBuildError();
+		}
 		}
 	}
 	
@@ -78,8 +84,8 @@ public class Function {
 	 * @param statement
 	 * @return
 	 */
-	public boolean canHaveAsStatement(NormalStatement statement){
-		return statement != null && statement.getFunction() == null && statement.canHaveAsFunction(this);
+	public boolean canHaveAsStatement(Statement statement){
+		return statement != null &&(statement instanceof NormalStatement) && ((NormalStatement) statement).getFunction() == null && ((NormalStatement) statement).canHaveAsFunction(this);
 			
 	}
 	
@@ -95,8 +101,8 @@ public class Function {
 	 * set the program associated with the function
 	 */
 	protected void setProgram(Program program){
-		if(program == null||!program.getFunctions().contains(this)){
-			throw new IllegalArgumentException();
+		if(program == null||!program.getFunctions().contains(this)||this.getBuildError()){
+			throw new BuilderException();
 		}
 		this.associatedProgram = program;
 	}
@@ -123,6 +129,18 @@ public class Function {
 	
 	
 	private NormalStatement associatedStatement;
+	
+	
+	public boolean getBuildError(){
+		return this.buildError;
+	}
+	
+	public void setBuildError(){
+		this.buildError = true;
+	}
+	
+	private boolean buildError = false;
+	
 	
 //	/**
 //	 * adds a parameter to the parameter Map

@@ -484,5 +484,9 @@ public class Bullet extends WorldObject {
 	 * the maximum amount of bounces a bullet can make
 	 */
 	public final int MAX_BOUNCES = 3;
-
+	
+	@Override
+	public String toString(){
+		return "Bullet";
+	}
 }

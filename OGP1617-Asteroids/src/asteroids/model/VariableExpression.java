@@ -35,20 +35,51 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 		// check if the associated statement is a normal statement
 		// if so check also if it is connected to a function or not
 		if(statement instanceof NormalStatement){
+//			System.out.println("statement is normalstatement");
 			if(((NormalStatement) statement).getFunction() != null){
+//				System.out.println("statement has function");
+//				System.out.println(((NormalStatement) statement).getFunction().getProgram().getGlobals().get(this.getName()).toString());
+//				System.out.println("printed stuff");
 				if(((NormalStatement) statement).getFunction().getLocalVariables().containsKey(this.getName())){
-					return new LiteralExpression<Object>(((NormalStatement) statement).getFunction().
+					return generateLiteral(((NormalStatement) statement).getFunction().
 							getLocalVariables().get(this.getName()));
+				}else if(((NormalStatement) statement).getFunction().getProgram().containsGlobalVariable(this.getName())){
+//					System.out.println("VarName in Globals");
+					return generateLiteral(((NormalStatement) statement).getFunction().
+							getProgram().getGlobals().get(this.getName()));	
+				}else{
+					throw new IllegalArgumentException();
 				}
 			}
 		}
+		
 		// else read the global variable
-		if(this.getStatement().getProgram().getGlobals().containsKey(this.getName())){
-			return new LiteralExpression<Object>(this.getStatement().getProgram().getGlobals().get(this.getName()));
+		if(statement.getProgram().getGlobals().containsKey(this.getName())){
+			return generateLiteral(this.getStatement().getProgram().getGlobals().get(this.getName()));
 		}else{
 			throw new IllegalArgumentException();
 		}
 	}
 	
+	public String toString(){
+		Object var = this.evaluate().evaluate();
+		return var.toString();
+	}
+	
+	public LiteralExpression<?> generateLiteral(Object value){
+		//Check if the value is worldObject
+		if(value instanceof WorldObject){
+			return new LiteralExpression<WorldObject>((WorldObject) value);
+		//Check if the value is Double
+		}else if(value instanceof Double){
+			return new LiteralExpression<Double>((Double) value);
+		//check if value is Boolean
+		}else if(value instanceof Boolean){
+			return new LiteralExpression<Boolean>((Boolean) value);
+		//otherwise the value is of type literal
+		}else{
+			return (LiteralExpression<?>)value;
+		}
+	}
 	
 }

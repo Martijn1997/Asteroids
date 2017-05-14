@@ -806,6 +806,9 @@ public class Ship extends WorldObject{
 	 */
 	private Program associatedProgram;
 	
-	
+	@Override
+	public String toString(){
+		return "Ship";
+	}
 
 }

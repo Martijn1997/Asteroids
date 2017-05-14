@@ -5,18 +5,29 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import exceptions.BuilderException;
 
 // the program sets the associations with the statements
 public class Program {
 	
 	public Program(List<Function> functions, Statement statement){
-		this.setFunctions(functions);
-		this.setStatement(statement);
+		try{
+			this.setStatement(statement);
+			this.setFunctions(functions);
+		}catch(BuilderException exc){
+			this.setBuildFault();
+		}
+		
 	}
 	
 	public List<Object> excecuteProgram(double deltaTime){
+		if(this.getBuildFault()){
+			throw new BuilderException();
+		}
 		this.getStatement().executeStatement();
-		this.setTime(deltaTime);
+		this.setTime(deltaTime+this.getTime());
 		return this.getPrintedObjects();
 	}
 	
@@ -38,6 +49,16 @@ public class Program {
 	
 	private double time;
 	
+	public boolean getBuildFault(){
+		return this.buildFault;
+	}
+	
+	public void setBuildFault(){
+		this.buildFault = true;
+	}
+	
+	private boolean buildFault;
+	
 	/**
 	 * basic getter for the associated program
 	 * @return
@@ -54,9 +75,15 @@ public class Program {
 		// checks if the statement can be added to the program
 		if(statement!= null&& statement.getProgram() == null&& statement.canHaveAsProgram(this)){
 			this.associatedStatement = statement;
+			try{
 			statement.setProgram(this);
+			}catch (IllegalArgumentException exc){
+				throw new BuilderException();
+			}catch (IllegalStateException exc){
+				throw new BuilderException();
+			}
 		} else{
-			throw new IllegalArgumentException();
+			throw new BuilderException();
 		} 
 	}
 	
@@ -67,6 +94,7 @@ public class Program {
 	
 	
 	public List<Function> getFunctions(){
+		//System.out.print(this.functions);
 		return this.functions;
 	}
 	
@@ -78,22 +106,26 @@ public class Program {
 	public void setFunctions(List<Function> functions){
 		for(Function function: functions){
 			if(!this.canHaveAsFunction(function)){
-				throw new IllegalStateException();
+				throw new BuilderException();
 			}
 		}
 		HashSet<Function> temp_set = new HashSet<Function>(functions);
 		if(temp_set.size() != functions.size()){
-			throw new IllegalArgumentException();
+			throw new BuilderException();
 		}
-		this.functions = functions;
+		this.functions.addAll(functions);
 		for(Function function: functions){
 			function.setProgram(this);
 		}
+		
+		System.out.println(functions.size());
 	}
 	
 	public boolean canHaveAsFunction(Function function){
-		if(function != null && function.getProgram()==this){
-			return !this.containsGlobalVariable(function.getFunctionName());
+		if(function != null /*&&function.getProgram()==this*/){
+			System.out.println("I was here");
+			System.out.println(!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
+			return (!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
 		}else{
 			return false;
 		}
@@ -111,10 +143,13 @@ public class Program {
 	 * @param variable
 	 */
 	public void addGlobalVariable(String name, LiteralExpression<?> variable){
-		if(this.containsGlobalVariable(name)&&(!variable.evaluate().getClass().equals(this.getGlobals().get(name).evaluate().getClass()))){
+		if(!this.containsUninitGlobal(name)||(this.containsGlobalVariable(name)&&(!variable.evaluate().getClass().equals(this.getGlobals().get(name).evaluate().getClass())))){
 			throw new IllegalArgumentException();
 		}
 		this.getGlobals().put(name, variable);
+		if(this.containsGlobalVariable(name)){
+			this.getUninitGlobals().remove(name);
+		}
 	}
 	
 	/**
@@ -141,6 +176,24 @@ public class Program {
 	protected Map<String, LiteralExpression<?>> getGlobals(){
 		return this.globals;
 	}
+	
+	protected Set<String> getUninitGlobals(){
+		return this.uninit_globals;
+	}
+	
+	public void addUninitGlobal(String name){
+		if(!this.containsGlobalVariable(name)){
+			this.uninit_globals.add(name);
+		}else{
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	public boolean containsUninitGlobal(String name){
+		return this.getUninitGlobals().contains(name);
+	}
+	
+	private Set<String> uninit_globals = new HashSet<String>();
 	
 	private Map<String, LiteralExpression<?>> globals = new HashMap<String, LiteralExpression<?>>();
 	

@@ -8,6 +8,7 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 		super();
 		this.setExpression(condition);
 		this.setStatement(statement);
+		this.lookForBreakStatement(this);
 	}
 	
 	
@@ -18,6 +19,9 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 	
 	public void setStatement(Statement statement){
 		this.statement = statement;
+		if(statement instanceof BreakStatement){
+			((BreakStatement) statement).setWhileStatement(this);
+		}
 	}
 	
 	public Expression<?, Boolean> getExpression(){
@@ -61,6 +65,7 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 //		}
 //		
 //	}
+	
 	
 	private Expression<?, Boolean> condition;
 	
