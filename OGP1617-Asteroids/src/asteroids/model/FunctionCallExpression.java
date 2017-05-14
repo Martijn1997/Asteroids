@@ -8,11 +8,21 @@ import exceptions.ReturnException;
 public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralExpression<?>>{
 	
 	public FunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs){
-		this.setFunction(functionName);
+		this.setFunctionName(functionName);
 		this.setArguments(actualArgs);
 	}
 	
-	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException{
+	public String getFunctionName(){
+		return this.functionName;
+	}
+	
+	public void setFunctionName(String functionName){
+		this.functionName = functionName;
+	}
+	
+	private String functionName;
+	
+	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException, IllegalArgumentException{
 		Function function = this.getFunction();
 		List<Expression<?,?>> arguments = this.getArguments();
 		/*
@@ -20,36 +30,53 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		 */
 		for(int index = 1; index + 1 ==  arguments.size(); index++){
 			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
-				function.addLocalVariable('$' + Integer.toString(index), new LiteralExpression<Object>(arguments.get(index-1).evaluate()));
+				//TODO fix issue with literal<Object>
+				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
 			}else
 				throw new IndexOutOfBoundsException();
 		}
 		
-		try{
-			function.evaluate();
-		}catch (ReturnException returnVal){
-			return returnVal.getValue();
+		return function.evaluate();
+		
+	}
+	
+	public LiteralExpression<?> generateLiteral(Object value){
+		//Check if the value is worldObject
+		if(value instanceof WorldObject){
+			return new LiteralExpression<WorldObject>((WorldObject) value);
+		//Check if the value is Double
+		}else if(value instanceof Double){
+			return new LiteralExpression<Double>((Double) value);
+		//check if value is Boolean
+		}else if(value instanceof Boolean){
+			return new LiteralExpression<Boolean>((Boolean) value);
+		//otherwise the value is of type literal
+		}else{
+			return (LiteralExpression<?>)value;
 		}
-		
-		return null;
-		
 	}
 	
 	public Function getFunction(){
-		return this.associatedFunction;
-	}
-	
-	public void setFunction(String name) throws IllegalArgumentException{
-		List<Function> functions = this.getStatement().getProgram().getFunctions();
+		List<Function> functions = null;
+		
+		Statement statement = this.getStatement();
+		if(statement instanceof NormalStatement){
+			// if the current statement is a normal statement in a function
+			if(((NormalStatement)statement).getProgram() == null){
+				functions = ((NormalStatement)statement).getFunction().getProgram().getFunctions();	
+			}
+		}else{
+			Program program = statement.getProgram();
+			functions = program.getFunctions();
+		}
+//		List<Function> functions = this.getStatement().getProgram().getFunctions();
 		for(Function function: functions){
-			if(function.getFunctionName().equals(name)){
+			if(function.getFunctionName().equals(this.getFunctionName())){
 				this.associatedFunction = function;
-				break;
+				return function;
 			}
 		}
 		throw new IllegalArgumentException("Cannot set function, no function with same name found in program");
-		
-		
 	}
 	
 
@@ -69,15 +96,23 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	
 	@Override
 	public String toString(){
-		String string = this.getFunction().getFunctionName() + "(";
-		int size = this.getArguments().size();
-		for(Expression<?,?> argument: this.getArguments().subList(0, size - 2)){
-			string += argument.toString() + ", ";
+		String string = this.getFunction().getFunctionName() + "( ";
+		
+		for(Expression<?,?> argument : this.getArguments()){
+			string += argument.toString() + ","; 
 		}
 		
-		string += this.getArguments().get(size-1) + ")";
-		
+		string = string.substring(0, string.length()-1) + ")";	
 		return string;
+	}
+	
+	public void scanForBreakStatement(WhileStatement whileState){
+		Statement statement = this.getFunction().getStatement();
+		if(statement instanceof BreakStatement){
+			((BreakStatement) statement).setWhileStatement(whileState);
+		}else if(statement instanceof ChainedStatement){
+			((ChainedStatement) statement).lookForBreakStatement(whileState);
+		}
 	}
 	
 }

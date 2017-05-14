@@ -119,5 +119,9 @@ public abstract class MinorPlanet extends WorldObject {
 	}
 	
 	public abstract void resolveCollision(Ship other);
-
+	
+	@Override
+	public String toString(){
+		return "MinorPlanet";
+	}
 }

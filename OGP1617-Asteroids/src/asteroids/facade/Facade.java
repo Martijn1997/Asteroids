@@ -17,6 +17,7 @@ import asteroids.model.ProgramFactory;
 import asteroids.part2.CollisionListener;
 import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
+import exceptions.BuilderException;
 import asteroids.model.Expression;
 import asteroids.model.Function;
 import asteroids.model.Statement;
@@ -786,6 +787,10 @@ public class Facade implements asteroids.part3.facade.IFacade{
 		}catch(IllegalArgumentException exc){
 			throw new ModelException(exc);
 		}catch(IllegalStateException exc){
+			throw new ModelException(exc);
+		}catch(IndexOutOfBoundsException exc){
+			throw new ModelException(exc);
+		}catch(BuilderException exc){
 			throw new ModelException(exc);
 		}
 	}

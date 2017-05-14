@@ -21,14 +21,7 @@ public class GetdirExpression extends Expression<WorldObject, Double>{
 			throw new IllegalStateException();
 		}
 		
-		Double xVelocity = self.getXVelocity();
-		Double yVelocity = self.getYVelocity();
-		
-		if(Math.signum(xVelocity)>0){
-			return Math.atan(yVelocity/xVelocity);
-		}else{
-			return Math.atan(yVelocity/xVelocity) + Math.PI;
-		}
+		return self.getOrientation();
 	}
 	
 	public void setStatement(Statement statement){

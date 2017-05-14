@@ -38,4 +38,9 @@ public class Asteroid extends MinorPlanet {
 	public boolean canHaveAsRadius(double radius){
 		return radius >= this.getMinimumRadius() && !this.hasInitializedRadius();
 	}
+	
+	@Override
+	public String toString(){
+		return "Asteroid";
+	}
 }

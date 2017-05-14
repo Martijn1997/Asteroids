@@ -56,7 +56,7 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 		return new Iterator<Statement>(){
 			
 			public boolean hasNext(){
-				return iteratorIndex > 0 && iteratorIndex < SequenceStatement.this.getStatementSequence().size();
+				return index >= 0 && index < SequenceStatement.this.getStatementSequence().size();
 			}
 			
 			public Statement next() throws IndexOutOfBoundsException{
@@ -69,6 +69,16 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 					
 				}
 			}
+			
+			private int getIndex(){
+				return this.index;
+			}
+			
+			private void setIndex(int index){
+				this.index = index;
+			}
+			
+			private int index = 0;
 		};
 	}
 	
@@ -78,13 +88,47 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	@Override
 	protected void setFunction(Function function)throws IllegalStateException{
-		try{
-		for(int index = 0; index < this.getStatementSequence().size(); index++){
-			super.setFunction(function);
+//		try{
+			for(int index = 0; index < this.getStatementSequence().size(); index++){
+				super.setFunction(function);
+			}
+//		}catch (Throwable exc){
+//			this.setIndex(0);
+//		}
+	}
+	
+	@Override
+	protected void setProgram(Program program)throws IllegalStateException{
+//		try{
+			List<Statement> sequence = this.getStatementSequence();
+			for(Statement statement: sequence){
+				statement.setProgram(program);
+				super.setProgram(program);
+			}
+//		}catch (Throwable exc){
+//			this.setIndex(0);
+//		}
+	}
+	
+	@Override
+	public void lookForBreakStatement(WhileStatement whileState){
+		
+		List<Statement> sequence = this.getStatementSequence();
+		
+//		try{
+		for(Statement statement: sequence){	
+			// if the statement is instance of breakstatement 
+			if(statement instanceof BreakStatement){
+				((BreakStatement) statement).setWhileStatement(whileState);
+
+//						}
+			}else if(statement instanceof ChainedStatement){
+				((ChainedStatement)statement).lookForBreakStatement(whileState);
+			}
 		}
-		}catch (Throwable exc){
-			this.setIndex(0);
-		}
+//		}catch (Throwable exc){
+//			this.setIndex(0);
+//		}
 	}
 	
 	/**
@@ -92,13 +136,13 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	private List<Statement> statementSequence = new ArrayList<Statement>();
 	
-	private int getIndex(){
-		return this.iteratorIndex;
-	}
-	
-	private void setIndex(int index){
-		this.iteratorIndex = index;
-	}
-	
-	private int iteratorIndex = 0;
+//	private int getIndex(){
+//		return this.iteratorIndex;
+//	}
+//	
+//	private void setIndex(int index){
+//		this.iteratorIndex = index;
+//	}
+//	
+//	private int iteratorIndex = 0;
 }

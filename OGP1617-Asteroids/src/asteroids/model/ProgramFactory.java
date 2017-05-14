@@ -36,7 +36,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Function createFunctionDefinition(String functionName, Statement body, SourceLocation sourceLocation){
-		return new Function(functionName, (NormalStatement) body);
+		return new Function(functionName, body);
 	}
 
 	/* STATEMENTS */
@@ -217,7 +217,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Ship,Ship> createShipExpression(SourceLocation location){
-		return new ClosestWorldObject<Ship>("Ship");
+		return new ClosestWorldObject<Ship>("asteroids.model.Ship");
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Asteroid,Asteroid> createAsteroidExpression(SourceLocation location){
-		return new ClosestWorldObject<Asteroid>("Asteroid");
+		return new ClosestWorldObject<Asteroid>("asteroids.model.Asteroid");
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Planetoid,Planetoid> createPlanetoidExpression(SourceLocation location){
-		return new ClosestWorldObject<Planetoid>("Planetoid");
+		return new ClosestWorldObject<Planetoid>("asteroids.model.Planetoid");
 	}
 
 	/**
@@ -253,7 +253,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<MinorPlanet,MinorPlanet> createPlanetExpression(SourceLocation location){
-		return new ClosestWorldObject<MinorPlanet>("MinorPlanet");
+		return new ClosestWorldObject<MinorPlanet>("asteroids.model.MinorPlanet");
 	}
 
 	/**

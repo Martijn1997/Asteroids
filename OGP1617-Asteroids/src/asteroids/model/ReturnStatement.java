@@ -23,15 +23,29 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	 */
 	public LiteralExpression<?> getValue(){
 		
-//		if(this.value.evaluate() instanceof WorldObject){
-//			return new LiteralExpression<WorldObject>((WorldObject)this.value.evaluate());
-//		}else if( this.value.evaluate() instanceof Double){
-//			return new LiteralExpression<Double>((Double)this.value.evaluate());
-//		}else{
-//			return new LiteralExpression<Boolean>((Boolean)this.value.evaluate());
-//		}
+		Object evaluation = this.value.evaluate();
+
 		
-		return new LiteralExpression<Object>(this.value.evaluate());
+		if(evaluation instanceof WorldObject){
+			LiteralExpression<WorldObject> returnValue = new LiteralExpression<WorldObject>((WorldObject)evaluation);
+			returnValue.setStatement(this);
+			return returnValue;
+			
+		}else if( evaluation instanceof Double){
+			LiteralExpression<Double> returnValue = new LiteralExpression<Double>((Double)evaluation);
+			returnValue.setStatement(this);
+			return returnValue;
+
+		}else if (evaluation instanceof LiteralExpression){
+			return (LiteralExpression<?>)evaluation;
+			
+		}else{
+			LiteralExpression<Boolean> returnValue = new LiteralExpression<Boolean>((Boolean)evaluation);
+			returnValue.setStatement(this);
+			return returnValue;
+		}
+		
+
 	}
 	
 	@Override
