@@ -73,9 +73,7 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		}
 		return returnValue;
 
-		}
-		else
-			return null;
+
 		
 //		T result = 	worldObjects.stream()
 //				.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types

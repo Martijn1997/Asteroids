@@ -783,16 +783,16 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	@Override
 	public List<Object> executeProgram(Ship ship, double dt) throws ModelException {
 		try{
-		return ship.getProgram().excecuteProgram(dt);
+			return ship.getProgram().excecuteProgram(dt);
 		}catch(IllegalArgumentException exc){
 			throw new ModelException(exc);
 		}catch(IllegalStateException exc){
 			throw new ModelException(exc);
 		}catch(IllegalAngleException exc){
+			throw new ModelException(exc);
 		}catch(IndexOutOfBoundsException exc){
 			throw new ModelException(exc);
 		}catch(BuilderException exc){
-
 			throw new ModelException(exc);
 		}
 	}
