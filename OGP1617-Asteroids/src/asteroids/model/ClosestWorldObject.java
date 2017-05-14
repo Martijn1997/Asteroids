@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import java.util.Optional;
 import java.util.Set;
 
 public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
@@ -8,6 +9,7 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		this.setClassName(className);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public T evaluate(){
 		Ship self;
@@ -26,12 +28,30 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		World currentWorld = self.getWorld();
 			
 		Set<WorldObject> worldObjects = currentWorld.getAllWorldObjects();
-		T result = 	worldObjects.stream()
-					.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types
+		
+		
+		Optional<WorldObject> result = 	worldObjects.stream()
+					.filter(worldObject -> {
+						try {
+							return Class.forName(className).isInstance(worldObject);
+						} catch (ClassNotFoundException e) {
+						}
+						return false;
+					})
 					.reduce((a, b) -> self.getDistanceBetween(a) < self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
+
+		if (result.isPresent()){
+			WorldObject result2 = result.get();
+			return (T)result2;
+		}
+		else
+			return null;
 		
+//		T result = 	worldObjects.stream()
+//				.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types
+//				.reduce((a, b) -> self.getDistanceBetween(a) < self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
 		
-		return result;
+//		return result;
 	}
 	
 	public String getClassName(){
