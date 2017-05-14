@@ -1,6 +1,8 @@
 package asteroids.model;
 
+
 import java.util.NoSuchElementException;
+
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +13,10 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		this.className = className;
 	}
 	
+
+	@SuppressWarnings("unchecked")
 	//TODO modify the reduction with unity parameter
+
 	@Override
 	public T evaluate() throws IllegalStateException{
 		final Ship self;
@@ -42,6 +47,7 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		
 		Set<WorldObject> worldObjects = currentWorld.getAllWorldObjects();
 		
+
 		//first count the amount of objects that statisfy the conditions
 		Set<WorldObject> result1 = worldObjects.stream()
 				    .filter(worldObject -> currentClass.isInstance(worldObject)).collect(Collectors.toSet());// filter for the right types	
@@ -68,6 +74,15 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		return returnValue;
 
 		}
+		else
+			return null;
+		
+//		T result = 	worldObjects.stream()
+//				.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types
+//				.reduce((a, b) -> self.getDistanceBetween(a) < self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
+		
+//		return result;
+	}
 	
 	public String getClassName(){
 		return this.className;

@@ -9,6 +9,7 @@ public class PrintStatement extends Statement {
 	@Override
 	public void executeStatement(){
 		System.out.println(this.getExpression().toString());
+
 		Object evaluation = this.getExpression().evaluate();
 		
 		if(evaluation instanceof LiteralExpression){

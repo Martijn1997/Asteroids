@@ -9,6 +9,8 @@ import java.util.Set;
 
 import exceptions.BuilderException;
 
+import exceptions.OutOfTimeException;
+
 // the program sets the associations with the statements
 public class Program {
 	
@@ -23,11 +25,21 @@ public class Program {
 	}
 	
 	public List<Object> excecuteProgram(double deltaTime){
+
+		this.setTime(deltaTime + this.getTime());
+		if (!this.getStatement().isExecuted()){
+			try{
+				this.getStatement().executeStatement();
+			}catch (OutOfTimeException exc){
+			}
+		}
+
 		if(this.getBuildFault()){
 			throw new BuilderException();
 		}
 		this.getStatement().executeStatement();
 		this.setTime(deltaTime+this.getTime());
+
 		return this.getPrintedObjects();
 	}
 	
