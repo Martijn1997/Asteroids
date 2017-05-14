@@ -1,8 +1,8 @@
 package asteroids.model;
 
-public class FireStatement extends ActionStatement {
+public class ThrustOnStatement extends ActionStatement {
 	
-	public FireStatement(){
+	public ThrustOnStatement(){
 		super();
 	}
 
@@ -10,7 +10,6 @@ public class FireStatement extends ActionStatement {
 	public void executeStatement() {
 		super.executeStatement();
 		Ship self = this.getProgram().getShip();
-		self.fireBullet();
+		self.thrustOn();;
 	}
-
 }

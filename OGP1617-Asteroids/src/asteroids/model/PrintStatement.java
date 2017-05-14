@@ -10,6 +10,7 @@ public class PrintStatement extends Statement {
 	public void executeStatement(){
 		System.out.println(this.getExpression().toString());
 		this.getProgram().addPrintedObject(this.getExpression().evaluate());
+		//super.executeStatement()
 	}
 	
 	public Expression<?,?> getExpression(){

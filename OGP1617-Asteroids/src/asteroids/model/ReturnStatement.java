@@ -15,6 +15,7 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	}
 	
 	public void executeStatement() throws ReturnException{
+		//super.executeStatement()
 		throw new ReturnException(this.getValue());
 	}
 	

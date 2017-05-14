@@ -2,10 +2,12 @@ package asteroids.model;
 
 import java.util.List;
 import asteroids.part3.programs.SourceLocation;
-import asteroids.util.ModelException;
 
 @SuppressWarnings("unchecked")
 public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<Expression<?,?>,Statement,Function,Program>{
+	
+	public ProgramFactory(){
+	}
 	/* PROGRAM */
 
 	/**
@@ -371,7 +373,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createThrustOnStatement(SourceLocation location){
-		return null;
+		return new ThrustOnStatement();
 	}
 
 	/**
@@ -380,7 +382,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createThrustOffStatement(SourceLocation location){
-		return null;
+		return new ThrustOffStatement();
 	}
 
 	/**
@@ -389,7 +391,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createFireStatement(SourceLocation location){
-		return null;
+		return new FireStatement();
 	}
 
 	/**
@@ -398,7 +400,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createTurnStatement(Expression<?,?> angle, SourceLocation location){
-		return null;
+		return new TurnStatement((Expression<?, Double>) angle);
 	}
 
 	/**
@@ -406,6 +408,6 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createSkipStatement(SourceLocation location){
-		return null;
+		return new SkipStatement();
 	}
 }

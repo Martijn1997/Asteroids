@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import exceptions.OutOfTimeException;
+
 // the program sets the associations with the statements
 public class Program {
 	
@@ -15,8 +17,13 @@ public class Program {
 	}
 	
 	public List<Object> excecuteProgram(double deltaTime){
-		this.getStatement().executeStatement();
-		this.setTime(deltaTime);
+		this.setTime(deltaTime + this.getTime());
+		if (!this.getStatement().isExecuted()){
+			try{
+				this.getStatement().executeStatement();
+			}catch (OutOfTimeException exc){
+			}
+		}
 		return this.getPrintedObjects();
 	}
 	

@@ -19,7 +19,19 @@ public abstract class Statement {
 	
 	public abstract boolean canHaveAsProgram(Program program);
 	
-	public abstract void executeStatement();
+	public void executeStatement(){
+		this.setExecuted();
+	}
+	
+	public void setExecuted(){
+		this.executionFlag = true;
+	}
+	
+	public boolean isExecuted(){
+		return this.executionFlag;
+	}
+	
+	private boolean executionFlag = false;
 	
 	private Program associatedProgram;
 }

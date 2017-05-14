@@ -29,9 +29,10 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		T result = 	worldObjects.stream()
 					.filter(worldObject -> worldObject instanceof Class.forName(className)) // filter for the right types
 					.reduce((a, b) -> self.getDistanceBetween(a) < self.getDistanceBetween(b) && (a != self || b != self)? a : b); // select the smallest distance
-
+		
+		
 		return result;
-		}
+	}
 	
 	public String getClassName(){
 		return this.className;

@@ -7,6 +7,7 @@ public class BreakStatement extends NormalStatement{
 		super();
 	}
 	
+	//super.executeStatement() zodat flag wordt geraised
 	public void executeStatement(){
 		if(this.assocWhile != null){
 			throw new BreakException(this.getWhileStatement());

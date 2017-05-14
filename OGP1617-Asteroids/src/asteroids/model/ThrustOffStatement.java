@@ -1,16 +1,16 @@
 package asteroids.model;
 
-public class FireStatement extends ActionStatement {
+public class ThrustOffStatement extends ActionStatement {
 	
-	public FireStatement(){
+	public ThrustOffStatement(){
 		super();
 	}
-
+	
 	@Override
 	public void executeStatement() {
 		super.executeStatement();
 		Ship self = this.getProgram().getShip();
-		self.fireBullet();
+		self.thrustOff();
 	}
 
 }
