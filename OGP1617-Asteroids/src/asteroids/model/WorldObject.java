@@ -1277,5 +1277,10 @@ public abstract class WorldObject {
 		return a-EPSILON2 <= b && a+EPSILON2 >= b;		
 
 	}
+	
+	@Override
+	public String toString(){
+		return "WorldObject";
+	}
 
 }

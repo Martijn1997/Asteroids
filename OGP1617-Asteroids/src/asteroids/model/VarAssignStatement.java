@@ -8,6 +8,7 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 	public VarAssignStatement(Expression<?,?> expression, String varName){
 		super();
 		this.setExpression(expression);
+		this.setName(varName);
 	}
 
 	public void executeStatement(){
@@ -30,6 +31,13 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 	 */
 	public Object getValue(){
 		return variable.evaluate();
+	}
+	
+	@Override
+	public void setProgram(Program program){
+		super.setProgram(program);
+		this.getProgram().addUninitGlobal(this.getName());
+		
 	}
 	
 	/**

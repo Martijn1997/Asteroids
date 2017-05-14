@@ -38,13 +38,15 @@ public abstract class ChainedStatement extends NormalStatement {
 	
 	@Override
 	protected void setFunction(Function function) throws IllegalStateException{
+		
+		Statement statement = this.getStatement();
 		// if the underlying statement is also chained, re-invoke
-		if(this.getStatement() instanceof ChainedStatement){
-			((ChainedStatement) this.getStatement()).setFunction(function);
+		if(statement instanceof ChainedStatement){
+			((ChainedStatement) statement).setFunction(function);
 			
-		}else if(this.getStatement() instanceof NormalStatement){
+		}else if(statement instanceof NormalStatement){
 			//if the underlying statement is a normal statement set the function for the underlying one
-			((NormalStatement) this.getStatement()).setFunction(function);
+			((NormalStatement) statement).setFunction(function);
 			
 		}else{
 			// if the underlying statement is not a chained or normal statement, throw exception
@@ -56,13 +58,30 @@ public abstract class ChainedStatement extends NormalStatement {
 	
 	@Override
 	protected void setProgram(Program program){
+		
+		Statement statement = this.getStatement();
 		// if the underlying statement is also a chained statement, set the chained statements
 		// associated programs to program
-		if(this.getStatement() instanceof ChainedStatement){
-			((ChainedStatement) this.getStatement()).setProgram(program);
-		}else{
-			// else if it is a non chained statement, set the program to program without further ado
-			this.getStatement().setProgram(program);
+		statement.setProgram(program);
+		super.setProgram(program);
+	}
+	
+	
+	// extra add to detect break in function in while
+	public void lookForBreakStatement(WhileStatement whileState){
+		Statement statement = this.getStatement();
+		
+		// if the statement is instance of breakstatement 
+		if(statement instanceof BreakStatement){
+			((BreakStatement) statement).setWhileStatement(whileState);
+			// case the break is nested in a function
+//		}else if(statement instanceof ExpressionStatement){
+//			if(((ExpressionStatement<Expression<?,?>>) statement).getExpression() instanceof FunctionCallExpression){
+//				((FunctionCallExpression) ((ExpressionStatement<Expression<?,?>>) statement).getExpression())
+//				.scanForBreakStatement(whileState);
+//			}
+		}else if(statement instanceof ChainedStatement){
+			((ChainedStatement)statement).lookForBreakStatement(whileState);
 		}
 	}
 }

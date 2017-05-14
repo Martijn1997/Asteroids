@@ -9,8 +9,15 @@ public class PrintStatement extends Statement {
 	@Override
 	public void executeStatement(){
 		System.out.println(this.getExpression().toString());
-		this.getProgram().addPrintedObject(this.getExpression().evaluate());
-		//super.executeStatement()
+
+		Object evaluation = this.getExpression().evaluate();
+		
+		if(evaluation instanceof LiteralExpression){
+			this.getProgram().addPrintedObject(((LiteralExpression<?>)evaluation).evaluate());
+		}else{
+
+		this.getProgram().addPrintedObject(evaluation);
+		}
 	}
 	
 	public Expression<?,?> getExpression(){
@@ -19,6 +26,7 @@ public class PrintStatement extends Statement {
 	
 	public void setExpression(Expression<?,?> expression){
 		this.expression = expression;
+		expression.setStatement(this);
 	}
 	
 	private Expression<?,?> expression;

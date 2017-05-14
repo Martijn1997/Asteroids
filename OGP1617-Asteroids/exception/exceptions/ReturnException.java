@@ -4,7 +4,7 @@ import asteroids.model.LiteralExpression;
 
 /**
  * Class of exceptions used for return statements
- * @author Martijn
+ * @author Martijn & Flor
  *
  */
 public class ReturnException extends RuntimeException {

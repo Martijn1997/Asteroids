@@ -14,6 +14,9 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 	 * returns the x position of the provided ship
 	 */
 	public Double evaluate(){
+		if(this.getOperand().evaluate() == null){
+			throw new IllegalArgumentException();
+		}
 		return this.getOperand().evaluate().getXPosition();
 	}
 	
