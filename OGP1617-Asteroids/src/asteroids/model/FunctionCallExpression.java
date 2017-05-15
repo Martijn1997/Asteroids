@@ -58,7 +58,7 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		//check if value is Boolean
 		}else if(value instanceof Boolean){
 			return new LiteralExpression<Boolean>((Boolean) value);
-		//otherwise the value is of type literal
+		//otherwise the value is of type literal.
 		}else{
 			return (LiteralExpression<?>)value;
 		}
