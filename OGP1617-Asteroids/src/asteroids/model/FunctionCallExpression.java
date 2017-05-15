@@ -25,12 +25,19 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException, IllegalArgumentException{
 		Function function = this.getFunction();
 		List<Expression<?,?>> arguments = this.getArguments();
+		
+		System.out.println("PARAMETERS");
+		for(String parameter: function.getLocalVariables().keySet()){
+			System.out.println(parameter);
+			
+		}
 		/*
 		 * parameters are added as actual variables with given names '$1' etc
 		 */
 		System.out.println(arguments.size());
-		for(int index = 1; index == arguments.size(); index++){
-			System.out.println('$' + Integer.toString(index));
+		for(int index = 1; index + 1< arguments.size() ; index++){
+			System.out.println("index = " + Integer.toString(index));
+			
 			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
 				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
 			}else

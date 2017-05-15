@@ -28,9 +28,7 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 		Expression<?,?> expression = ((NormalStatement)this.getStatement()).getFunction().getLocalVariables().get(this.getName());
 		// execute and return a literalExpression of an object type
 		return new LiteralExpression<Object>(expression.evaluate());
-		//if an classcastException is thrown
-		
-		
+		//if an classcastException is thrown	
 	}
 	
 	@Override
