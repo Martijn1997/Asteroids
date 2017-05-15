@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import exceptions.OutOfTimeException;
+
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
 	public SequenceStatement(List<Statement> statements){
@@ -16,7 +18,12 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	public void executeStatement(){
 		for(Statement statement: this.getStatementSequence()){
-			statement.executeStatement();
+			if (this.getProgram().getTime() < 0.2){
+				throw new OutOfTimeException();
+			}else{
+				if(!statement.isExecuted())
+					statement.executeStatement();
+			}
 		}
 	}
 	

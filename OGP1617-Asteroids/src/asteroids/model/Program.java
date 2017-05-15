@@ -26,8 +26,12 @@ public class Program {
 	
 	public List<Object> excecuteProgram(double deltaTime){
 
+		if(this.getBuildFault()){
+			throw new BuilderException();
+		}
+		
 		this.setTime(deltaTime + this.getTime());
-		if (!this.getStatement().isExecuted()){
+		if (!this.getStatement().isExecuted() && (this.getTime() >= 0.2)){
 			try{
 				this.getStatement().executeStatement();
 			}catch (OutOfTimeException exc){
@@ -37,10 +41,11 @@ public class Program {
 		if(this.getBuildFault()){
 			throw new BuilderException();
 		}
-		this.getStatement().executeStatement();
-		this.setTime(deltaTime+this.getTime());
 
-		return this.getPrintedObjects();
+		if (this.getPrintedObjects().isEmpty())
+			return null;
+		else
+			return this.getPrintedObjects();
 	}
 	
 	public double getTime(){
@@ -69,7 +74,7 @@ public class Program {
 		this.buildFault = true;
 	}
 	
-	private boolean buildFault;
+	private boolean buildFault = false;
 	
 	/**
 	 * basic getter for the associated program
