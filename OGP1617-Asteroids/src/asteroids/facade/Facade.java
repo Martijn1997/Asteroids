@@ -19,9 +19,6 @@ import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
 import exceptions.IllegalAngleException;
 import exceptions.BuilderException;
-import asteroids.model.Expression;
-import asteroids.model.Function;
-import asteroids.model.Statement;
 
 public class Facade implements asteroids.part3.facade.IFacade{
 	

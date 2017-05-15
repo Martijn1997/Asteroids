@@ -11,7 +11,7 @@ public class PrintStatement extends Statement {
 		System.out.println(this.getExpression().toString());
 
 		Object evaluation = this.getExpression().evaluate();
-		
+		super.executeStatement();
 		if(evaluation instanceof LiteralExpression){
 			this.getProgram().addPrintedObject(((LiteralExpression<?>)evaluation).evaluate());
 		}else{
