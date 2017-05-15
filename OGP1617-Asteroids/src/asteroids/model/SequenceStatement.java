@@ -89,12 +89,23 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	@Override
 	protected void setFunction(Function function)throws IllegalStateException{
 //		try{
-			for(int index = 0; index < this.getStatementSequence().size(); index++){
-				super.setFunction(function);
+			for(Statement statement: this.getStatementSequence()){
+				// if the underlying statement is also chained, re-invoke
+				if(statement instanceof ChainedStatement){
+					((ChainedStatement) statement).setFunction(function);
+					
+				}else if(statement instanceof NormalStatement){
+					//if the underlying statement is a normal statement set the function for the underlying one
+					((NormalStatement) statement).setFunction(function);
+					
+				}else{
+					// if the underlying statement is not a chained or normal statement, throw exception
+					throw new IllegalStateException();
+				}
+
 			}
-//		}catch (Throwable exc){
-//			this.setIndex(0);
-//		}
+			// also don't forget to set the associated function of the chained function to the provided function
+			super.setFunction(function);
 	}
 	
 	@Override
@@ -103,8 +114,9 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 			List<Statement> sequence = this.getStatementSequence();
 			for(Statement statement: sequence){
 				statement.setProgram(program);
-				super.setProgram(program);
+				
 			}
+			super.setProgram(program);
 //		}catch (Throwable exc){
 //			this.setIndex(0);
 //		}

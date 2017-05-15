@@ -17,6 +17,7 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 		return this.statement;
 	}
 	
+
 	public void setStatement(Statement statement){
 		this.statement = statement;
 		if(statement instanceof BreakStatement){

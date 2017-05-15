@@ -17,10 +17,25 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 	 * returns the sum of the left operand and the right operand of the expression.
 	 */
 	public Double evaluate(){
-		Expression<?, Double> leftOperand = this.getLeftOperand();
-		Expression<?, Double> rightOperand = this.getRightOperand();
+		Expression<?,?> leftOperand = this.getLeftOperand();
+		Expression<?,?> rightOperand = this.getRightOperand();
 		
-		return leftOperand.evaluate() + rightOperand.evaluate();
+		Double leftResult;
+		Double rightResult;
+		
+		if(leftOperand instanceof VariableExpression){
+			leftResult = (Double) ((VariableExpression)leftOperand).evaluate().evaluate();
+		}else{
+			leftResult = (Double) leftOperand.evaluate();
+		}
+		
+		if(rightOperand instanceof VariableExpression){
+			rightResult =	(Double) ((VariableExpression)rightOperand).evaluate().evaluate();
+		}else{
+			rightResult = (Double) rightOperand.evaluate();
+		}
+		
+		return leftResult + rightResult;
 	}
 	
 	@Override

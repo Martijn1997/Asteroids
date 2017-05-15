@@ -46,6 +46,7 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		Optional<WorldObject> result2;
 		
 		Set<WorldObject> worldObjects = currentWorld.getAllWorldObjects();
+		worldObjects.remove(self);
 		
 
 		//first count the amount of objects that statisfy the conditions
@@ -63,7 +64,7 @@ public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 		//	
 		}else{
 			result2= result1.stream().reduce((WorldObject a, WorldObject b) 
-					-> self.getDistanceBetween(a) <= self.getDistanceBetween(b) ? (a != self? a:b): (b!=self? b: a ));
+					-> self.getDistanceBetween(a) <= self.getDistanceBetween(b) ? a : b);
 		}
 							
 		try{
