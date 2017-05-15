@@ -153,7 +153,7 @@ public class Program {
 	}
 	
 	/**
-	 * removes global variables based on name
+	 * removes global variables based on provided name
 	 * @param name
 	 */
 	public void removeGlobalVariable(String name){
