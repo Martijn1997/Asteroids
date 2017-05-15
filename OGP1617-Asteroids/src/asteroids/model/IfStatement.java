@@ -48,7 +48,7 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 */
 	@Override
 	public Statement getStatement(){
-		return this.statement;
+		return this.ifStatement;
 	}
 	
 	/**
@@ -56,7 +56,7 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 * @post new.getStatement == statement
 	 */
 	public void setStatement(Statement statement){
-		this.statement = statement;
+		this.ifStatement = statement;
 	}
 	
 	
@@ -89,7 +89,7 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	/**
 	 * variable that stores the statement of the if statement
 	 */
-	private Statement statement;
+	private Statement ifStatement;
 	
 	/**
 	 * variable that stores the associated else statement of the if statement
@@ -101,7 +101,13 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 */
 	private boolean hasElseStatement = false;
 	
-	
+	@Override
+	public void setProgram(Program program){
+		super.setProgram(program);
+		if(this.hasElseStatement){
+			this.getElseStatement().setProgram(program);
+		}
+	}
 	
 	/**
 	 * Class of else statements chained to a given if statement
@@ -111,28 +117,30 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 */
 	private class ElseStatement extends ChainedStatement{
 		
-		public ElseStatement(Statement Statement){
+		public ElseStatement(Statement statement){
 			super();
 			this.setStatement(statement);
 		}
 		
 		@Override
 		public void executeStatement(){
+
 			this.getStatement().executeStatement();
 		}
 		
 		@Override
 		public Statement getStatement(){
-			return this.statement;
+			return this.elseStatement;
 		}
 		
 		private void setStatement(Statement statement){
-			this.statement = statement;
+			this.elseStatement = statement;
 		}
 		/**
 		 * variable that stores the statement for the else statement
 		 */
-		private Statement statement;
+		private Statement elseStatement;
+		
 		
 	}
 }
