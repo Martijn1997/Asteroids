@@ -143,7 +143,7 @@ public class Program {
 	 * @param variable
 	 */
 	public void addGlobalVariable(String name, LiteralExpression<?> variable){
-		if(!this.containsUninitGlobal(name)||(this.containsGlobalVariable(name)&&(!variable.evaluate().getClass().equals(this.getGlobals().get(name).evaluate().getClass())))){
+		if(!this.containsUninitGlobal(name)&&(this.containsGlobalVariable(name)&&(!variable.evaluate().getClass().equals(this.getGlobals().get(name).evaluate().getClass())))){
 			throw new IllegalArgumentException();
 		}
 		this.getGlobals().put(name, variable);

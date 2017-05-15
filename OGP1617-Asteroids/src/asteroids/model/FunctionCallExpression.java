@@ -63,7 +63,9 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		if(statement instanceof NormalStatement){
 			// if the current statement is a normal statement in a function
 			if(((NormalStatement)statement).getProgram() == null){
-				functions = ((NormalStatement)statement).getFunction().getProgram().getFunctions();	
+				Function assocFunct = ((NormalStatement)statement).getFunction();
+				Program program = assocFunct.getProgram();
+				functions = program.getFunctions();
 			}
 		}else{
 			Program program = statement.getProgram();
