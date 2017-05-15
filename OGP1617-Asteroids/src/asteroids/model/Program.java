@@ -31,7 +31,7 @@ public class Program {
 		}
 		
 		this.setTime(deltaTime + this.getTime());
-		if (!this.getStatement().isExecuted()){
+		if (!this.getStatement().isExecuted() && (this.getTime() >= 0.2)){
 			try{
 				this.getStatement().executeStatement();
 			}catch (OutOfTimeException exc){
