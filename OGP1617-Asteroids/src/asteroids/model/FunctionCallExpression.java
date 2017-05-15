@@ -28,9 +28,10 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		/*
 		 * parameters are added as actual variables with given names '$1' etc
 		 */
-		for(int index = 1; index + 1 ==  arguments.size(); index++){
+		System.out.println(arguments.size());
+		for(int index = 1; index == arguments.size(); index++){
+			System.out.println('$' + Integer.toString(index));
 			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
-				//TODO fix issue with literal<Object>
 				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
 			}else
 				throw new IndexOutOfBoundsException();
