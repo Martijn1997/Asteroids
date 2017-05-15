@@ -792,6 +792,8 @@ public class Facade implements asteroids.part3.facade.IFacade{
 			throw new ModelException(exc);
 		}catch(BuilderException exc){
 			throw new ModelException(exc);
+		}catch(ClassCastException exc){
+			throw new ModelException(exc);
 		}
 	}
 

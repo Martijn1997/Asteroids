@@ -1,6 +1,7 @@
 package asteroids.model;
 
 import java.util.ArrayList;
+import exceptions.OutOfTimeException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,7 +58,7 @@ public class Program {
 		this.buildFault = true;
 	}
 	
-	private boolean buildFault;
+	private boolean buildFault = false;
 	
 	/**
 	 * basic getter for the associated program

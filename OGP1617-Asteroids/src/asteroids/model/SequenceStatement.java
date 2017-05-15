@@ -3,6 +3,7 @@ package asteroids.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import exceptions.OutOfTimeException;
 
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
@@ -16,8 +17,8 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	public void executeStatement(){
 		for(Statement statement: this.getStatementSequence()){
-			statement.executeStatement();
-		}
+				statement.executeStatement();
+		}				
 	}
 	
 	/**
