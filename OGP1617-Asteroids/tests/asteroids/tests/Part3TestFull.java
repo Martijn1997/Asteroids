@@ -217,16 +217,16 @@ public class Part3TestFull {
     score += 2;
   }
 
-//  @Test
-//  public void testLoadProgram() throws ModelException {
-//    max_score += 2;
-//    Ship ship = facade.createShip(100, 120, 10, 5, 50, 0, 1.0E20);
-//    String code = "print 4.0;";
-//    Program program = ProgramParser.parseProgramFromString(code, programFactory);
-//    facade.loadProgramOnShip(ship, program);
-//    assertEquals(program, facade.getShipProgram(ship));
-//    score += 2;
-//  }
+  @Test
+  public void testLoadProgram() throws ModelException {
+    max_score += 2;
+    Ship ship = facade.createShip(100, 120, 10, 5, 50, 0, 1.0E20);
+    String code = "print 4.0;";
+    Program program = ProgramParser.parseProgramFromString(code, programFactory);
+    facade.loadProgramOnShip(ship, program);
+    assertEquals(program, facade.getShipProgram(ship));
+    score += 2;
+  }
 
   @Test
   public void testCreateBullet() throws ModelException {
@@ -1723,7 +1723,7 @@ public class Part3TestFull {
         score += 3;
       }
     }
-  }
+//  }
 
   // Thruster OFF statement
 
@@ -1965,7 +1965,6 @@ public class Part3TestFull {
   public void testReadVariable_GlobalVariable() throws ModelException {
     if (nbStudentsInTeam > 1) {
       max_score += 10;
-      System.out.println("########################globaltest################################.");
       String code = "def f { " + "  return a; " + "}" + "a := 10; " + "print f(); ";
       Program program = ProgramParser.parseProgramFromString(code, programFactory);
       facade.loadProgramOnShip(ship1, program);
@@ -2409,6 +2408,7 @@ public class Part3TestFull {
   @Test
   public void testFunctionCall_WithParameters() throws ModelException {
     max_score += 10;
+    System.out.println("##########################FUNCTIONCALL##############################");
     String code = "def f { " + "  return $1 + $2; " + "}" + "print f(3.0,7.0); ";
     Program program = ProgramParser.parseProgramFromString(code, programFactory);
     facade.loadProgramOnShip(ship1, program);
@@ -2843,3 +2843,4 @@ public class Part3TestFull {
     }
   }
 }
+
