@@ -1,7 +1,9 @@
 package asteroids.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import exceptions.ReturnException;
 
@@ -25,28 +27,39 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException, IllegalArgumentException{
 		Function function = this.getFunction();
 		List<Expression<?,?>> arguments = this.getArguments();
+		//copy the local variables
+		this.setLocalScope(function.getLocals());
 		
-		System.out.println("PARAMETERS");
-		for(String parameter: function.getLocalVariables().keySet()){
-			System.out.println(parameter);
-			
-		}
-		/*
-		 * parameters are added as actual variables with given names '$1' etc
-		 */
-		System.out.println(arguments.size());
-		for(int index = 1; index + 1< arguments.size() ; index++){
-			System.out.println("index = " + Integer.toString(index));
-			
-			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
-				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
-			}else
-				throw new IndexOutOfBoundsException();
-		}
+//		/*
+//		 * parameters are added as actual variables with given names '$1' etc
+//		 */
+//		System.out.println(arguments.size());
+//		for(int index = 1; index + 1< arguments.size() ; index++){
+//			System.out.println("index = " + Integer.toString(index));
+//			
+//			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
+//				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
+//			}else
+//				throw new IndexOutOfBoundsException();
+//		}
 		
-		return function.evaluate();
+		return function.evaluate(this);
 		
 	}
+	
+	protected Map<String, LiteralExpression<?>> getLocalScope(){
+		return this.localScope;
+	}
+	
+	public void setLocalScope(Map<String, LiteralExpression<?>> map){
+		this.getLocalScope().clear();
+		
+		for(String name: map.keySet()){
+			this.getLocalScope().put(name, map.get(name));
+		}
+	}
+	
+	private Map<String, LiteralExpression<?>> localScope= new HashMap<String, LiteralExpression<?>>();
 	
 	public LiteralExpression<?> generateLiteral(Object value){
 		//Check if the value is worldObject
@@ -92,7 +105,7 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 
 	private Function associatedFunction;
 	
-	private List<Expression<?,?>> getArguments(){
+	protected List<Expression<?,?>> getArguments(){
 		return this.arguments;
 	}
 	

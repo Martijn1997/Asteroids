@@ -22,22 +22,6 @@ public abstract class NormalStatement extends Statement{
 		
 	}
 
-//	/**
-//	 * method that searches for underlying parameters
-//	 * @param function
-//	 */
-//	protected void searchUnderlyingParameters(Function function) {
-//		if(this instanceof ExpressionStatement){
-//			//first see if the expression is a parameter
-//			Expression<?,?> expression = ((ExpressionStatement<?>)this).getExpression();
-//			if(expression instanceof ParameterExpression){
-//				this.getFunction().addParameter(((ParameterExpression) expression).getName(), expression);
-//			//secondly see if the expression has subexpressions, if so, scan for parameters, otherwise do nothing
-//			}else if(expression instanceof SubExprExpression){
-//				((SubExprExpression) expression).scanForParameter(function);
-//			}
-//		}
-//	}
 	
 	/**
 	 * checks if the statement can have the given function associated

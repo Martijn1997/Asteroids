@@ -18,6 +18,7 @@ import asteroids.part2.CollisionListener;
 import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
 import exceptions.BuilderException;
+import exceptions.IllegalAngleException;
 import asteroids.model.Expression;
 import asteroids.model.Function;
 import asteroids.model.Statement;
@@ -793,6 +794,8 @@ public class Facade implements asteroids.part3.facade.IFacade{
 		}catch(BuilderException exc){
 			throw new ModelException(exc);
 		}catch(ClassCastException exc){
+			throw new ModelException(exc);
+		}catch(IllegalAngleException exc){
 			throw new ModelException(exc);
 		}
 	}

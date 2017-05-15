@@ -1,6 +1,8 @@
 package asteroids.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import exceptions.BuilderException;
@@ -37,14 +39,41 @@ public class Function {
 	/**
 	 * Evaluates the function and returns a LiteralExpression containing the return value
 	 */
-	public LiteralExpression<?> evaluate(){
+	public LiteralExpression<?> evaluate(FunctionCallExpression expression){
+		
+		LiteralExpression<?> result = null;
+		
+		this.pushStack(expression);
 		try{
+			System.out.print("times invoked: ");
+			System.out.println(stack.size());
 			this.getStatement().executeStatement();
 		}catch (ReturnException returnVal){
-			return returnVal.getValue();
+			result = returnVal.getValue();
 		}
-		return null; // return null if no value was returned (default case)
+		this.popStack();
+		return result; // return null if no value was returned (default case)
 	}
+	
+	
+	public FunctionCallExpression readTopStack(){
+		return this.getStack().get((this.getStack().size()-1));
+	}
+	
+	public void pushStack(FunctionCallExpression expression){
+		List<FunctionCallExpression> stack = this.getStack();
+		stack.add(expression);
+	}
+	
+	public FunctionCallExpression popStack(){
+		return this.getStack().remove(this.getStack().size() -1);
+	}
+	
+	private List<FunctionCallExpression> getStack(){
+		return this.stack;
+	}
+	
+	private List<FunctionCallExpression> stack = new ArrayList<FunctionCallExpression>();
 	
 	/**
 	 * Basic getter for the statement
@@ -110,6 +139,11 @@ public class Function {
 	private Program associatedProgram;
 	
 	protected Map<String, LiteralExpression<?>> getLocalVariables(){
+		return this.readTopStack().getLocalScope();
+		//return this.localVariables;
+	}
+	
+	protected Map<String, LiteralExpression<?>> getLocals(){
 		return this.localVariables;
 	}
 	

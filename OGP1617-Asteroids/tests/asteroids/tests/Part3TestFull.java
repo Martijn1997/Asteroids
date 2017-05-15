@@ -2408,7 +2408,6 @@ public class Part3TestFull {
   @Test
   public void testFunctionCall_WithParameters() throws ModelException {
     max_score += 10;
-    System.out.println("##########################FUNCTIONCALL##############################");
     String code = "def f { " + "  return $1 + $2; " + "}" + "print f(3.0,7.0); ";
     Program program = ProgramParser.parseProgramFromString(code, programFactory);
     facade.loadProgramOnShip(ship1, program);
@@ -2446,6 +2445,7 @@ public class Part3TestFull {
   @Test
   public void testFunctionCall_RecursiveFunction() throws ModelException {
     max_score += 20;
+    System.out.println("##############################FUNCTIONCALL##############################");
     String code = "def fac { " + "  if $1 < 1.5 { " + "    return 1.0; " + "  }" + "  else { "
         + "    return $1 * fac($1+-1.0); " + "  }" + "}" + "print fac(4.0); ";
     Program program = ProgramParser.parseProgramFromString(code, programFactory);
