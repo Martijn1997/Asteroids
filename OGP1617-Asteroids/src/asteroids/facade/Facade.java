@@ -17,6 +17,7 @@ import asteroids.model.ProgramFactory;
 import asteroids.part2.CollisionListener;
 import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
+import exceptions.IllegalAngleException;
 import exceptions.BuilderException;
 import asteroids.model.Expression;
 import asteroids.model.Function;
@@ -777,16 +778,17 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	@Override
 	public void loadProgramOnShip(Ship ship, Program program) throws ModelException {
 		program.setShip(ship);
-		
 	}
 
 	@Override
 	public List<Object> executeProgram(Ship ship, double dt) throws ModelException {
 		try{
-		return ship.getProgram().excecuteProgram(dt);
+			return ship.getProgram().excecuteProgram(dt);
 		}catch(IllegalArgumentException exc){
 			throw new ModelException(exc);
 		}catch(IllegalStateException exc){
+			throw new ModelException(exc);
+		}catch(IllegalAngleException exc){
 			throw new ModelException(exc);
 		}catch(IndexOutOfBoundsException exc){
 			throw new ModelException(exc);
