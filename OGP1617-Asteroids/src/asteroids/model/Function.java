@@ -85,8 +85,8 @@ public class Function {
 	 * @return
 	 */
 	public boolean canHaveAsStatement(Statement statement){
-		return statement != null && (!(statement instanceof ActionStatement)) && (statement instanceof NormalStatement) && ((NormalStatement) statement).getFunction() == null && ((NormalStatement) statement).canHaveAsFunction(this);
-			
+
+		return statement != null &&(statement instanceof NormalStatement) && ((NormalStatement) statement).getFunction() == null && ((NormalStatement) statement).canHaveAsFunction(this) && (!(statement instanceof ActionStatement));
 	}
 	
 	/**

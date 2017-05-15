@@ -1723,8 +1723,7 @@ public class Part3TestFull {
         score += 3;
       }
     }
-//  }
-
+  }
   // Thruster OFF statement
 
   @Test

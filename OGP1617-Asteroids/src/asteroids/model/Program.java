@@ -1,6 +1,7 @@
 package asteroids.model;
 
 import java.util.ArrayList;
+import exceptions.OutOfTimeException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
