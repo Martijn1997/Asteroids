@@ -19,7 +19,7 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	public void executeStatement(){
 		for(Statement statement: this.getStatementSequence()){
-				statement.executeStatement();
+			statement.executeStatement();
 		}
 	}
 	

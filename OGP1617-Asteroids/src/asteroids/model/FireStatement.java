@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import exceptions.OutOfTimeException;
+
 public class FireStatement extends ActionStatement {
 	
 	public FireStatement(){
@@ -7,10 +9,13 @@ public class FireStatement extends ActionStatement {
 	}
 
 	@Override
-	public void executeStatement() {
+	public void executeStatement() throws OutOfTimeException{
 		super.executeStatement();
-		Ship self = this.getProgram().getShip();
-		self.fireBullet();
+		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+			this.getProgram().setTime(this.getProgram().getTime() - 0.2);
+			Ship self = this.getProgram().getShip();
+			self.fireBullet();
+		}
 	}
 
 }

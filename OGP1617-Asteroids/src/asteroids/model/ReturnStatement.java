@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import exceptions.OutOfTimeException;
 import exceptions.ReturnException;
 
 /**
@@ -15,8 +16,13 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	}
 	
 	public void executeStatement() throws ReturnException{
-		//super.executeStatement()
-		throw new ReturnException(this.getValue());
+		if (this.getProgram().getTime() < 0.2){
+			throw new OutOfTimeException(this);
+		}
+		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+			this.getProgram().setLastStatement(null);
+			throw new ReturnException(this.getValue());
+		}
 	}
 	
 	/** 

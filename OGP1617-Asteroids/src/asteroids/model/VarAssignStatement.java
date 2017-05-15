@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import exceptions.OutOfTimeException;
+
 /**
  * Class to create a variable assignment statement
  */
@@ -12,17 +14,22 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 	}
 
 	public void executeStatement(){
-		
-		// if the statement is associated with a program, write the variable to the globals
-		if(this.isAssociatedWithProgram()){
-			LiteralExpression<Object> var = new LiteralExpression<Object>(this.getExpression().evaluate());
-			var.setStatement(this);
-			this.getProgram().addGlobalVariable(this.getName(), var);
-		}else{
-			// otherwise write the variable to the locals
-			LiteralExpression<Object> var = new LiteralExpression<Object>(this.getExpression().evaluate());
-			var.setStatement(this);
-			this.getFunction().addLocalVariable(this.getName(), var);
+		if (this.getProgram().getTime() < 0.2){
+			throw new OutOfTimeException(this);
+		}
+		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+			this.getProgram().setLastStatement(null);
+			// if the statement is associated with a program, write the variable to the globals
+			if(this.isAssociatedWithProgram()){
+				LiteralExpression<Object> var = new LiteralExpression<Object>(this.getExpression().evaluate());
+				var.setStatement(this);
+				this.getProgram().addGlobalVariable(this.getName(), var);
+			}else{
+				// otherwise write the variable to the locals
+				LiteralExpression<Object> var = new LiteralExpression<Object>(this.getExpression().evaluate());
+				var.setStatement(this);
+				this.getFunction().addLocalVariable(this.getName(), var);
+			}
 		}
 	}
 	

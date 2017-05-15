@@ -32,18 +32,26 @@ public class Program {
 		}
 		
 		this.setTime(deltaTime + this.getTime());
-		if (!this.getStatement().isExecuted() && (this.getTime() >= 0.2)){
+		if (this.getTime() >= 0.2){
 			try{
-				this.getStatement().executeStatement();
-			}catch (OutOfTimeException exc){
+				if (this.getStatement() instanceof SequenceStatement){
+					if (this.getLastStatement() == this.getStatement())
+						this.setLastStatement(null);
+					this.getStatement().executeStatement();
+				}else if ((this.getLastStatement() == null) || (this.getLastStatement() == this.getStatement()))
+					this.getStatement().executeStatement();
+			}catch (OutOfTimeException statement){
+				this.setLastStatement(statement.getStatement());
 			}
+		}else if(this.getLastStatement() == null){
+			this.setLastStatement(this.getStatement());
 		}
 
 		if(this.getBuildFault()){
 			throw new BuilderException();
 		}
 
-		if (this.getPrintedObjects().isEmpty())
+		if (!(this.getLastStatement() == null))
 			return null;
 		else
 			return this.getPrintedObjects();
@@ -52,6 +60,16 @@ public class Program {
 	public double getTime(){
 		return time;
 	}
+	
+	public void setLastStatement(Statement statement){
+		this.lastStatement = statement;
+	}
+	
+	public Statement getLastStatement(){
+		return this.lastStatement;
+	}
+	
+	private Statement lastStatement = null;
 	
 	public void setTime(double time){
 		if(isValidTime(time)){
