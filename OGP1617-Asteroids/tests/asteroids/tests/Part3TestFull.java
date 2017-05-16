@@ -2487,7 +2487,7 @@ public class Part3TestFull {
   public void testFunctionCall_IllegalActualArgument() throws ModelException {
     try {
       max_score += 5;
-      String code = "def f { " + "  return $1; " + "}" + "print f(self+3.0); ";
+      String code = "def f { " + "  return $1; " + "}" + "print f(self + 3.0); ";
       Program program = ProgramParser.parseProgramFromString(code, programFactory);
       facade.loadProgramOnShip(ship1, program);
       facade.executeProgram(ship1, 0.3);

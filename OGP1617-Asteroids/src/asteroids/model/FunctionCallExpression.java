@@ -102,8 +102,17 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		throw new IllegalArgumentException("Cannot set function, no function with same name found in program");
 	}
 	
-
 	private Function associatedFunction;
+	
+	@Override
+	public void setStatement(Statement statement){
+		for(Expression<?,?> expression: this.getArguments()){
+			expression.setStatement(statement);
+		}
+		
+		super.setStatement(statement);
+	}
+	
 	
 	protected List<Expression<?,?>> getArguments(){
 		return this.arguments;
@@ -137,5 +146,6 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 			((ChainedStatement) statement).lookForBreakStatement(whileState);
 		}
 	}
+	
 	
 }
