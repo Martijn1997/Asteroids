@@ -8,7 +8,7 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 		super();
 		this.setExpression(condition);
 		this.setStatement(statement);
-		this.lookForBreakStatement(this);
+//		this.lookForBreakStatement(this);
 	}
 	
 	
@@ -20,9 +20,8 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 
 	public void setStatement(Statement statement){
 		this.statement = statement;
-		if(statement instanceof BreakStatement){
-			((BreakStatement) statement).setWhileStatement(this);
-		}
+
+
 	}
 	
 	public Expression<?, Boolean> getExpression(){
@@ -44,28 +43,11 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 		}
 		// if during the execution a break is thrown catch the BreakException
 		}catch (BreakException exc){
-			// check if the break does not belong to this while statement, throw exception
-			if(exc.getValue() != this){
-				throw new IllegalStateException();
-			}
+
 		}
 	}
 	
-//	/**
-//	 * Break class only accessible by While statements enclosing the break
-//	 * @author Martijn
-//	 *
-//	 */
-//	public class BreakStatement extends NormalStatement{
-//		public BreakStatement(Program program){
-//			super();
-//		}
-//		
-//		public void executeStatement(){
-//			throw new BreakException(WhileStatement.this);
-//		}
-//		
-//	}
+
 	
 	
 	private Expression<?, Boolean> condition;

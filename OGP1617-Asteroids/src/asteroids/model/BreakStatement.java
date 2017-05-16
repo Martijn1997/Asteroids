@@ -8,20 +8,8 @@ public class BreakStatement extends NormalStatement{
 	}
 	
 	public void executeStatement(){
-		if(this.assocWhile != null){
-			throw new BreakException(this.getWhileStatement());
-		}else{
-			throw new IllegalStateException();
-		}
+			throw new BreakException();
+
 	}
-	
-	public WhileStatement getWhileStatement(){
-		return this.assocWhile;
-	}
-	
-	public void setWhileStatement(WhileStatement statement){
-		this.assocWhile = statement;
-	}
-	
-	private WhileStatement assocWhile;
+
 }

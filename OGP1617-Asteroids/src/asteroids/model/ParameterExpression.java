@@ -12,9 +12,11 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 	}
 	
 	public LiteralExpression<?> evaluate(){
+		//TODO FIX INFINITE LOOP
 		Function function = null;
 		try{
-			function = ((NormalStatement)this.getStatement()).getFunction();
+			NormalStatement statement = (NormalStatement) this.getStatement();
+			function = statement.getFunction();
 		}catch (ClassCastException exc){
 			throw new IllegalStateException("Not normal expression");
 		}
@@ -73,5 +75,6 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 	public boolean canHaveAsStatement(Statement statement){
 		return (statement!=null && statement instanceof Statement);
 	}
+	
 	
 }

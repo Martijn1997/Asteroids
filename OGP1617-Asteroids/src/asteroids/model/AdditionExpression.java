@@ -30,7 +30,6 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 		}else{
 			leftResult = (Double) leftOperand.evaluate();
 		}
-		
 		if(rightOperand instanceof VariableExpression ){
 			rightResult =	(Double) ((VariableExpression)rightOperand).evaluate().evaluate();
 		}else if(rightOperand instanceof ParameterExpression){

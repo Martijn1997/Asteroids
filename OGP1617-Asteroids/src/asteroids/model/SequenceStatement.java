@@ -125,26 +125,26 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 //		}
 	}
 	
-	@Override
-	public void lookForBreakStatement(WhileStatement whileState){
-		
-		List<Statement> sequence = this.getStatementSequence();
-		
-//		try{
-		for(Statement statement: sequence){	
-			// if the statement is instance of breakstatement 
-			if(statement instanceof BreakStatement){
-				((BreakStatement) statement).setWhileStatement(whileState);
-
-//						}
-			}else if(statement instanceof ChainedStatement){
-				((ChainedStatement)statement).lookForBreakStatement(whileState);
-			}
-		}
-//		}catch (Throwable exc){
-//			this.setIndex(0);
+//	@Override
+//	public void lookForBreakStatement(WhileStatement whileState){
+//		
+//		List<Statement> sequence = this.getStatementSequence();
+//		
+////		try{
+//		for(Statement statement: sequence){	
+//			// if the statement is instance of breakstatement 
+//			if(statement instanceof BreakStatement){
+//				((BreakStatement) statement).setWhileStatement(whileState);
+//
+////						}
+//			}else if(statement instanceof ChainedStatement){
+//				((ChainedStatement)statement).lookForBreakStatement(whileState);
+//			}
 //		}
-	}
+////		}catch (Throwable exc){
+////			this.setIndex(0);
+////		}
+//	}
 	
 	/**
 	 * List that stores all the statements belonging to the statement sequences

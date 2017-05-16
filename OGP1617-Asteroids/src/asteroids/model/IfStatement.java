@@ -109,6 +109,14 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 		}
 	}
 	
+	@Override
+	public void setFunction(Function function){
+		super.setFunction(function);
+		if(this.hasElseStatement){
+			this.getElseStatement().setFunction(function);
+		}
+	}
+	
 	/**
 	 * Class of else statements chained to a given if statement
 	 * @Invar an else statement can only belong to one specific if statement 

@@ -47,6 +47,7 @@ public class Function {
 		try{
 			System.out.print("times invoked: ");
 			System.out.println(stack.size());
+			this.getStatement().setFunction(this);
 			this.getStatement().executeStatement();
 		}catch (ReturnException returnVal){
 			result = returnVal.getValue();

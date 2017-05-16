@@ -28,18 +28,9 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		//copy the local variables
 		this.setLocalScope(function.getLocals());
 		
-//		/*
-//		 * parameters are added as actual variables with given names '$1' etc
-//		 */
-//		System.out.println(arguments.size());
-//		for(int index = 1; index + 1< arguments.size() ; index++){
-//			System.out.println("index = " + Integer.toString(index));
-//			
-//			if(function.getLocalVariables().containsKey('$' + Integer.toString(index))){
-//				function.addLocalVariable('$' + Integer.toString(index), generateLiteral(arguments.get(index-1).evaluate()));
-//			}else
-//				throw new IndexOutOfBoundsException();
-//		}
+		//TODO if this call is in the function that it is called upon, create new call for recursion
+		
+
 		
 		return function.evaluate(this);
 		
@@ -84,6 +75,9 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 			if(((NormalStatement)statement).getProgram() == null){
 				Function assocFunct = ((NormalStatement)statement).getFunction();
 				Program program = assocFunct.getProgram();
+				functions = program.getFunctions();
+			}else{
+				Program program = statement.getProgram();
 				functions = program.getFunctions();
 			}
 		}else{
@@ -136,14 +130,13 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 		return string;
 	}
 	
-	public void scanForBreakStatement(WhileStatement whileState){
-		Statement statement = this.getFunction().getStatement();
-		if(statement instanceof BreakStatement){
-			((BreakStatement) statement).setWhileStatement(whileState);
-		}else if(statement instanceof ChainedStatement){
-			((ChainedStatement) statement).lookForBreakStatement(whileState);
-		}
-	}
-	
+//	public void scanForBreakStatement(WhileStatement whileState){
+//		Statement statement = this.getFunction().getStatement();
+//		if(statement instanceof BreakStatement){
+//			((BreakStatement) statement).setWhileStatement(whileState);
+//		}else if(statement instanceof ChainedStatement){
+//			((ChainedStatement) statement).lookForBreakStatement(whileState);
+//		}
+//	}
 	
 }

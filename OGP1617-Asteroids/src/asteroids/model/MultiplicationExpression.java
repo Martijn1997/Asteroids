@@ -17,12 +17,16 @@ public class MultiplicationExpression extends BinaryExpression<Expression<?, Dou
 		
 		if(leftOperand instanceof VariableExpression){
 			leftResult = (Double) ((VariableExpression)leftOperand).evaluate().evaluate();
+		}else if(leftOperand instanceof ParameterExpression){
+			leftResult = (Double) ((ParameterExpression)leftOperand).evaluate().evaluate();
 		}else{
 			leftResult = (Double) leftOperand.evaluate();
 		}
 		
-		if(rightOperand instanceof VariableExpression){
+		if(rightOperand instanceof VariableExpression ){
 			rightResult =	(Double) ((VariableExpression)rightOperand).evaluate().evaluate();
+		}else if(rightOperand instanceof ParameterExpression){
+			rightResult = (Double) ((ParameterExpression)rightOperand).evaluate().evaluate();
 		}else{
 			rightResult = (Double) rightOperand.evaluate();
 		}
