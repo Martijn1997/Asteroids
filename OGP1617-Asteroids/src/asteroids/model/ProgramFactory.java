@@ -2,10 +2,12 @@ package asteroids.model;
 
 import java.util.List;
 import asteroids.part3.programs.SourceLocation;
-import asteroids.util.ModelException;
 
 @SuppressWarnings("unchecked")
 public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<Expression<?,?>,Statement,Function,Program>{
+	
+	public ProgramFactory(){
+	}
 	/* PROGRAM */
 
 	/**
@@ -398,7 +400,8 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createTurnStatement(Expression<?,?> angle, SourceLocation location){
-		return new TurnStatement((Expression<?,Double>)angle);
+		return new TurnStatement((Expression<?, Double>) angle);
+
 	}
 
 	/**

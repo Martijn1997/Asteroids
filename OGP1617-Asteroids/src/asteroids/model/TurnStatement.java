@@ -1,6 +1,7 @@
 package asteroids.model;
 
 import exceptions.IllegalAngleException;
+import exceptions.OutOfTimeException;
 
 public class TurnStatement extends ActionStatement implements ExpressionStatement<Expression<?, Double>>{
 
@@ -21,15 +22,19 @@ public class TurnStatement extends ActionStatement implements ExpressionStatemen
 	}
 	
 	@Override
-	public void executeStatement() {
+	public void executeStatement() throws OutOfTimeException{
 		super.executeStatement();
-		Ship self = this.getProgram().getShip();
-		double angle = this.getExpression().evaluate();
-		try{
-			self.turn(angle);
-		}catch (AssertionError err){
-			throw new IllegalAngleException();
-		}	
+		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+			this.getProgram().setTime(this.getProgram().getTime() - 0.2);
+			Ship self = this.getProgram().getShip();
+			double angle = this.getExpression().evaluate();
+			this.getProgram().setLastStatement(null);
+			try{
+				self.turn(angle);
+			}catch (AssertionError err){
+				throw new IllegalAngleException();
+			}
+		}
 	}
 	
 	private Expression<?, Double> angle;

@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import exceptions.OutOfTimeException;
 
+import exceptions.OutOfTimeException;
+
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
 	public SequenceStatement(List<Statement> statements){
@@ -17,8 +19,8 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	public void executeStatement(){
 		for(Statement statement: this.getStatementSequence()){
-				statement.executeStatement();
-		}				
+			statement.executeStatement();
+		}
 	}
 	
 	/**
