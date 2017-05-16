@@ -78,6 +78,37 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 		super.setStatement(statement);
 	}
 	
+	public Object leftOperandEvaluated(){
+		
+		Expression<?,?> leftOperand = this.getLeftOperand();
+		
+		if(leftOperand instanceof VariableExpression){
+			return  ((VariableExpression)leftOperand).evaluate().evaluate() ;
+		}else if(leftOperand instanceof ParameterExpression){
+			return((ParameterExpression)leftOperand).evaluate().evaluate();
+		}else if (leftOperand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)leftOperand).evaluate().evaluate();
+		}else{
+			return leftOperand.evaluate();
+		}
+	}
+	
+	public Object rightOperandEvaluated(){
+		
+		Expression<?,?> rightOperand = this.getRightOperand();
+		if(rightOperand instanceof VariableExpression){
+			return  ((VariableExpression)rightOperand).evaluate().evaluate() ;
+		}else if(rightOperand instanceof ParameterExpression){
+			return((ParameterExpression)rightOperand).evaluate().evaluate();
+		}else if (rightOperand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)rightOperand).evaluate().evaluate();
+		}else{
+			return rightOperand.evaluate();
+		}
+
+		
+	}
+	
 	
 	private T leftOperand;
 		

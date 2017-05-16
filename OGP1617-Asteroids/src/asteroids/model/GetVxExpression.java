@@ -16,7 +16,7 @@ public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>,
 		if(this.getOperand().evaluate() == null){
 			throw new IllegalArgumentException();
 		}
-		return this.getOperand().evaluate().getXVelocity();
+		return ((WorldObject) this.operandEvaluated()).getXVelocity();
 	}
 	
 	@Override

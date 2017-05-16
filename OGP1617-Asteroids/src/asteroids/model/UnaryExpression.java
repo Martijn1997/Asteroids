@@ -69,6 +69,19 @@ public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expre
 		super.setStatement(statement);
 	}
 	
+	public Object operandEvaluated(){
+		Expression<?,?> operand = this.getOperand();
+		if(operand instanceof VariableExpression){
+			return  ((VariableExpression)operand).evaluate().evaluate() ;
+		}else if(operand instanceof ParameterExpression){
+			return((ParameterExpression)operand).evaluate().evaluate();
+		}else if (operand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)operand).evaluate().evaluate();
+		}else{
+			return operand.evaluate();
+		}
+	}
+	
 	/**
 	 * scans if the operands have a parameter as expression
 	 */

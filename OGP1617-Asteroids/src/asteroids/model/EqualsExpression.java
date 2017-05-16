@@ -15,7 +15,7 @@ public class EqualsExpression<T extends Expression<?,?>> extends BinaryExpressio
 			return false;
 		}
 		
-		if(((Expression<?,?>) leftOperand).evaluate().equals(((Expression<?,?>) rightOperand).evaluate())){
+		if((this.leftOperandEvaluated()).equals(this.rightOperandEvaluated())){
 			return true;
 		}else{
 			return false;

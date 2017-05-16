@@ -17,7 +17,7 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 		if(this.getOperand().evaluate() == null){
 			throw new IllegalArgumentException();
 		}
-		return this.getOperand().evaluate().getXPosition();
+		return ((WorldObject) this.operandEvaluated()).getXPosition();
 	}
 	
 	@Override

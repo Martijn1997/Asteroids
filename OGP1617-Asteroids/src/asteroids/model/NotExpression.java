@@ -16,7 +16,7 @@ public class NotExpression extends UnaryExpression<Expression<?,Boolean>, Boolea
 	 * getter for the value of the operand
 	 */
 	public Boolean evaluate(){
-		return !this.getOperand().evaluate();
+		return !(Boolean)this.operandEvaluated();
 	}
 	
 	@Override

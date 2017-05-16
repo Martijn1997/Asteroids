@@ -21,7 +21,7 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 */
 	public Double evaluate(){
 		// because the cast is checked in the isValid the warning may be surpressed
-		return -this.getOperand().evaluate();
+		return -(Double)this.operandEvaluated();
 	}
 	
 	@Override

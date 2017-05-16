@@ -10,7 +10,7 @@ public class GetRadiusExpression extends UnaryExpression<Expression<?, WorldObje
 		if(this.getOperand().evaluate() == null){
 			throw new IllegalArgumentException();
 		}
-		return this.getOperand().evaluate().getRadius();
+		return ((WorldObject) this.operandEvaluated()).getRadius();
 	}
 	
 	@Override
