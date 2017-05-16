@@ -30,6 +30,7 @@ import asteroids.util.ModelException;
 
 public class Part3TestFull {
 
+
 	  private static final double EPSILON = 0.0001;
 	  private static final double BIG_EPSILON = 1.0E14;
 	  private static final double VERY_BIG_EPSILON = 1.0E34;
@@ -2897,4 +2898,4 @@ public class Part3TestFull {
 	    }
 	  }
 
-	}
+

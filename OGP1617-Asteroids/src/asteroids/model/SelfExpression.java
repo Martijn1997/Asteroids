@@ -7,7 +7,9 @@ public class SelfExpression extends Expression<Ship,Ship> {
 	}
 	
 	public Ship evaluate(){
-		return this.getStatement().getProgram().getShip();
+		Statement statement = this.getStatement();
+		Program program = statement.getProgram();
+		return program.getShip();
 	}
 	
 	public String toString(){

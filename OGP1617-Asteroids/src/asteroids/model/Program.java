@@ -159,8 +159,6 @@ public class Program {
 	
 	public boolean canHaveAsFunction(Function function){
 		if(function != null /*&&function.getProgram()==this*/){
-			System.out.println("I was here");
-			System.out.println(!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
 			return (!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
 		}else{
 			return false;
