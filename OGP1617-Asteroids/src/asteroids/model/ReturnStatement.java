@@ -16,12 +16,16 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	}
 	
 	public void executeStatement() throws ReturnException{
-		if (this.getProgram().getTime() < 0.2){
-			throw new OutOfTimeException(this);
-		}
-		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
-			this.getProgram().setLastStatement(null);
+		if(this.getProgram() ==  null){
 			throw new ReturnException(this.getValue());
+		}else{
+			if (this.getProgram().getTime() < 0.2){
+				throw new OutOfTimeException(this);
+			}
+			if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+				this.getProgram().setLastStatement(null);
+				throw new ReturnException(this.getValue());
+			}
 		}
 	}
 	
