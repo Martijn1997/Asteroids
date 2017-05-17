@@ -1904,14 +1904,12 @@ public class Part3TestFull {
   @Test
   public void testWhileStatement_InsideRecursiveFunction() throws ModelException {
     max_score += 20;
-    System.out.println("##############################################RecursiveWhileTest######################################");
     String code = "def sumfac { " + "  a := $1; " + "  t := 1.0; " + "  while 1.5 < a { "
         + "    t := t + (a*sumfac(a + -1.0));" + "    a := a + -1.0; " + "  }" + "  return t; " + "} "
         + "print sumfac(4.0); ";
     Program program = ProgramParser.parseProgramFromString(code, programFactory);
     facade.loadProgramOnShip(ship1, program);
     List<Object> results = facade.executeProgram(ship1, 0.3);
-    System.out.println("###############################################END OF THE TEST  ###################################### ");
     Object[] expecteds = { 60.0 };
     assertArrayEquals(expecteds, results.toArray());
     

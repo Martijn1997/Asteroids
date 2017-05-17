@@ -16,10 +16,7 @@ public abstract class NormalStatement extends Statement{
 			throw new IllegalArgumentException();
 		}
 		this.associatedFunction = function;
-		
-		// scan for underlying parameters
-		//searchUnderlyingParameters(function);
-		
+
 	}
 
 	

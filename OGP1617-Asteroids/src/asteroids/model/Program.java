@@ -85,14 +85,23 @@ public class Program {
 	
 	private double time;
 	
+	/**
+	 * Getter for build fault flag
+	 */
 	public boolean getBuildFault(){
 		return this.buildFault;
 	}
 	
+	/**
+	 * setter for build fault flag
+	 */
 	public void setBuildFault(){
 		this.buildFault = true;
 	}
 	
+	/**
+	 * Variable that stores the build fault flag (signals error upon constructing the program)
+	 */
 	private boolean buildFault = false;
 	
 	/**
@@ -135,26 +144,37 @@ public class Program {
 	}
 	
 	/**
-	 * set the function list to the provided functions
+	 * establishes the bidirectional relationship between functions and the host program
 	 * @param functions
 	 */
-	//TODO check if there are no functions with the same name
 	public void setFunctions(List<Function> functions){
 		for(Function function: functions){
 			if(!this.canHaveAsFunction(function)){
 				throw new BuilderException();
 			}
 		}
+		//Look for duplicate functions
 		HashSet<Function> temp_set = new HashSet<Function>(functions);
 		if(temp_set.size() != functions.size()){
 			throw new BuilderException();
 		}
+		
+		//check if there are no functions with the same name
+		List<String> functionNames = new ArrayList<String>();
+		for(Function function: functions){
+			functionNames.add(function.getFunctionName());
+		}
+		
+		if(temp_set.size()!=functionNames.size()){
+			throw new BuilderException();
+		}
+		
+		//Add the functions to the program and set the program of the functions to this program
 		this.functions.addAll(functions);
 		for(Function function: functions){
 			function.setProgram(this);
 		}
 		
-		System.out.println(functions.size());
 	}
 	
 	public boolean canHaveAsFunction(Function function){

@@ -43,7 +43,7 @@ public class Function {
 	public LiteralExpression<?> evaluate(FunctionCallExpression expression){
 		
 		LiteralExpression<?> result = null;
-		
+		//push the provided call on the stack of the function
 		this.pushStack(expression);
 
 		try{
@@ -52,22 +52,30 @@ public class Function {
 
 		}catch (ReturnException returnVal){
 			result = returnVal.getValue();
-			//System.out.println(result);
 		}
 		this.popStack();
 		return result; 
 	}
 	
+	/**
+	 * Getter for the stack size, returns the amount of function calls on the stack
+	 */
 	public int getStackHeight(){
 		return this.getStack().size();
 	}
 	
+	/**
+	 * Reads the top of the stack without popping the upper value
+	 */
 	public FunctionCallExpression readTopStack(){
 		return this.getStack().get((this.getStack().size()-1));
 	}
 	
-	public void pushStack(FunctionCallExpression expression){
-		System.out.print("Stack PUSH: ");
+	/**
+	 * Pushes new call on top of the stack
+	 * if the call is already present throws an AlreadyInStackException
+	 */
+	public void pushStack(FunctionCallExpression expression) throws AlreadyInStackException{
 		List<FunctionCallExpression> stack = this.getStack();
 		if(!stack.contains(expression)){
 			expression.setEvalArguments(expression.evaluateArguments());
@@ -75,21 +83,28 @@ public class Function {
 		}else{
 			throw new AlreadyInStackException();
 		}
-		
-		System.out.println(stack.size());
+
 	}
 	
+	/**
+	 * removes the latest call from the stack and returns it
+	 */
 	public FunctionCallExpression popStack(){
-		System.out.print("Stack POP: ");
 		FunctionCallExpression call =this.getStack().remove(this.getStack().size() -1);
-		System.out.println(stack.size());
 		return call;
 	}
 	
+	/**
+	 * Returns the list containing the stack of the function
+	 */
 	private List<FunctionCallExpression> getStack(){
 		return this.stack;
 	}
 	
+	
+	/**
+	 * The stack that stores all the function calls
+	 */
 	private List<FunctionCallExpression> stack = new ArrayList<FunctionCallExpression>();
 	
 	/**
@@ -160,28 +175,40 @@ public class Function {
 		//return this.localVariables;
 	}
 	
-	protected Map<String, LiteralExpression<?>> getLocals(){
-		return this.localVariables;
-	}
 	
+//	protected Map<String, LiteralExpression<?>> getLocals(){
+//		return this.localVariables;
+//	}
+	
+	/**
+	 * Adds local variable to the top function call in the stack
+	 * @param name
+	 * @param variable
+	 */
 	public void addLocalVariable(String name, LiteralExpression<?> variable){
 		if(!canHaveAsLocalVar(variable)){
 			throw new IllegalArgumentException();
 		}
-		if(this.getStack().size() == 1){
-			this.localVariables.put(name, variable);
-		}
+//		if(this.getStack().size() == 1){
+//			this.localVariables.put(name, variable);
+//		}
 
 		this.readTopStack().addLocalScope(name, variable);
 		
 	}
 	
+	/**
+	 * Checks if a local variable can be added to the local variables.
+	 * @param variable
+	 * @return
+	 */
+	//TODO check for right type if variable is already present
 	public boolean canHaveAsLocalVar(LiteralExpression<?> variable){
 		return (variable.evaluate() instanceof WorldObject || variable.evaluate() instanceof Double || variable.evaluate() instanceof Boolean);
 		
 	}
 	
-	private Map<String, LiteralExpression<?>> localVariables = new HashMap<String, LiteralExpression<?>>();
+//	private Map<String, LiteralExpression<?>> localVariables = new HashMap<String, LiteralExpression<?>>();
 	
 	
 	private NormalStatement associatedStatement;

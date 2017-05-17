@@ -32,31 +32,29 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 		//find the corresponding argument for this parameter and adjusting the index
 		int index = Integer.parseInt(this.getName().substring(1)) - 1;
 		
-		System.out.print("Amount of arguments: ");
-		System.out.println( currentCall.getEvalArguments().size());
 		
 		LiteralExpression<?> argument = currentCall.getEvalArguments().get(index);
 		
 		
-		return generateLiteral(argument.evaluate());
+		return LiteralExpression.generateLiteral(argument.evaluate());
 		
 	}
 	
-	public LiteralExpression<?> generateLiteral(Object value){
-		//Check if the value is worldObject
-		if(value instanceof WorldObject){
-			return new LiteralExpression<WorldObject>((WorldObject) value);
-		//Check if the value is Double
-		}else if(value instanceof Double){
-			return new LiteralExpression<Double>((Double) value);
-		//check if value is Boolean
-		}else if(value instanceof Boolean){
-			return new LiteralExpression<Boolean>((Boolean) value);
-		//otherwise the value is of type literal
-		}else{
-			return generateLiteral((LiteralExpression<?>)value);
-		}
-	}
+//	public LiteralExpression<?> generateLiteral(Object value){
+//		//Check if the value is worldObject
+//		if(value instanceof WorldObject){
+//			return new LiteralExpression<WorldObject>((WorldObject) value);
+//		//Check if the value is Double
+//		}else if(value instanceof Double){
+//			return new LiteralExpression<Double>((Double) value);
+//		//check if value is Boolean
+//		}else if(value instanceof Boolean){
+//			return new LiteralExpression<Boolean>((Boolean) value);
+//		//otherwise the value is of type literal
+//		}else{
+//			return generateLiteral((LiteralExpression<?>)value);
+//		}
+//	}
 		
 //		// get the expression filled in at the function level
 //		Function assocFunction = null;

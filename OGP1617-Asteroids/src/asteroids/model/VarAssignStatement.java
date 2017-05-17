@@ -21,7 +21,7 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 //				this.getProgram().addGlobalVariable(this.getName(), var);
 //			}else{
 				// otherwise write the variable to the locals
-				LiteralExpression<?> var = generateLiteral(this.getExpression().evaluate());
+				LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate());
 				var.setStatement(this);
 				this.getFunction().addLocalVariable(this.getName(), var);
 //			}
@@ -33,12 +33,12 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 				this.getProgram().setLastStatement(null);
 				// if the statement is associated with a program, write the variable to the globals
 				if(this.isAssociatedWithProgram()){
-					LiteralExpression<?> var = generateLiteral(this.getExpression().evaluate());
+					LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate());
 					var.setStatement(this);
 					this.getProgram().addGlobalVariable(this.getName(), var);
 				}else{
 					// otherwise write the variable to the locals
-					LiteralExpression<?> var =generateLiteral(this.getExpression().evaluate());
+					LiteralExpression<?> var =LiteralExpression.generateLiteral(this.getExpression().evaluate());
 					var.setStatement(this);
 					this.getFunction().addLocalVariable(this.getName(), var);
 				}
@@ -46,21 +46,21 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 		}
 	}
 	
-	public LiteralExpression<?> generateLiteral(Object value){
-		//Check if the value is worldObject
-		if(value instanceof WorldObject){
-			return new LiteralExpression<WorldObject>((WorldObject) value);
-		//Check if the value is Double
-		}else if(value instanceof Double){
-			return new LiteralExpression<Double>((Double) value);
-		//check if value is Boolean
-		}else if(value instanceof Boolean){
-			return new LiteralExpression<Boolean>((Boolean) value);
-		//otherwise the value is of type literal
-		}else{
-			return (LiteralExpression<?>)value;
-		}
-	}
+//	public LiteralExpression<?> generateLiteral(Object value){
+//		//Check if the value is worldObject
+//		if(value instanceof WorldObject){
+//			return new LiteralExpression<WorldObject>((WorldObject) value);
+//		//Check if the value is Double
+//		}else if(value instanceof Double){
+//			return new LiteralExpression<Double>((Double) value);
+//		//check if value is Boolean
+//		}else if(value instanceof Boolean){
+//			return new LiteralExpression<Boolean>((Boolean) value);
+//		//otherwise the value is of type literal
+//		}else{
+//			return (LiteralExpression<?>)value;
+//		}
+//	}
 	
 	
 	/**

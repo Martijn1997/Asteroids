@@ -451,16 +451,14 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	 * Return all ships located within <code>world</code>.
 	 */
 	public Set<? extends Ship> getWorldShips(World world) throws ModelException{
-		Set<Ship> allShips = new HashSet<Ship>(world.getAllShips());
-		return allShips;
+		return world.getAll("asteroids.model.Ship");
 	}
 
 	/**
 	 * Return all bullets located in <code>world</code>.
 	 */
 	public Set<? extends Bullet> getWorldBullets(World world) throws ModelException{
-		Set<Bullet> allBullets = new HashSet<Bullet>(world.getAllBullets());
-		return allBullets;
+		return world.getAll("asteroids.model.Bullet");
 	}
 
 	/**
@@ -638,8 +636,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 
 	@Override
 	public Set<? extends Asteroid> getWorldAsteroids(World world) throws ModelException {
-		Set<Asteroid> allAsteroids = new HashSet<Asteroid>(world.getAllAsteroids());
-		return allAsteroids;
+		return world.getAll("asteroids.model.Asteroid");
 	}
 
 	@Override
@@ -662,8 +659,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 
 	@Override
 	public Set<? extends Planetoid> getWorldPlanetoids(World world) throws ModelException {
-		Set<Planetoid> allPlanetoids = new HashSet<Planetoid>(world.getAllPlanetoids());
-		return allPlanetoids;
+		return world.getAll("asteroids.model.Planetoid");
 	}
 
 	@Override
