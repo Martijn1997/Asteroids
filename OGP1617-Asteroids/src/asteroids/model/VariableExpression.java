@@ -82,7 +82,7 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 		return var.toString();
 	}
 	
-	public LiteralExpression<?> generateLiteral(Object value){
+	public static LiteralExpression<?> generateLiteral(Object value){
 		//Check if the value is worldObject
 		if(value instanceof WorldObject){
 			return new LiteralExpression<WorldObject>((WorldObject) value);

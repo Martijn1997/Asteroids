@@ -32,6 +32,7 @@ public class LiteralExpression<T> extends Expression<T,T> {
 	}
 	
 	public T evaluate() throws IllegalArgumentException{
+		System.out.println(this.getValue());
 		if(isValidValue(this.getValue())){
 			return this.getValue();
 		}else{

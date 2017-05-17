@@ -25,10 +25,10 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException, IllegalArgumentException{
 		Function function = this.getFunction();
 		List<Expression<?,?>> arguments = this.getArguments();
-		//copy the local variables
+		this.setEvalArguments(this.evaluateArguments());
 		this.setLocalScope(function.getLocals());
 		
-		//TODO if this call is in the function that it is called upon, create new call for recursion
+		//TODO evaluate the arguments before executing the code
 		
 
 		
@@ -118,6 +118,27 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	
 	private List<Expression<?,?>> arguments = new ArrayList<Expression<?,?>>();
 	
+	
+	public List<LiteralExpression<?>> evaluateArguments(){
+		List<LiteralExpression<?>> evalArgs = new ArrayList<LiteralExpression<?>>();
+		for(Expression<?,?> expression: this.getArguments()){
+			evalArgs.add(generateLiteral(expression.evaluate()));
+		}
+		return evalArgs;
+	}
+	
+	protected List<LiteralExpression<?>> getEvalArguments() {
+		return evalArguments;
+	}
+
+	protected void setEvalArguments(List<LiteralExpression<?>> evalArguments) {
+		this.evalArguments = evalArguments;
+	}
+	
+	private List<LiteralExpression<?>> evalArguments = new ArrayList<LiteralExpression<?>>();
+	
+
+
 	@Override
 	public String toString(){
 		String string = this.getFunction().getFunctionName() + "( ";

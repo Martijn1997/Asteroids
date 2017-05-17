@@ -45,7 +45,7 @@ public class Function {
 		
 		this.pushStack(expression);
 		try{
-			System.out.print("times invoked: ");
+			System.out.print("calls in stack: ");
 			System.out.println(stack.size());
 			this.getStatement().setFunction(this);
 			this.getStatement().executeStatement();

@@ -29,11 +29,8 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 		
 		//find the corresponding argument for this parameter and adjusting the index
 		int index = Integer.parseInt(this.getName().substring(1)) - 1;
-//		System.out.print("argument size: ");
-//		System.out.println(currentCall.getArguments().size());
-//		System.out.print("current index: ");
-//		System.out.println(index);
-		Expression<?,?> argument = currentCall.getArguments().get(index);
+
+		Expression<?,?> argument = currentCall.getEvalArguments().get(index);
 		
 		return generateLiteral(argument.evaluate());
 		
