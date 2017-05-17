@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import java.util.Map;
+
 /**
  * filling in parameter's is done by providing expressions
  * @author Martijn
@@ -10,7 +12,7 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 	public ParameterExpression(String parName){
 		super(parName);
 	}
-	
+	//TODO ADD PRINT FOR CURRENT VALUE
 	public LiteralExpression<?> evaluate(){
 		//TODO FIX INFINITE LOOP
 		Function function = null;
@@ -29,8 +31,12 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 		
 		//find the corresponding argument for this parameter and adjusting the index
 		int index = Integer.parseInt(this.getName().substring(1)) - 1;
-
-		Expression<?,?> argument = currentCall.getEvalArguments().get(index);
+		
+		System.out.print("Amount of arguments: ");
+		System.out.println( currentCall.getEvalArguments().size());
+		
+		LiteralExpression<?> argument = currentCall.getEvalArguments().get(index);
+		
 		
 		return generateLiteral(argument.evaluate());
 		
@@ -48,7 +54,7 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 			return new LiteralExpression<Boolean>((Boolean) value);
 		//otherwise the value is of type literal
 		}else{
-			return (LiteralExpression<?>)value;
+			return generateLiteral((LiteralExpression<?>)value);
 		}
 	}
 		

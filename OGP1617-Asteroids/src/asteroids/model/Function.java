@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import exceptions.AlreadyInStackException;
 import exceptions.BuilderException;
 import exceptions.ReturnException;
 
@@ -44,30 +45,45 @@ public class Function {
 		LiteralExpression<?> result = null;
 		
 		this.pushStack(expression);
+
 		try{
-			System.out.print("calls in stack: ");
-			System.out.println(stack.size());
 			this.getStatement().setFunction(this);
 			this.getStatement().executeStatement();
+
 		}catch (ReturnException returnVal){
 			result = returnVal.getValue();
+			//System.out.println(result);
 		}
 		this.popStack();
-		return result; // return null if no value was returned (default case)
+		return result; 
 	}
 	
+	public int getStackHeight(){
+		return this.getStack().size();
+	}
 	
 	public FunctionCallExpression readTopStack(){
 		return this.getStack().get((this.getStack().size()-1));
 	}
 	
 	public void pushStack(FunctionCallExpression expression){
+		System.out.print("Stack PUSH: ");
 		List<FunctionCallExpression> stack = this.getStack();
-		stack.add(expression);
+		if(!stack.contains(expression)){
+			expression.setEvalArguments(expression.evaluateArguments());
+			stack.add(expression);
+		}else{
+			throw new AlreadyInStackException();
+		}
+		
+		System.out.println(stack.size());
 	}
 	
 	public FunctionCallExpression popStack(){
-		return this.getStack().remove(this.getStack().size() -1);
+		System.out.print("Stack POP: ");
+		FunctionCallExpression call =this.getStack().remove(this.getStack().size() -1);
+		System.out.println(stack.size());
+		return call;
 	}
 	
 	private List<FunctionCallExpression> getStack(){
@@ -152,7 +168,12 @@ public class Function {
 		if(!canHaveAsLocalVar(variable)){
 			throw new IllegalArgumentException();
 		}
-		this.getLocalVariables().put(name, variable);
+		if(this.getStack().size() == 1){
+			this.localVariables.put(name, variable);
+		}
+
+		this.readTopStack().addLocalScope(name, variable);
+		
 	}
 	
 	public boolean canHaveAsLocalVar(LiteralExpression<?> variable){
@@ -176,6 +197,9 @@ public class Function {
 	
 	private boolean buildError = false;
 	
+	public String toString(){
+		return this.getFunctionName();
+	}
 	
 //	/**
 //	 * adds a parameter to the parameter Map

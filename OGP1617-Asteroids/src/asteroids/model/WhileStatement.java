@@ -38,6 +38,9 @@ public class WhileStatement extends ChainedStatement implements ExpressionStatem
 	@Override
 	public void executeStatement() throws IllegalStateException{
 		try{
+//		System.out.println(this);
+//		System.out.println(this.getExpression());
+//		System.out.println(this.getExpression().evaluate());
 		while(this.getExpression().evaluate()){
 			this.getStatement().executeStatement();
 		}

@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import exceptions.AlreadyInStackException;
+
 public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralExpression<?>>{
 	
 	public FunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs){
@@ -22,22 +24,28 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	
 	private String functionName;
 	
-	public LiteralExpression<?> evaluate() throws IndexOutOfBoundsException, IllegalArgumentException{
+	
+	public LiteralExpression<?> evaluate()throws IndexOutOfBoundsException, IllegalArgumentException{
 		Function function = this.getFunction();
-		List<Expression<?,?>> arguments = this.getArguments();
-		this.setEvalArguments(this.evaluateArguments());
-		this.setLocalScope(function.getLocals());
-		
-		//TODO evaluate the arguments before executing the code
-		
-
-		
-		return function.evaluate(this);
+		try{
+			return function.evaluate(this);
+			
+		}catch( AlreadyInStackException exc){
+			//create new FunctionCall
+			FunctionCallExpression newCall = new FunctionCallExpression(this.getFunctionName(),this.getArguments());
+			newCall.setStatement(this.getStatement());
+			//newCall.setLocalScope(function.getLocals());
+			return newCall.evaluate();
+		}
 		
 	}
 	
 	protected Map<String, LiteralExpression<?>> getLocalScope(){
 		return this.localScope;
+	}
+	
+	public void addLocalScope(String name, LiteralExpression<?> variable){
+		this.getLocalScope().put(name, variable);
 	}
 	
 	public void setLocalScope(Map<String, LiteralExpression<?>> map){
@@ -62,7 +70,7 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 			return new LiteralExpression<Boolean>((Boolean) value);
 		//otherwise the value is of type literal.
 		}else{
-			return (LiteralExpression<?>)value;
+			return generateLiteral(((LiteralExpression<?>) value).evaluate());
 		}
 	}
 	

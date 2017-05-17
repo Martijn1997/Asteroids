@@ -36,7 +36,7 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 		if(statement instanceof NormalStatement){
 
 			if(((NormalStatement) statement).getFunction() != null){
-
+				System.out.println("active variables " + ((NormalStatement)statement).getFunction().getLocalVariables().keySet());
 				if(((NormalStatement) statement).getFunction().getLocalVariables().containsKey(this.getName())){
 					return ((NormalStatement) statement).getFunction().
 							getLocalVariables().get(this.getName());
@@ -50,25 +50,6 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 			}
 		}
 		
-		// check if the associated statement is a normal statement
-		// if so check also if it is connected to a function or not
-//		if(statement instanceof NormalStatement){
-//
-//			if(((NormalStatement) statement).getFunction() != null){
-//
-//				if(((NormalStatement) statement).getFunction().getLocalVariables().containsKey(this.getName())){
-//					return generateLiteral(((NormalStatement) statement).getFunction().
-//							getLocalVariables().get(this.getName()));
-//				}else if(((NormalStatement) statement).getFunction().getProgram().containsGlobalVariable(this.getName())){
-//
-//					return generateLiteral(((NormalStatement) statement).getFunction().
-//							getProgram().getGlobals().get(this.getName()));	
-//				}else{
-//					throw new IllegalArgumentException();
-//				}
-//			}
-//		}
-		
 		// else read the global variable
 		if(statement.getProgram().getGlobals().containsKey(this.getName())){
 			return generateLiteral(this.getStatement().getProgram().getGlobals().get(this.getName()));
@@ -76,6 +57,25 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	// check if the associated statement is a normal statement
+	// if so check also if it is connected to a function or not
+//	if(statement instanceof NormalStatement){
+//
+//		if(((NormalStatement) statement).getFunction() != null){
+//
+//			if(((NormalStatement) statement).getFunction().getLocalVariables().containsKey(this.getName())){
+//				return generateLiteral(((NormalStatement) statement).getFunction().
+//						getLocalVariables().get(this.getName()));
+//			}else if(((NormalStatement) statement).getFunction().getProgram().containsGlobalVariable(this.getName())){
+//
+//				return generateLiteral(((NormalStatement) statement).getFunction().
+//						getProgram().getGlobals().get(this.getName()));	
+//			}else{
+//				throw new IllegalArgumentException();
+//			}
+//		}
+//	}
 	
 	public String toString(){
 		Object var = this.evaluate().evaluate();

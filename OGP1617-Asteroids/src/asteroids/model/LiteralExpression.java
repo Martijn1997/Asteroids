@@ -24,7 +24,7 @@ public class LiteralExpression<T> extends Expression<T,T> {
 	 * 			|result == value instanceof Double|| value instanceof Boolean || value instanceof WorldObject
 	 */
 	public boolean isValidValue(T value){
-		if(value instanceof Double|| value instanceof Boolean || value instanceof WorldObject){
+		if(value instanceof Double|| value instanceof Boolean || value instanceof WorldObject || value instanceof LiteralExpression){
 			return true;
 		}else{
 			return false;
@@ -32,9 +32,15 @@ public class LiteralExpression<T> extends Expression<T,T> {
 	}
 	
 	public T evaluate() throws IllegalArgumentException{
-		System.out.println(this.getValue());
-		if(isValidValue(this.getValue())){
+		
+		T value = this.getValue();
+		
+		if(isValidValue(value)){
+			if(value instanceof LiteralExpression){
+				return ((LiteralExpression<T>) value).evaluate();
+			}else{
 			return this.getValue();
+			}
 		}else{
 			throw new IllegalArgumentException();
 		}
