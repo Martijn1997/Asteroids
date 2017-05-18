@@ -3,9 +3,8 @@ package asteroids.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import exceptions.OutOfTimeException;
 
-import exceptions.OutOfTimeException;
+
 
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
@@ -21,6 +20,7 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 		for(Statement statement: this.getStatementSequence()){
 			statement.executeStatement();
 		}
+		
 	}
 	
 	/**
@@ -40,9 +40,7 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	public Statement getStatement(){
 		return this.iterator().next();
 	}
-	
-	//TODO create iterator, everytime getStatement is invoked, the next statement is selected in the selection
-	// sequence
+
 	@Override
 	public boolean hasAllNormalSubStatement(){
 		for(int index = 0; index < this.getStatementSequence().size(); index++ ){
@@ -91,7 +89,7 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 	 */
 	@Override
 	protected void setFunction(Function function)throws IllegalStateException{
-//		try{
+
 			for(Statement statement: this.getStatementSequence()){
 				// if the underlying statement is also chained, re-invoke
 				if(statement instanceof ChainedStatement){
@@ -111,53 +109,26 @@ public class SequenceStatement extends ChainedStatement implements Iterable<Stat
 			super.setFunction(function);
 	}
 	
+	
+	/**
+	 * Sets the program of all the underlying statements to the program associated with the sequence statement
+	 */
 	@Override
 	protected void setProgram(Program program)throws IllegalStateException{
-//		try{
+
 			List<Statement> sequence = this.getStatementSequence();
 			for(Statement statement: sequence){
 				statement.setProgram(program);
-				
 			}
 			super.setProgram(program);
-//		}catch (Throwable exc){
-//			this.setIndex(0);
-//		}
+
 	}
 	
-//	@Override
-//	public void lookForBreakStatement(WhileStatement whileState){
-//		
-//		List<Statement> sequence = this.getStatementSequence();
-//		
-////		try{
-//		for(Statement statement: sequence){	
-//			// if the statement is instance of breakstatement 
-//			if(statement instanceof BreakStatement){
-//				((BreakStatement) statement).setWhileStatement(whileState);
-//
-////						}
-//			}else if(statement instanceof ChainedStatement){
-//				((ChainedStatement)statement).lookForBreakStatement(whileState);
-//			}
-//		}
-////		}catch (Throwable exc){
-////			this.setIndex(0);
-////		}
-//	}
 	
 	/**
 	 * List that stores all the statements belonging to the statement sequences
 	 */
 	private List<Statement> statementSequence = new ArrayList<Statement>();
 	
-//	private int getIndex(){
-//		return this.iteratorIndex;
-//	}
-//	
-//	private void setIndex(int index){
-//		this.iteratorIndex = index;
-//	}
-//	
-//	private int iteratorIndex = 0;
+
 }
