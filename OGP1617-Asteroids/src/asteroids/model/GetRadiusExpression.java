@@ -1,9 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class GetRadiusExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	
-	public GetRadiusExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetRadiusExpression(Expression<?,WorldObject> operand, SourceLocation sourceLocation){
+		super(operand, sourceLocation);
 	}
 		
 	public Double evaluate(){

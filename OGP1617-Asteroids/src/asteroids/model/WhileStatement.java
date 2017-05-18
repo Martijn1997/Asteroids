@@ -1,11 +1,12 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.BreakException;
 
 public class WhileStatement extends ChainedStatement implements ExpressionStatement<Expression<?,Boolean>>{
 	
-	public WhileStatement(Expression<?, Boolean> condition, Statement statement){
-		super();
+	public WhileStatement(Expression<?, Boolean> condition, Statement statement, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(condition);
 		this.setStatement(statement);
 //		this.lookForBreakStatement(this);

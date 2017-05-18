@@ -1,11 +1,12 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 public class FireStatement extends ActionStatement {
 	
-	public FireStatement(){
-		super();
+	public FireStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
 	}
 
 	@Override

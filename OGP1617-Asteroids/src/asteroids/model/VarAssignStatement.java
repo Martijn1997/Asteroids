@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 /**
@@ -7,13 +8,14 @@ import exceptions.OutOfTimeException;
  */
 public class VarAssignStatement extends NormalStatement implements ExpressionStatement<Expression<?,?>>{
 	
-	public VarAssignStatement(Expression<?,?> expression, String varName){
-		super();
+	public VarAssignStatement(Expression<?,?> expression, String varName, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(expression);
 		this.setName(varName);
 	}
 
 	public void executeStatement(){
+		SourceLocation sourceLocation = this.getExpression().getSourceLocation();
 		if(this.getProgram() ==  null){
 //			if(this.isAssociatedWithProgram()){
 //				LiteralExpression<?> var = generateLiteral(this.getExpression().evaluate());
@@ -21,7 +23,7 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 //				this.getProgram().addGlobalVariable(this.getName(), var);
 //			}else{
 				// otherwise write the variable to the locals
-				LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate());
+				LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate(), sourceLocation);
 				var.setStatement(this);
 				this.getFunction().addLocalVariable(this.getName(), var);
 //			}
@@ -33,12 +35,12 @@ public class VarAssignStatement extends NormalStatement implements ExpressionSta
 				this.getProgram().setLastStatement(null);
 				// if the statement is associated with a program, write the variable to the globals
 				if(this.isAssociatedWithProgram()){
-					LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate());
+					LiteralExpression<?> var = LiteralExpression.generateLiteral(this.getExpression().evaluate(),  sourceLocation);
 					var.setStatement(this);
 					this.getProgram().addGlobalVariable(this.getName(), var);
 				}else{
 					// otherwise write the variable to the locals
-					LiteralExpression<?> var =LiteralExpression.generateLiteral(this.getExpression().evaluate());
+					LiteralExpression<?> var =LiteralExpression.generateLiteral(this.getExpression().evaluate(),  sourceLocation);
 					var.setStatement(this);
 					this.getFunction().addLocalVariable(this.getName(), var);
 				}

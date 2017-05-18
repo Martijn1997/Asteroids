@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 import exceptions.ReturnException;
 
@@ -10,8 +11,8 @@ import exceptions.ReturnException;
  */
 public class ReturnStatement extends NormalStatement implements ExpressionStatement<Expression<?,?>>{
 	
-	public ReturnStatement(Expression<?,?> value){
-		super();
+	public ReturnStatement(Expression<?,?> value,SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(value);
 	}
 	
@@ -35,15 +36,15 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	public LiteralExpression<?> getValue(){
 		
 		Object evaluation = this.value.evaluate();
-
+		SourceLocation sourceLocation = this.value.getSourceLocation();
 		
 		if(evaluation instanceof WorldObject){
-			LiteralExpression<WorldObject> returnValue = new LiteralExpression<WorldObject>((WorldObject)evaluation);
+			LiteralExpression<WorldObject> returnValue = new LiteralExpression<WorldObject>((WorldObject)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 			
 		}else if( evaluation instanceof Double){
-			LiteralExpression<Double> returnValue = new LiteralExpression<Double>((Double)evaluation);
+			LiteralExpression<Double> returnValue = new LiteralExpression<Double>((Double)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 
@@ -51,7 +52,7 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 			return (LiteralExpression<?>)evaluation;
 			
 		}else{
-			LiteralExpression<Boolean> returnValue = new LiteralExpression<Boolean>((Boolean)evaluation);
+			LiteralExpression<Boolean> returnValue = new LiteralExpression<Boolean>((Boolean)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 		}

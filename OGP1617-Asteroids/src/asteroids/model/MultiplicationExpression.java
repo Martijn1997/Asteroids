@@ -1,11 +1,14 @@
 package asteroids.model;
+
+import asteroids.part3.programs.SourceLocation;
+
 //TODO ask TA if this is good practice?
 //public class MultiplicationExpression extends BinaryExpression<Expression<?, Double>, Double>
 
 public class MultiplicationExpression extends BinaryExpression<Expression<?, Double>, Double>{
 	
-	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public MultiplicationExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, SourceLocation sourceLocation){
+		super(leftOperand, rightOperand,  sourceLocation);
 	}
 	
 	public Double evaluate(){

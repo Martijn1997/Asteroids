@@ -5,18 +5,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.AlreadyInStackException;
 import exceptions.BuilderException;
 import exceptions.ReturnException;
 
 public class Function {
 	
-	public Function(String functionName, Statement statement){
+	public Function(String functionName, Statement statement,SourceLocation sourceLocation){
 			this.setFunctionName(functionName);
 			this.setStatement(statement);
+			this.setSouceLocation(sourceLocation);
 		
 	}
+	private SourceLocation souceLocation;
 	
+	protected SourceLocation getSouceLocation() {
+		return souceLocation;
+	}
+
+	protected void setSouceLocation(SourceLocation souceLocation) {
+		this.souceLocation = souceLocation;
+	}
+
 	/**
 	 * Basic getter for the function name
 	 */

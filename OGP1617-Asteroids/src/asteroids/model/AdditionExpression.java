@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class AdditionExpression extends BinaryExpression<Expression<?, Double>, Double>{
 	
 	/**
@@ -9,8 +11,8 @@ public class AdditionExpression extends BinaryExpression<Expression<?, Double>, 
 	 * 
 	 * @effect BinaryExpression(leftOperand,rightOperand)
 	 */
-	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public AdditionExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand,SourceLocation sourceLocation){
+		super(leftOperand, rightOperand,sourceLocation);
 	}
 	
 	/**

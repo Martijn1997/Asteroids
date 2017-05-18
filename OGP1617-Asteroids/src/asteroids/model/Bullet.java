@@ -164,9 +164,17 @@ public class Bullet extends WorldObject {
 	 * 
 	 * @effect	the bullets position and velocity are synced with the ship
 	 * 			|syncBulletVectors();
+	 * 
+	 * @throws	IllegalArgumentException
+	 * 			thrown when the ship is a nullpointer or the bullet is not in the ship
+	 * 			| ship == null || !bulletInShip(Ship)
 	 */
 	@Basic
 	public void loadBulletOnShip(Ship ship) throws IllegalArgumentException{
+		
+		if(ship == null){
+			throw new IllegalArgumentException();
+		}
 		
 		if(residesInWorld()){
 			this.getWorld().removeFromWorld(this);

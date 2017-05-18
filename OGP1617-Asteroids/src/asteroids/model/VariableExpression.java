@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import be.kuleuven.cs.som.annotate.*;
 
 /**
@@ -14,8 +15,8 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 	 * @param varName
 	 * @param variable
 	 */
-	public VariableExpression(String varName){
-		super(varName);
+	public VariableExpression(String varName, SourceLocation sourceLocation){
+		super(varName, sourceLocation);
 		// store the literal in the specified variable
 	}
 	
@@ -51,7 +52,8 @@ public class VariableExpression extends BasicExpression<LiteralExpression<?>> {
 		
 		// else read the global variable
 		if(statement.getProgram().getGlobals().containsKey(this.getName())){
-			return LiteralExpression.generateLiteral(this.getStatement().getProgram().getGlobals().get(this.getName()));
+			SourceLocation sourceLocation = this.getSourceLocation();
+			return LiteralExpression.generateLiteral(this.getStatement().getProgram().getGlobals().get(this.getName()),  sourceLocation);
 		}else{
 			throw new IllegalArgumentException();
 		}

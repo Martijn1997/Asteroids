@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 /**
  * Class for a literal creation
  * @author Martijn &Flor
@@ -13,7 +15,8 @@ package asteroids.model;
  */
 public class LiteralExpression<T> extends Expression<T,T> {
 	
-	public LiteralExpression(T value) {
+	public LiteralExpression(T value, SourceLocation sourceLocation) {
+		super( sourceLocation);
 		this.value = value;
 	}
 	
@@ -58,19 +61,19 @@ public class LiteralExpression<T> extends Expression<T,T> {
 				
 	}
 	
-	public static LiteralExpression<?> generateLiteral(Object value){
+	public static LiteralExpression<?> generateLiteral(Object value, SourceLocation sourceLocation){
 		//Check if the value is worldObject
 		if(value instanceof WorldObject){
-			return new LiteralExpression<WorldObject>((WorldObject) value);
+			return new LiteralExpression<WorldObject>((WorldObject) value,  sourceLocation);
 		//Check if the value is Double
 		}else if(value instanceof Double){
-			return new LiteralExpression<Double>((Double) value);
+			return new LiteralExpression<Double>((Double) value,sourceLocation);
 		//check if value is Boolean
 		}else if(value instanceof Boolean){
-			return new LiteralExpression<Boolean>((Boolean) value);
+			return new LiteralExpression<Boolean>((Boolean) value,  sourceLocation);
 		//otherwise the value is of type literal
 		}else{
-			return generateLiteral(((LiteralExpression<?>) value).evaluate());
+			return generateLiteral(((LiteralExpression<?>) value).evaluate(),  sourceLocation);
 		}
 	}
 	

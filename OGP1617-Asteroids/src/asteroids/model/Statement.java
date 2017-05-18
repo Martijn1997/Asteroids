@@ -1,10 +1,25 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public abstract class Statement {
 	
-	public Statement(){
-		//TODO implement constructor
+	public Statement(SourceLocation sourceLocation){
+		this.setSourceLocation(sourceLocation);
+		
 	}
+	
+	
+	protected SourceLocation getSourceLocation() {
+		return sourceLocation;
+	}
+
+	protected void setSourceLocation(SourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
+
+	private SourceLocation sourceLocation;
 	
 	protected Program getProgram(){
 		return this.associatedProgram;

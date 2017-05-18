@@ -1,12 +1,14 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class GetVxExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	/**
 	 * constructor for the getVx expression
 	 * @param operand
 	 */
-	public GetVxExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetVxExpression(Expression<?,WorldObject> operand, SourceLocation sourceLocation){
+		super(operand,  sourceLocation);
 	}
 	
 	/**

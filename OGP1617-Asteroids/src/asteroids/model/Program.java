@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.BuilderException;
 
 import exceptions.OutOfTimeException;
@@ -23,8 +24,20 @@ public class Program {
 			this.setBuildFault();
 		}
 		
+		this.setSourceLocation(sourceLocation);
+		
 	}
 	
+	private SourceLocation sourceLocation;
+	
+	protected SourceLocation getSourceLocation() {
+		return sourceLocation;
+	}
+
+	protected void setSourceLocation(SourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
 	public List<Object> excecuteProgram(double deltaTime){
 
 		if(this.getBuildFault()){

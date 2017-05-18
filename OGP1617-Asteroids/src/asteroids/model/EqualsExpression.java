@@ -1,10 +1,12 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class EqualsExpression<T extends Expression<?,?>> extends BinaryExpression<T, Boolean>{
 	
 	
-	public EqualsExpression(T leftOperand, T rightOperand){
-		super(leftOperand, rightOperand);
+	public EqualsExpression(T leftOperand, T rightOperand, SourceLocation sourceLocation){
+		super(leftOperand, rightOperand, sourceLocation);
 	}
 	
 	public Boolean evaluate(){

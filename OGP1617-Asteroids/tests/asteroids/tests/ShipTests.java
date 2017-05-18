@@ -99,11 +99,6 @@ public class ShipTests {
 	public final void isValidVelocity_ExceedingLightSpeed() {
 		assertFalse(Ship.isValidTotalVelocity(300001));
 	}
-
-	@Test
-	public final void isValidRadius_TrueCase() {
-		assertTrue(ship1.canHaveAsRadius(100));
-	}
 	
 	@Test
 	public final void isValidRadius_NegRadius() {

@@ -1,10 +1,12 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 public class PrintStatement extends Statement {
 	
-	public PrintStatement(Expression<?,?> expression){
+	public PrintStatement(Expression<?,?> expression, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(expression);
 	}
 	

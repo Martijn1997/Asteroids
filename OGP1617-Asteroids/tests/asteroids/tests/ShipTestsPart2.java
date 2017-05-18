@@ -36,7 +36,7 @@ public class ShipTestsPart2 {
 	}
 	
 	// radius test
-	@Test (expected = IllegalStateException.class)
+	@Test (expected = IllegalArgumentException.class)
 	public final void setRadius_AlreadyInitialized(){
 		ship1.setRadius(20);
 	}
@@ -77,6 +77,7 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void loadBullet_oneBullet(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		bullet1.loadBulletOnShip(ship1);
 		assert(ship1.containsBullet(bullet1));
 		assertEquals(ship1.getPosition(), bullet1.getPosition());
@@ -90,6 +91,8 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void loadBullets_multipleBullets(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
+		bullet2.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		ship1.loadBullets(bullet1, bullet2);
 		assert(ship1.containsBullet(bullet1));
 		assert(ship1.containsBullet(bullet2));
@@ -104,6 +107,8 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void LoadBullets_multipleBullets_invalid_other_ship(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
+		bullet2.setPosition(ship2.getXPosition(), ship2.getXPosition());
 		bullet2.loadBulletOnShip(ship2);
 		try{
 		ship1.loadBullets(bullet1, bullet2);
@@ -136,12 +141,15 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void TotalMass_2Bullets(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
+		bullet2.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		ship1.loadBullets(bullet1, bullet2);
 		assertEquals(ship1.getMass() + bullet1.getMass()+ bullet2.getMass(), ship1.getTotalMass(), EPSILON );
 	}
 	// test on moving the ship
 	@Test
 	public final void moveShipWithBullets(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		bullet1.loadBulletOnShip(ship1);
 		ship1.setVelocity(100, 100);
 		ship1.move(1);
@@ -252,6 +260,7 @@ public class ShipTestsPart2 {
 	@Test
 	public final void FireBullet_ship1_bullet1(){
 		world1.addWorldObject(ship1);
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
 		assertEquals(bullet1.getWorld(), ship1.getWorld());
@@ -264,6 +273,7 @@ public class ShipTestsPart2 {
 	@Test
 	public final void FireBullet_Ship2_bullet1(){
 		world1.addWorldObject(ship2);
+		bullet1.setPosition(ship2.getXPosition(), ship2.getXPosition());
 		bullet1.loadBulletOnShip(ship2);
 		ship2.fireBullet();
 		assertEquals(ship2.getRadius() + bullet1.getRadius()*Ship.BULLET_OFFSET, ship2.getPosition().distanceTo(bullet1.getPosition()), EPSILON);
@@ -274,6 +284,7 @@ public class ShipTestsPart2 {
 	@Test 
 	public final void FireBullet_bullet_overlaps_Bullet(){
 		bullet2.setPosition(111.2, 100);
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		world1.addWorldObject(bullet2);
 		world1.addWorldObject(ship1);
 		bullet1.loadBulletOnShip(ship1);
@@ -285,6 +296,7 @@ public class ShipTestsPart2 {
 	
 	@Test
 	public final void FireBullet_bullet_overlaps_ship(){
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		ship2.setPosition(120.5,100);
 		world1.addWorldObject(ship1);
 		world1.addWorldObject(ship2);
@@ -338,6 +350,7 @@ public class ShipTestsPart2 {
 	@Test
 	public final void ResolveShipBulletCollision_own_bullet(){
 		world1.addWorldObject(ship1);
+		bullet1.setPosition(ship1.getXPosition(), ship1.getXPosition());
 		bullet1.loadBulletOnShip(ship1);
 		ship1.fireBullet();
 		bullet1.setPosition(89, 100);
