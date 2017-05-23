@@ -1,12 +1,14 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class GetYExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	/**
 	 * constructor for the getY expression
 	 * @param operand
 	 */
-	public GetYExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetYExpression(Expression<?,WorldObject> operand, SourceLocation sourceLocation){
+		super(operand,  sourceLocation);
 	}
 	
 	/**

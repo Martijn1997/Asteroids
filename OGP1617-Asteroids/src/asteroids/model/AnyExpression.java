@@ -2,10 +2,12 @@ package asteroids.model;
 
 import java.util.Set;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class AnyExpression extends Expression<WorldObject,WorldObject>{
 	
-	public AnyExpression(){
-		
+	public AnyExpression(SourceLocation sourceLocation){
+		super(sourceLocation);
 	}
 	
 	

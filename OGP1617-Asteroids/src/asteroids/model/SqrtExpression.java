@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Double>{
 		
 		/**
@@ -7,8 +9,8 @@ public class SqrtExpression extends UnaryExpression<Expression<?, Double>, Doubl
 		 * @param operand
 		 * @effect	UnaryExpression(operand)
 		 */
-		public SqrtExpression(Expression<?, Double> operand){
-			super(operand);
+		public SqrtExpression(Expression<?, Double> operand, SourceLocation sourceLocation){
+			super(operand, sourceLocation);
 		}
 		
 		/**

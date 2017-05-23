@@ -7,9 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class ClosestWorldObject<T extends WorldObject> extends Expression<T,T> {
 	
-	public ClosestWorldObject(String className){
+	public ClosestWorldObject(String className, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.className = className;
 	}
 	

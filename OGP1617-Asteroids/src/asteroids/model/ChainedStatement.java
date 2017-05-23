@@ -1,9 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public abstract class ChainedStatement extends NormalStatement {
 	
-	public ChainedStatement(){
-		super();
+	public ChainedStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
 	}
 	
 	@Override

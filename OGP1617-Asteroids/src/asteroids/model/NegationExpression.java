@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class NegationExpression extends UnaryExpression<Expression<?, Double>,Double> {
 	
 	/**
@@ -9,8 +11,8 @@ public class NegationExpression extends UnaryExpression<Expression<?, Double>,Do
 	 * @effect 	constructs the unary expression of a negation
 	 * 			|UnaryExpression(Operand)
 	 */
-	public NegationExpression(Expression<?, Double> operand){
-		super(operand);
+	public NegationExpression(Expression<?, Double> operand, SourceLocation sourceLocation){
+		super(operand,  sourceLocation);
 		
 	}
 	

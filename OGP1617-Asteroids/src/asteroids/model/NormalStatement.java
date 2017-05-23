@@ -1,9 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public abstract class NormalStatement extends Statement{
 	
-	public NormalStatement(){
-		super();
+	public NormalStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
 	}
 	
 	public Function getFunction(){

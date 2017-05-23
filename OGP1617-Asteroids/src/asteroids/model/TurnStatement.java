@@ -1,12 +1,13 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.IllegalAngleException;
 import exceptions.OutOfTimeException;
 
 public class TurnStatement extends ActionStatement implements ExpressionStatement<Expression<?, Double>>{
 
-	public TurnStatement(Expression<?, Double> angleExpression){
-		super();
+	public TurnStatement(Expression<?, Double> angleExpression, SourceLocation sourceLocation){
+		super( sourceLocation);
 		this.setExpression(angleExpression);
 	}
 

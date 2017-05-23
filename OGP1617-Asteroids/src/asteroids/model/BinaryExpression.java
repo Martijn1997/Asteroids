@@ -1,6 +1,7 @@
 package asteroids.model;
 
 
+import asteroids.part3.programs.SourceLocation;
 import be.kuleuven.cs.som.annotate.*;
 
 public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expression<T,R>/* implements SubExprExpression*/{
@@ -11,7 +12,8 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 	 * @param rightOperand
 	 */
 	@Model @Raw
-	protected BinaryExpression(T leftOperand, T rightOperand) throws IllegalArgumentException{
+	protected BinaryExpression(T leftOperand, T rightOperand, SourceLocation sourceLocation) throws IllegalArgumentException{
+		super(sourceLocation);
 		this.setLeftOperand(leftOperand);
 		this.setRightoperand(rightOperand);
 	}

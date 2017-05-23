@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.AlreadyInStackException;
 
 //Important note on the working principles:
@@ -20,7 +21,8 @@ import exceptions.AlreadyInStackException;
  */
 public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralExpression<?>>{
 	
-	public FunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs){
+	public FunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs, SourceLocation sourceLocation){
+		super( sourceLocation);
 		this.setFunctionName(functionName);
 		this.setArguments(actualArgs);
 	}
@@ -52,7 +54,7 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 			//if the function call is already present in the stack make a new call.
 		}catch( AlreadyInStackException exc){
 			//create new FunctionCall
-			FunctionCallExpression newCall = new FunctionCallExpression(this.getFunctionName(),this.getArguments());
+			FunctionCallExpression newCall = new FunctionCallExpression(this.getFunctionName(),this.getArguments(), this.getSourceLocation());
 			newCall.setStatement(this.getStatement());
 			//newCall.setLocalScope(function.getLocals());
 			return newCall.evaluate();
@@ -148,7 +150,7 @@ public class FunctionCallExpression extends Expression<Expression<?,?>,LiteralEx
 	public List<LiteralExpression<?>> evaluateArguments(){
 		List<LiteralExpression<?>> evalArgs = new ArrayList<LiteralExpression<?>>();
 		for(Expression<?,?> expression: this.getArguments()){
-			evalArgs.add(LiteralExpression.generateLiteral(expression.evaluate()));
+			evalArgs.add(LiteralExpression.generateLiteral(expression.evaluate(), this.getSourceLocation()));
 		}
 		return evalArgs;
 	}

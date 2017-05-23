@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 // return type is a double, the needed input is an expression with a double return type
 public class SmallerThanExpression extends BinaryExpression<Expression<?, Double>, Boolean>{
 	
@@ -9,8 +11,8 @@ public class SmallerThanExpression extends BinaryExpression<Expression<?, Double
 	 * @param rightOperand
 	 * @effect binaryExpression(leftOperand, rightOperand)
 	 */
-	public SmallerThanExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand){
-		super(leftOperand, rightOperand);
+	public SmallerThanExpression(Expression<?, Double> leftOperand, Expression<?, Double> rightOperand, SourceLocation sourceLocation){
+		super(leftOperand, rightOperand, sourceLocation);
 	}
 	
 	

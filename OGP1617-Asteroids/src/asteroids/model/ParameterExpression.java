@@ -2,6 +2,8 @@ package asteroids.model;
 
 import java.util.Map;
 
+import asteroids.part3.programs.SourceLocation;
+
 /**
  * filling in parameter's is done by providing expressions
  * @author Martijn
@@ -9,8 +11,8 @@ import java.util.Map;
  */
 public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 	
-	public ParameterExpression(String parName){
-		super(parName);
+	public ParameterExpression(String parName, SourceLocation sourceLocation){
+		super(parName,  sourceLocation);
 	}
 	//TODO ADD PRINT FOR CURRENT VALUE
 	public LiteralExpression<?> evaluate(){
@@ -36,7 +38,7 @@ public class ParameterExpression extends BasicExpression<LiteralExpression<?>>{
 		LiteralExpression<?> argument = currentCall.getEvalArguments().get(index);
 		
 		
-		return LiteralExpression.generateLiteral(argument.evaluate());
+		return LiteralExpression.generateLiteral(argument.evaluate(), this.getSourceLocation());
 		
 	}
 	

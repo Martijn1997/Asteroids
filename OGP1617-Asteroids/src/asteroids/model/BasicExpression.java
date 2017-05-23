@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import be.kuleuven.cs.som.annotate.*;
 
 public abstract class BasicExpression<T> extends Expression<T,T>{
@@ -11,7 +12,8 @@ public abstract class BasicExpression<T> extends Expression<T,T>{
 	 * 			| new.getName() = name
 	 */
 	@Model @Raw
-	protected BasicExpression(String name){
+	protected BasicExpression(String name, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.name = name;
 	}
 	

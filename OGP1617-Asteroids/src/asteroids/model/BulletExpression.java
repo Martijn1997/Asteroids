@@ -3,10 +3,12 @@ package asteroids.model;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class BulletExpression extends Expression<Bullet, Bullet>{
 	
-	public BulletExpression(){
-		super();
+	public BulletExpression(SourceLocation sourceLocation){
+		super(sourceLocation);
 	}
 	
 	/**

@@ -1,10 +1,13 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 public abstract class ActionStatement extends Statement{
 	
-	
+	public ActionStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
+	}
 	
 	@Override
 	public boolean canHaveAsProgram(Program program){

@@ -1,4 +1,8 @@
 package asteroids.model;
+
+import asteroids.part3.programs.SourceLocation;
+import be.kuleuven.cs.som.annotate.Model;
+
 //R the return Type, T the type of the operands
 public abstract class Expression<T, R> {
 	
@@ -6,7 +10,22 @@ public abstract class Expression<T, R> {
 //		public abstract String toString();
 		
 		//create constructor
+		
+		@Model
+		protected Expression(SourceLocation sourceLocation){
+			this.setSourceLocation(sourceLocation);
+		}
+		
+		private SourceLocation sourceLocation;
 	
+		protected SourceLocation getSourceLocation() {
+			return sourceLocation;
+		}
+
+		protected void setSourceLocation(SourceLocation sourceLocation) {
+			this.sourceLocation = sourceLocation;
+		}
+
 		public abstract R evaluate();
 		
 		/**

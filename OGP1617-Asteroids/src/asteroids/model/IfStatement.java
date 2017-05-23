@@ -1,9 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class IfStatement extends ChainedStatement implements ExpressionStatement<Expression<?, Boolean>>{
 	
-	public IfStatement(Expression<?,Boolean> condition, Statement ifstatement, Statement elseStatement){
-		super();
+	public IfStatement(Expression<?,Boolean> condition, Statement ifstatement, Statement elseStatement, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setStatement(ifstatement);
 		this.setExpression(condition);
 		if(elseStatement != null){
@@ -73,7 +75,7 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 * @param elseStatement
 	 */
 	public void createElseStatement(Statement statement){
-		this.associatedElse = this.new ElseStatement(statement);
+		this.associatedElse = this.new ElseStatement(statement, this.getSourceLocation());
 		this.hasElseStatement = true;
 	}
 	
@@ -125,8 +127,8 @@ public class IfStatement extends ChainedStatement implements ExpressionStatement
 	 */
 	private class ElseStatement extends ChainedStatement{
 		
-		public ElseStatement(Statement statement){
-			super();
+		public ElseStatement(Statement statement, SourceLocation sourceLocation){
+			super(sourceLocation);
 			this.setStatement(statement);
 		}
 		

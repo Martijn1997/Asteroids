@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import asteroids.part3.programs.SourceLocation;
+
 
 
 public class SequenceStatement extends ChainedStatement implements Iterable<Statement>{
 	
-	public SequenceStatement(List<Statement> statements){
-		super();
+	public SequenceStatement(List<Statement> statements, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setStatementSequence(statements);
 	}
 	

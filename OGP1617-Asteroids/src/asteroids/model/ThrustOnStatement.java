@@ -1,11 +1,12 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 public class ThrustOnStatement extends ActionStatement {
 	
-	public ThrustOnStatement(){
-		super();
+	public ThrustOnStatement(SourceLocation sourceLocation){
+		super(sourceLocation);
 	}
 
 	@Override

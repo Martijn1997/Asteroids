@@ -1,8 +1,13 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.OutOfTimeException;
 
 public class SkipStatement extends ActionStatement {
+	
+	public SkipStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
+	}
 	
 	@Override
 	public void executeStatement() throws OutOfTimeException{
