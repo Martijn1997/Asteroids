@@ -536,8 +536,7 @@ public abstract class WorldObject {
 //		}
 //	}
 	
-	
-	//TODO fix the overdrive speed
+
 	/**
 	 * basic setter for the mass
 	 * @param	mass
@@ -933,7 +932,7 @@ public abstract class WorldObject {
 	 * 			|
 	 * 			| And with possibleCollisions the set of all possible collisions
 	 * 			|  	possibleCollisions = {(world.getWidth(), center.getYComponent()), (0, center.getYComponent()),
-				|						(center.getXComponent(),world.getHeight()), (center.getXComponent(), 0)}
+	 *			|						(center.getXComponent(),world.getHeight()), (center.getXComponent(), 0)}
 	 * 			| now determine the coordinates where the world and the WorldObject touch
 	 * 			| for collision in possibleCollsions if center.distanceTo(collision) == getRadius() ==> result == collision
 	 */		
@@ -1163,6 +1162,12 @@ public abstract class WorldObject {
 		this.associatedWorld = world;
 	}
 	
+	/**
+	 * Returns true if the worldobject is in a world
+	 * 
+	 * @return 
+	 * 			|this.getWorld()!=null;
+	 */
 	public boolean residesInWorld(){
 		return this.getWorld()!=null;
 	}
@@ -1188,7 +1193,10 @@ public abstract class WorldObject {
 	 */
 	public abstract boolean canHaveAsWorld(World world);
 	
-	
+	/**
+	 * Resolves the collision between two worldobjects
+	 * @param other
+	 */
 	public abstract void resolveCollision(WorldObject other);
 	
 	

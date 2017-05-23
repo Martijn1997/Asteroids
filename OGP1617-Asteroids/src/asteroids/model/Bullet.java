@@ -191,9 +191,13 @@ public class Bullet extends WorldObject {
 				
 	}
 	
-
+	/**
+	 * Checks if the bullet lies fully within the given ship
+	 * @param ship
+	 * @return @see implementation
+	 */
 	private boolean bulletInShip(Ship ship){		
-		if(this.getPosition().distanceTo(ship.getPosition()) + this.getRadius() <= ship.getRadius())		
+		if((this.getPosition().distanceTo(ship.getPosition()) + this.getRadius()) <= ship.getRadius())		
 			return true;		
 		else		
 			return false;		
@@ -392,7 +396,10 @@ public class Bullet extends WorldObject {
 	 */
 	public final static double SHOOTING_VELOCITY=250;
 
-	
+	/**
+	 * Resolves the collision between a bullet and a worldobject
+	 * @param other
+	 */
 	@Override
 	public void resolveCollision(WorldObject other){
 		if (other instanceof Bullet)
