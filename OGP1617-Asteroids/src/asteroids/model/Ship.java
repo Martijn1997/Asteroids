@@ -48,6 +48,16 @@ public class Ship extends WorldObject{
 	 * 
 	 * @param 	radius
 	 * 			the Radius of the Ship
+	 * 
+	 * @param 	xVel
+	 * 			the x velocity of the Ship
+	 * 
+	 * @param	yVel
+	 * 			the y velocity of the Ship
+	 * 
+	 * @param	mass
+	 * 			the mass of the Ship
+	 * 
 	 * @effect	creates a ship with the given values for position, velocity, radius and density
 	 * 			|WorldObject(xPos,yPos,Radius,xVel,yVel,density)
 	 * 
@@ -214,8 +224,10 @@ public class Ship extends WorldObject{
 		return rad >= this.getMinimumRadius() && !this.hasInitializedRadius();
 	}
 	
-	// the radius will not change once the radius has been set
-	
+//	the radius will not change once the radius has been set
+	/**
+	 *  Variable that stores the radius of the ship
+	 */
 	public final static double MIN_RADIUS = 10;
 	
 	/**
@@ -698,11 +710,14 @@ public class Ship extends WorldObject{
 	 */
 	private Set<Bullet> loadedBullets = new HashSet<Bullet>();
 	
+	/**
+	 * Resolves the collision between a ship and a worldobject
+	 * @param other
+	 */
 	@Override
 	public void resolveCollision(WorldObject other){
 		if (other instanceof Ship){
 			this.resolveCollision((Ship) other);
-
 		}
 		else if (other instanceof Bullet){
 
@@ -790,9 +805,10 @@ public class Ship extends WorldObject{
 	public Program getProgram(){
 		return this.associatedProgram;
 	}
+
 	
-	//TODO add documentation
 	/**
+
 	 * Sets the bidirectional relation between the ship and the provided program
 	 * @param 	program
 	 * 			the desired associated program
