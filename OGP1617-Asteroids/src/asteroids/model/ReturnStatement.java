@@ -1,5 +1,7 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+import exceptions.OutOfTimeException;
 import exceptions.ReturnException;
 
 /**
@@ -9,14 +11,23 @@ import exceptions.ReturnException;
  */
 public class ReturnStatement extends NormalStatement implements ExpressionStatement<Expression<?,?>>{
 	
-	public ReturnStatement(Expression<?,?> value){
-		super();
+	public ReturnStatement(Expression<?,?> value,SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(value);
 	}
 	
 	public void executeStatement() throws ReturnException{
-		//super.executeStatement()
-		throw new ReturnException(this.getValue());
+		if(this.getProgram() ==  null){
+			throw new ReturnException(this.getValue());
+		}else{
+			if (this.getProgram().getTime() < 0.2){
+				throw new OutOfTimeException(this);
+			}
+			if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+				this.getProgram().setLastStatement(null);
+				throw new ReturnException(this.getValue());
+			}
+		}
 	}
 	
 	/** 
@@ -25,15 +36,15 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 	public LiteralExpression<?> getValue(){
 		
 		Object evaluation = this.value.evaluate();
-
+		SourceLocation sourceLocation = this.value.getSourceLocation();
 		
 		if(evaluation instanceof WorldObject){
-			LiteralExpression<WorldObject> returnValue = new LiteralExpression<WorldObject>((WorldObject)evaluation);
+			LiteralExpression<WorldObject> returnValue = new LiteralExpression<WorldObject>((WorldObject)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 			
 		}else if( evaluation instanceof Double){
-			LiteralExpression<Double> returnValue = new LiteralExpression<Double>((Double)evaluation);
+			LiteralExpression<Double> returnValue = new LiteralExpression<Double>((Double)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 
@@ -41,7 +52,7 @@ public class ReturnStatement extends NormalStatement implements ExpressionStatem
 			return (LiteralExpression<?>)evaluation;
 			
 		}else{
-			LiteralExpression<Boolean> returnValue = new LiteralExpression<Boolean>((Boolean)evaluation);
+			LiteralExpression<Boolean> returnValue = new LiteralExpression<Boolean>((Boolean)evaluation,  sourceLocation);
 			returnValue.setStatement(this);
 			return returnValue;
 		}

@@ -1,5 +1,6 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import be.kuleuven.cs.som.annotate.*;
 
 
@@ -16,7 +17,8 @@ public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expre
 	 * 			| !isValidOperand(operand)
 	 */
 	@Model @Raw
-	protected UnaryExpression(T operand){
+	protected UnaryExpression(T operand, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setOperand(operand);
 	}
 	
@@ -67,6 +69,19 @@ public abstract class UnaryExpression<T extends Expression<?,?>,R> extends Expre
 	protected void setStatement(Statement statement){
 		this.getOperand().setStatement(statement);
 		super.setStatement(statement);
+	}
+	
+	public Object operandEvaluated(){
+		Expression<?,?> operand = this.getOperand();
+		if(operand instanceof VariableExpression){
+			return  ((VariableExpression)operand).evaluate().evaluate() ;
+		}else if(operand instanceof ParameterExpression){
+			return((ParameterExpression)operand).evaluate().evaluate();
+		}else if (operand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)operand).evaluate().evaluate();
+		}else{
+			return operand.evaluate();
+		}
 	}
 	
 	/**

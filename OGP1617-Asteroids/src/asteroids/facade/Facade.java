@@ -18,7 +18,13 @@ import asteroids.part2.CollisionListener;
 import asteroids.part3.programs.IProgramFactory;
 import asteroids.util.ModelException;
 import exceptions.IllegalAngleException;
+import exceptions.BreakException;
 import exceptions.BuilderException;
+import exceptions.IllegalAngleException;
+import asteroids.model.Expression;
+import asteroids.model.Function;
+import asteroids.model.Statement;
+
 
 public class Facade implements asteroids.part3.facade.IFacade{
 	
@@ -445,16 +451,14 @@ public class Facade implements asteroids.part3.facade.IFacade{
 	 * Return all ships located within <code>world</code>.
 	 */
 	public Set<? extends Ship> getWorldShips(World world) throws ModelException{
-		Set<Ship> allShips = new HashSet<Ship>(world.getAllShips());
-		return allShips;
+		return world.getAll("asteroids.model.Ship");
 	}
 
 	/**
 	 * Return all bullets located in <code>world</code>.
 	 */
 	public Set<? extends Bullet> getWorldBullets(World world) throws ModelException{
-		Set<Bullet> allBullets = new HashSet<Bullet>(world.getAllBullets());
-		return allBullets;
+		return world.getAll("asteroids.model.Bullet");
 	}
 
 	/**
@@ -632,8 +636,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 
 	@Override
 	public Set<? extends Asteroid> getWorldAsteroids(World world) throws ModelException {
-		Set<Asteroid> allAsteroids = new HashSet<Asteroid>(world.getAllAsteroids());
-		return allAsteroids;
+		return world.getAll("asteroids.model.Asteroid");
 	}
 
 	@Override
@@ -656,8 +659,7 @@ public class Facade implements asteroids.part3.facade.IFacade{
 
 	@Override
 	public Set<? extends Planetoid> getWorldPlanetoids(World world) throws ModelException {
-		Set<Planetoid> allPlanetoids = new HashSet<Planetoid>(world.getAllPlanetoids());
-		return allPlanetoids;
+		return world.getAll("asteroids.model.Planetoid");
 	}
 
 	@Override
@@ -790,6 +792,10 @@ public class Facade implements asteroids.part3.facade.IFacade{
 		}catch(IndexOutOfBoundsException exc){
 			throw new ModelException(exc);
 		}catch(BuilderException exc){
+			throw new ModelException(exc);
+		}catch(ClassCastException exc){
+			throw new ModelException(exc);
+		}catch(BreakException exc){
 			throw new ModelException(exc);
 		}
 	}

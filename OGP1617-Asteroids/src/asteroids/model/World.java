@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import asteroids.part2.CollisionListener;
 import be.kuleuven.cs.som.annotate.*;
@@ -460,8 +461,24 @@ public class World {
 		return allObjects;
 	}
 	
-	//TODO make function such that the class is passed as the argument 
-	// see: Class myClass = Class.forName("Ship") or http://stackoverflow.com/questions/14846853/passing-a-class-as-an-argument-to-a-method-in-java
+	public <T extends WorldObject> Set<T> getAll(String className){
+		Set<WorldObject> allObjects = new HashSet<WorldObject>(this.getWorldObjectMap().values());
+		
+		Class<?> currentClass;
+		
+		try{
+			currentClass = Class.forName(className);
+		}catch(ClassNotFoundException exc){
+			throw new IllegalArgumentException("Class not found");
+		}
+		
+		Set<WorldObject> result = allObjects.stream()
+			    .filter(worldObject -> currentClass.isInstance(worldObject)).collect(Collectors.toSet());
+		
+		return (Set<T>)result;
+	}
+	
+	
 	/**
 	 * returns all the ships currently in the world
 	 * 
@@ -793,46 +810,6 @@ public class World {
 		}
 	}
 	
-	/***
-	 * return the next two objects that collide with each other or one if it collides with the world.
-	 * 
-	 * @return	if the next collision is between two objects
-	 * 			return [object1, object2] such that
-	 * 			object1.getTimeToCollision(object2) <= objectI.getTimeToCollision(objectJ)
-	 * 			with objectI and objectJ any of the objects in the world.
-	 * 
-	 * @return	if the next collision is between an object and the world
-	 * 			return object1 such that
-	 * 			object1.getTimeToCollision(this) <= objectI.getTimeToCollision(this)
-	 * 			with objectI any of the objects in the world.
-	 * 
-	 * @throws IllegalArgumentException
-	 * @throws ArithmeticException
-	 */
-	public WorldObject[] getObjectsNextCollision() throws IllegalArgumentException, ArithmeticException{
-		double timeToCollision = Double.POSITIVE_INFINITY;
-		WorldObject object1 = null;
-		WorldObject object2 = null;
-		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
-		Set<WorldObject> copyAllObjects = new HashSet<WorldObject>(worldObjects.values());
-		for (WorldObject i : allObjects){
-			copyAllObjects.remove(i);
-			if (i.getTimeToCollision(this) < timeToCollision){
-				timeToCollision = i.getTimeToCollision(this);
-				object1 = i;
-				object2 = null;
-			}
-			for (WorldObject j : copyAllObjects){
-				if (i.getTimeToCollision(j) < timeToCollision){
-					timeToCollision = i.getTimeToCollision(j);
-					object1 = i;
-					object2 = j;
-				}
-			}
-		}
-		WorldObject[] objectsNextCollision = {object1, object2};
-		return objectsNextCollision;
-	}
 	
 	/***
 	 * returns the time and position of the next collision

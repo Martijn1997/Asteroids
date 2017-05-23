@@ -1,13 +1,15 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, Double>{
 	
 	/**
 	 * constructor for the getX expression
 	 * @param operand
 	 */
-	public GetXExpression(Expression<?,WorldObject> operand){
-		super(operand);
+	public GetXExpression(Expression<?,WorldObject> operand,SourceLocation sourceLocation){
+		super(operand,  sourceLocation);
 	}
 	
 	/**
@@ -17,7 +19,7 @@ public class GetXExpression extends UnaryExpression<Expression<?, WorldObject>, 
 		if(this.getOperand().evaluate() == null){
 			throw new IllegalArgumentException();
 		}
-		return this.getOperand().evaluate().getXPosition();
+		return ((WorldObject) this.operandEvaluated()).getXPosition();
 	}
 	
 	@Override

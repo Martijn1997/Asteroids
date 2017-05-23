@@ -38,7 +38,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Function createFunctionDefinition(String functionName, Statement body, SourceLocation sourceLocation){
-		return new Function(functionName, body);
+		return new Function(functionName, body, sourceLocation);
 	}
 
 	/* STATEMENTS */
@@ -53,7 +53,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createAssignmentStatement(String variableName, Expression<?,?> value, SourceLocation sourceLocation){
-		return new VarAssignStatement(value, variableName);
+		return new VarAssignStatement(value, variableName, sourceLocation);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createWhileStatement(Expression<?,?> condition, Statement body, SourceLocation sourceLocation){
-			return new WhileStatement((Expression<?,Boolean>)condition, body);
+			return new WhileStatement((Expression<?,Boolean>)condition, body, sourceLocation);
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createBreakStatement(SourceLocation sourceLocation){
-		return new BreakStatement();
+		return new BreakStatement(sourceLocation);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createReturnStatement(Expression<?,?> value, SourceLocation sourceLocation){
-		return new ReturnStatement(value);
+		return new ReturnStatement(value, sourceLocation);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createIfStatement(Expression<?,?> condition, Statement ifBody, Statement elseBody, SourceLocation sourceLocation){
-		return new IfStatement((Expression<?,Boolean>)condition, ifBody, elseBody);
+		return new IfStatement((Expression<?,Boolean>)condition, ifBody, elseBody, sourceLocation);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            The expression to evaluate and print
 	 */
 	public Statement createPrintStatement(Expression<?,?> value, SourceLocation sourceLocation){
-		return new PrintStatement(value);
+		return new PrintStatement(value, sourceLocation);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            The statements that must be executed in the given order.
 	 */
 	public Statement createSequenceStatement(List<Statement> statements, SourceLocation sourceLocation){
-		return new SequenceStatement(statements);
+		return new SequenceStatement(statements, sourceLocation);
 	}
 
 	/* EXPRESSIONS */
@@ -138,7 +138,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            The name of the variable to read.
 	 */
 	public Expression<?,?>createReadVariableExpression(String variableName, SourceLocation sourceLocation){
-		return new VariableExpression(variableName);
+		return new VariableExpression(variableName, sourceLocation);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            The name of the parameter to read.
 	 */
 	public Expression<?,?> createReadParameterExpression(String parameterName, SourceLocation sourceLocation){
-		return new ParameterExpression(parameterName);
+		return new ParameterExpression(parameterName, sourceLocation);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 *            A list of expressions that act as actual arguments.
 	 */
 	public Expression<?,?> createFunctionCallExpression(String functionName, List<Expression<?,?>> actualArgs, SourceLocation sourceLocation){
-		return new FunctionCallExpression(functionName, actualArgs);
+		return new FunctionCallExpression(functionName, actualArgs, sourceLocation);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,Double>,Double> createChangeSignExpression(Expression<?,?> expression, SourceLocation sourceLocation){
-		return new NegationExpression((Expression<?,Double>)expression);
+		return new NegationExpression((Expression<?,Double>)expression, sourceLocation);
 	
 	}
 
@@ -185,7 +185,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,Boolean>,Boolean> createNotExpression(Expression<?,?> expression, SourceLocation sourceLocation){
-		return new NotExpression((Expression<?,Boolean>) expression);
+		return new NotExpression((Expression<?,Boolean>) expression, sourceLocation);
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Double,Double> createDoubleLiteralExpression(double value, SourceLocation location){
-		return new LiteralExpression<Double>(value);
+		return new LiteralExpression<Double>(value, location);
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<WorldObject,WorldObject> createNullExpression(SourceLocation location){
-		return new NullExpression();
+		return new NullExpression(location);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Ship,Ship> createSelfExpression(SourceLocation location){
-		return new SelfExpression();
+		return new SelfExpression(location);
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Ship,Ship> createShipExpression(SourceLocation location){
-		return new ClosestWorldObject<Ship>("asteroids.model.Ship");
+		return new ClosestWorldObject<Ship>("asteroids.model.Ship", location);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Asteroid,Asteroid> createAsteroidExpression(SourceLocation location){
-		return new ClosestWorldObject<Asteroid>("asteroids.model.Asteroid");
+		return new ClosestWorldObject<Asteroid>("asteroids.model.Asteroid", location);
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Planetoid,Planetoid> createPlanetoidExpression(SourceLocation location){
-		return new ClosestWorldObject<Planetoid>("asteroids.model.Planetoid");
+		return new ClosestWorldObject<Planetoid>("asteroids.model.Planetoid", location);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Bullet,Bullet> createBulletExpression(SourceLocation location){
-		return new BulletExpression();
+		return new BulletExpression(location);
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<MinorPlanet,MinorPlanet> createPlanetExpression(SourceLocation location){
-		return new ClosestWorldObject<MinorPlanet>("asteroids.model.MinorPlanet");
+		return new ClosestWorldObject<MinorPlanet>("asteroids.model.MinorPlanet", location);
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<?,?> createAnyExpression(SourceLocation location){
-		return new AnyExpression();
+		return new AnyExpression(location);
 	}
 
 	/**
@@ -273,7 +273,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,WorldObject>,Double> createGetXExpression(Expression<?,?> e, SourceLocation location){
-		return new GetXExpression((Expression<?,WorldObject>)e);
+		return new GetXExpression((Expression<?,WorldObject>)e, location);
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,WorldObject>,Double> createGetYExpression(Expression<?,?> e, SourceLocation location){
-		return new GetYExpression((Expression<?, WorldObject>) e);
+		return new GetYExpression((Expression<?, WorldObject>) e, location);
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,WorldObject>,Double> createGetVXExpression(Expression<?,?> e, SourceLocation location){
-		return new GetVxExpression((Expression<?, WorldObject>) e);
+		return new GetVxExpression((Expression<?, WorldObject>) e, location);
 	}
 	/**
 	 * Returns an expression that evaluates to the velocity along the y-axis of
@@ -299,7 +299,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,WorldObject>,Double> createGetVYExpression(Expression<?,?> e, SourceLocation location){
-		return new GetVyExpression((Expression<?, WorldObject>) e);
+		return new GetVyExpression((Expression<?, WorldObject>) e, location);
 	}
 	/**
 	 * Returns an expression that evaluates to the radius of the entity to which
@@ -307,7 +307,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?, WorldObject>,Double> createGetRadiusExpression(Expression<?,?> e, SourceLocation location){
-		return new GetRadiusExpression((Expression<?, WorldObject>) e);
+		return new GetRadiusExpression((Expression<?, WorldObject>) e, location);
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,Double>, Boolean> createLessThanExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
-		return new SmallerThanExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+		return new SmallerThanExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2, location);
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	@Override
 	public Expression<?,Boolean> createEqualityExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
 		return new EqualsExpression<Expression<?,? extends Expression<?,?>>>((Expression<?,? extends Expression<?,?>>)e1,
-				(Expression<?,? extends Expression<?,?>>)e2);
+				(Expression<?,? extends Expression<?,?>>)e2, location);
 	}
 
 	/**
@@ -337,7 +337,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,Double>,Double> createAdditionExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
-		return new AdditionExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+		return new AdditionExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2, location);
 	}
 
 	/**
@@ -346,7 +346,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?,Double>,Double> createMultiplicationExpression(Expression<?,?> e1, Expression<?,?> e2, SourceLocation location){
-		return new MultiplicationExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2);
+		return new MultiplicationExpression((Expression<?,Double>)e1,(Expression<?,Double>)e2, location);
 	}
 
 	/**
@@ -355,7 +355,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<Expression<?, Double>,Double> createSqrtExpression(Expression<?,?> e, SourceLocation location){
-		return new SqrtExpression((Expression<?, Double>) e);
+		return new SqrtExpression((Expression<?, Double>) e, location);
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Expression<?,?> createGetDirectionExpression(SourceLocation location){
-		return new GetdirExpression();
+		return new GetdirExpression(location);
 	}
 
 	/**
@@ -373,7 +373,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createThrustOnStatement(SourceLocation location){
-		return new ThrustOnStatement();
+		return new ThrustOnStatement(location);
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createThrustOffStatement(SourceLocation location){
-		return new ThrustOffStatement();
+		return new ThrustOffStatement(location);
 	}
 
 	/**
@@ -391,7 +391,7 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createFireStatement(SourceLocation location){
-		return new FireStatement();
+		return new FireStatement(location);
 	}
 
 	/**
@@ -400,7 +400,8 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createTurnStatement(Expression<?,?> angle, SourceLocation location){
-		return new TurnStatement((Expression<?, Double>) angle);
+		return new TurnStatement((Expression<?, Double>) angle, location);
+
 	}
 
 	/**
@@ -408,6 +409,6 @@ public class ProgramFactory implements asteroids.part3.programs.IProgramFactory<
 	 */
 	@Override
 	public Statement createSkipStatement(SourceLocation location){
-		return new SkipStatement();
+		return new SkipStatement(location);
 	}
 }

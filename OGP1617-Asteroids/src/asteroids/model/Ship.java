@@ -649,13 +649,17 @@ public class Ship extends WorldObject{
 		}
 		else{
 			WorldObject other = this.getWorld().getEntityAt(otherPos);
-			try {
-				bullet.resolveCollision(other);
-			//if there is no significant overlap between the bullet and the other entity
-			//means that they are positioned within each other, terminate both
-			} catch (IllegalStateException exc) {
+			if (other == this){
 				bullet.terminate();
-				other.terminate();
+			}else{
+				try {
+					bullet.resolveCollision(other);
+				//if there is no significant overlap between the bullet and the other entity
+				//means that they are positioned within each other, terminate both
+				} catch (IllegalStateException exc) {
+					bullet.terminate();
+					other.terminate();
+				}
 			}
 		}
 	}
@@ -789,12 +793,19 @@ public class Ship extends WorldObject{
 	
 	//TODO add documentation
 	/**
+	 * Sets the bidirectional relation between the ship and the provided program
+	 * @param 	program
+	 * 			the desired associated program
 	 * 
-	 * @param program
-	 * @throws IllegalArgumentException
+	 * @Post 	the associated program is set to program
+	 * 			|(new) getAssociatedPorgram == program
+	 * @throws 	IllegalArgumentException
+	 * 			thrown if the program is a null pointer
+	 * 			thrown if the current associated program is not null
+	 * 			thrown if the program doesn't reference the ship
 	 */
-	public void setProgram(Program program)throws IllegalArgumentException{
-		if(this.getProgram()== null && program.getShip() == this){
+	protected void setProgram(Program program)throws IllegalArgumentException{
+		if(program != null&&this.getProgram()== null && program.getShip() == this){
 			this.associatedProgram = program;
 		}else{
 			throw new IllegalArgumentException();

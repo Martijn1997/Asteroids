@@ -1,10 +1,25 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public abstract class Statement {
 	
-	public Statement(){
-		//TODO implement constructor
+	public Statement(SourceLocation sourceLocation){
+		this.setSourceLocation(sourceLocation);
+		
 	}
+	
+	
+	protected SourceLocation getSourceLocation() {
+		return sourceLocation;
+	}
+
+	protected void setSourceLocation(SourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
+
+	private SourceLocation sourceLocation;
 	
 	protected Program getProgram(){
 		return this.associatedProgram;
@@ -19,19 +34,17 @@ public abstract class Statement {
 	
 	public abstract boolean canHaveAsProgram(Program program);
 	
-	public void executeStatement(){
-		this.setExecuted();
-	}
+	public abstract void executeStatement();
 	
-	public void setExecuted(){
-		this.executionFlag = true;
-	}
-	
-	public boolean isExecuted(){
-		return this.executionFlag;
-	}
-	
-	private boolean executionFlag = false;
+//	public void setExecuted(){
+//		this.executionFlag = true;
+//	}
+//	
+//	public boolean isExecuted(){
+//		return this.executionFlag;
+//	}
+//	
+//	private boolean executionFlag = false;
 	
 	private Program associatedProgram;
 }

@@ -1,12 +1,14 @@
 package asteroids.model;
 
 import java.util.ArrayList;
+import exceptions.OutOfTimeException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.BuilderException;
 
 import exceptions.OutOfTimeException;
@@ -22,8 +24,20 @@ public class Program {
 			this.setBuildFault();
 		}
 		
+		this.setSourceLocation(sourceLocation);
+		
 	}
 	
+	private SourceLocation sourceLocation;
+	
+	protected SourceLocation getSourceLocation() {
+		return sourceLocation;
+	}
+
+	protected void setSourceLocation(SourceLocation sourceLocation) {
+		this.sourceLocation = sourceLocation;
+	}
+
 	public List<Object> excecuteProgram(double deltaTime){
 
 		if(this.getBuildFault()){
@@ -31,18 +45,26 @@ public class Program {
 		}
 		
 		this.setTime(deltaTime + this.getTime());
-		if (!this.getStatement().isExecuted() && (this.getTime() >= 0.2)){
+		if (this.getTime() >= 0.2){
 			try{
-				this.getStatement().executeStatement();
-			}catch (OutOfTimeException exc){
+				if (this.getStatement() instanceof SequenceStatement){
+					if (this.getLastStatement() == this.getStatement())
+						this.setLastStatement(null);
+					this.getStatement().executeStatement();
+				}else if ((this.getLastStatement() == null) || (this.getLastStatement() == this.getStatement()))
+					this.getStatement().executeStatement();
+			}catch (OutOfTimeException statement){
+				this.setLastStatement(statement.getStatement());
 			}
+		}else if(this.getLastStatement() == null){
+			this.setLastStatement(this.getStatement());
 		}
 
 		if(this.getBuildFault()){
 			throw new BuilderException();
 		}
 
-		if (this.getPrintedObjects().isEmpty())
+		if (!(this.getLastStatement() == null))
 			return null;
 		else
 			return this.getPrintedObjects();
@@ -51,6 +73,16 @@ public class Program {
 	public double getTime(){
 		return time;
 	}
+	
+	public void setLastStatement(Statement statement){
+		this.lastStatement = statement;
+	}
+	
+	public Statement getLastStatement(){
+		return this.lastStatement;
+	}
+	
+	private Statement lastStatement = null;
 	
 	public void setTime(double time){
 		if(isValidTime(time)){
@@ -66,14 +98,23 @@ public class Program {
 	
 	private double time;
 	
+	/**
+	 * Getter for build fault flag
+	 */
 	public boolean getBuildFault(){
 		return this.buildFault;
 	}
 	
+	/**
+	 * setter for build fault flag
+	 */
 	public void setBuildFault(){
 		this.buildFault = true;
 	}
 	
+	/**
+	 * Variable that stores the build fault flag (signals error upon constructing the program)
+	 */
 	private boolean buildFault = false;
 	
 	/**
@@ -116,32 +157,41 @@ public class Program {
 	}
 	
 	/**
-	 * set the function list to the provided functions
+	 * establishes the bidirectional relationship between functions and the host program
 	 * @param functions
 	 */
-	//TODO check if there are no functions with the same name
 	public void setFunctions(List<Function> functions){
 		for(Function function: functions){
 			if(!this.canHaveAsFunction(function)){
 				throw new BuilderException();
 			}
 		}
+		//Look for duplicate functions
 		HashSet<Function> temp_set = new HashSet<Function>(functions);
 		if(temp_set.size() != functions.size()){
 			throw new BuilderException();
 		}
+		
+		//check if there are no functions with the same name
+		List<String> functionNames = new ArrayList<String>();
+		for(Function function: functions){
+			functionNames.add(function.getFunctionName());
+		}
+		
+		if(temp_set.size()!=functionNames.size()){
+			throw new BuilderException();
+		}
+		
+		//Add the functions to the program and set the program of the functions to this program
 		this.functions.addAll(functions);
 		for(Function function: functions){
 			function.setProgram(this);
 		}
 		
-		System.out.println(functions.size());
 	}
 	
 	public boolean canHaveAsFunction(Function function){
 		if(function != null /*&&function.getProgram()==this*/){
-			System.out.println("I was here");
-			System.out.println(!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
 			return (!this.containsGlobalVariable(function.getFunctionName())&&!this.containsUninitGlobal(function.getFunctionName()));
 		}else{
 			return false;

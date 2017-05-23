@@ -1,22 +1,31 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+import exceptions.OutOfTimeException;
+
 public class PrintStatement extends Statement {
 	
-	public PrintStatement(Expression<?,?> expression){
+	public PrintStatement(Expression<?,?> expression, SourceLocation sourceLocation){
+		super(sourceLocation);
 		this.setExpression(expression);
 	}
 	
 	@Override
 	public void executeStatement(){
-		System.out.println(this.getExpression().toString());
-
-		Object evaluation = this.getExpression().evaluate();
-		super.executeStatement();
-		if(evaluation instanceof LiteralExpression){
-			this.getProgram().addPrintedObject(((LiteralExpression<?>)evaluation).evaluate());
-		}else{
-
-		this.getProgram().addPrintedObject(evaluation);
+		if (this.getProgram().getTime() < 0.2){
+			throw new OutOfTimeException(this);
+		}
+		if((this.getProgram().getLastStatement() == this) || (this.getProgram().getLastStatement() == null)){
+			this.getProgram().setLastStatement(null);
+			System.out.println(this.getExpression().toString());
+	
+			Object evaluation = this.getExpression().evaluate();
+			if(evaluation instanceof LiteralExpression){
+				this.getProgram().addPrintedObject(((LiteralExpression<?>)evaluation).evaluate());
+			}else{
+	
+			this.getProgram().addPrintedObject(evaluation);
+			}
 		}
 	}
 	

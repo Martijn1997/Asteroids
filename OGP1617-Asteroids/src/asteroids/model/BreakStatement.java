@@ -1,28 +1,16 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 import exceptions.BreakException;
 
 public class BreakStatement extends NormalStatement{
-	public BreakStatement(){
-		super();
+	public BreakStatement(SourceLocation sourceLocation){
+		super(sourceLocation);
 	}
 	
-	//super.executeStatement() zodat flag wordt geraised
 	public void executeStatement(){
-		if(this.assocWhile != null){
-			throw new BreakException(this.getWhileStatement());
-		}else{
-			throw new IllegalStateException();
-		}
+			throw new BreakException();
+
 	}
-	
-	public WhileStatement getWhileStatement(){
-		return this.assocWhile;
-	}
-	
-	public void setWhileStatement(WhileStatement statement){
-		this.assocWhile = statement;
-	}
-	
-	private WhileStatement assocWhile;
+
 }

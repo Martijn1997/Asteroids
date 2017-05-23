@@ -1,10 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
 
 public class GetdirExpression extends Expression<WorldObject, Double>{
 	
-	public GetdirExpression(){
-		
+	public GetdirExpression(SourceLocation sourceLocation){
+		super(sourceLocation);
 	}
 	
 	public Double evaluate(){	

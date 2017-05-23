@@ -1,9 +1,11 @@
 package asteroids.model;
 
+import asteroids.part3.programs.SourceLocation;
+
 public abstract class ChainedStatement extends NormalStatement {
 	
-	public ChainedStatement(){
-		super();
+	public ChainedStatement(SourceLocation sourceLocation){
+		super( sourceLocation);
 	}
 	
 	@Override
@@ -66,22 +68,5 @@ public abstract class ChainedStatement extends NormalStatement {
 		super.setProgram(program);
 	}
 	
-	
-	// extra add to detect break in function in while
-	public void lookForBreakStatement(WhileStatement whileState){
-		Statement statement = this.getStatement();
-		
-		// if the statement is instance of breakstatement 
-		if(statement instanceof BreakStatement){
-			((BreakStatement) statement).setWhileStatement(whileState);
-			// case the break is nested in a function
-//		}else if(statement instanceof ExpressionStatement){
-//			if(((ExpressionStatement<Expression<?,?>>) statement).getExpression() instanceof FunctionCallExpression){
-//				((FunctionCallExpression) ((ExpressionStatement<Expression<?,?>>) statement).getExpression())
-//				.scanForBreakStatement(whileState);
-//			}
-		}else if(statement instanceof ChainedStatement){
-			((ChainedStatement)statement).lookForBreakStatement(whileState);
-		}
-	}
+
 }

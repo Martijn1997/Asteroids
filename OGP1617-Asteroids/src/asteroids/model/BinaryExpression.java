@@ -1,6 +1,7 @@
 package asteroids.model;
 
 
+import asteroids.part3.programs.SourceLocation;
 import be.kuleuven.cs.som.annotate.*;
 
 public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expression<T,R>/* implements SubExprExpression*/{
@@ -11,7 +12,8 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 	 * @param rightOperand
 	 */
 	@Model @Raw
-	protected BinaryExpression(T leftOperand, T rightOperand) throws IllegalArgumentException{
+	protected BinaryExpression(T leftOperand, T rightOperand, SourceLocation sourceLocation) throws IllegalArgumentException{
+		super(sourceLocation);
 		this.setLeftOperand(leftOperand);
 		this.setRightoperand(rightOperand);
 	}
@@ -76,6 +78,37 @@ public abstract class BinaryExpression<T extends Expression<?,?>,R> extends Expr
 		this.getLeftOperand().setStatement(statement);
 		this.getRightOperand().setStatement(statement);
 		super.setStatement(statement);
+	}
+	
+	public Object leftOperandEvaluated(){
+		
+		Expression<?,?> leftOperand = this.getLeftOperand();
+		
+		if(leftOperand instanceof VariableExpression){
+			return  ((VariableExpression)leftOperand).evaluate().evaluate() ;
+		}else if(leftOperand instanceof ParameterExpression){
+			return((ParameterExpression)leftOperand).evaluate().evaluate();
+		}else if (leftOperand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)leftOperand).evaluate().evaluate();
+		}else{
+			return leftOperand.evaluate();
+		}
+	}
+	
+	public Object rightOperandEvaluated(){
+		
+		Expression<?,?> rightOperand = this.getRightOperand();
+		if(rightOperand instanceof VariableExpression){
+			return  ((VariableExpression)rightOperand).evaluate().evaluate() ;
+		}else if(rightOperand instanceof ParameterExpression){
+			return((ParameterExpression)rightOperand).evaluate().evaluate();
+		}else if (rightOperand instanceof FunctionCallExpression){
+			return((FunctionCallExpression)rightOperand).evaluate().evaluate();
+		}else{
+			return rightOperand.evaluate();
+		}
+
+		
 	}
 	
 	
