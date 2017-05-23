@@ -39,7 +39,7 @@ public class ProgramTests {
 	      ProgramFactory programFactory = new ProgramFactory();
 	      Program program = ProgramParser.parseProgramFromString(code, programFactory);
 	      System.out.print(program);
-	      ship1.setProgram(program);
+	      //ship1.setProgram(program);
 	      List<Object> results = ship1.getProgram().excecuteProgram(0.45);
 	      assertTrue(ship1.getThrusterStatus());
 	      Object[] expecteds = { 0.4 };
