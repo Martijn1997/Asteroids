@@ -515,6 +515,11 @@ public class World {
 		return allBullets;
 	}
 	
+	/**
+	 * returns all the asteroids currently in the world
+	 * 
+	 * @see implementation
+	 */
 	public HashSet<Asteroid> getAllAsteroids(){
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 		HashSet<Asteroid> allAsteroids = new HashSet<Asteroid>();
@@ -528,6 +533,11 @@ public class World {
 		return allAsteroids;
 	}
 	
+	/**
+	 * returns all the planetoids currently in the world
+	 * 
+	 * @see implementation
+	 */
 	public HashSet<Planetoid> getAllPlanetoids(){
 		Set<WorldObject> allObjects = new HashSet<WorldObject>(worldObjects.values());
 		HashSet<Planetoid> allPlanetoids = new HashSet<Planetoid>();
@@ -868,6 +878,13 @@ public class World {
 			return new double[] {timeToCollision, collisionPosition[0], collisionPosition[1]};
 	}
 	
+	/**
+	 * Checks if upon transportation the given ship doesn't collide
+	 * 
+	 * @param ship
+	 * @return true if there is no collision
+	 * @return false if there is a collision
+	 */
 	public boolean checkTransport(Ship ship){
 		// first check if the ship is a null reference
 				if((ship != null)&&this.withinBoundary(ship)){

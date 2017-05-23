@@ -118,6 +118,10 @@ public abstract class MinorPlanet extends WorldObject {
 		this.terminate();
 	}
 	
+	/**
+	 * Resolves the collision between a minor planet and a ship
+	 * @param other
+	 */
 	public abstract void resolveCollision(Ship other);
 	
 	@Override
